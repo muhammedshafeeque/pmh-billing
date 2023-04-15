@@ -51,3 +51,6 @@ export const doLogin = async (req, res) => {
     res.status(400).send("Invalid userId Or Password");
   }
 };
+export const getReqestUser=(req,res)=>{
+  res.send(req.user)
+}

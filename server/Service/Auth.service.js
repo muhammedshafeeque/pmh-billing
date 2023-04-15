@@ -6,7 +6,7 @@ export const getUserByUserId = (userName) => {
     try {
       let user = await db()
         .collection(collections.USER_COLLECTION)
-        .findOne({userName:userName});
+        .findOne({ userName: userName });
       resolve(user);
     } catch (error) {
       reject(error);
@@ -15,13 +15,13 @@ export const getUserByUserId = (userName) => {
 };
 export const createUser = (user) => {
   return new Promise(async (resolve, reject) => {
-      try {
-        let User = await db()
-          .collection(collections.USER_COLLECTION)
-          .insertOne(user);
-        resolve(User);
-      } catch (error) {
-        reject(error);
-      }
-    })
+    try {
+      let User = await db()
+        .collection(collections.USER_COLLECTION)
+        .insertOne(user);
+      resolve(User);
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
