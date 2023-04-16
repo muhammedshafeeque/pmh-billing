@@ -8,13 +8,12 @@ const instance = axios.create({
 
 instance.defaults.headers.common[
   "Authorization"
-] = `Bearer ${localStorage.getItem(TOKEN)}`;
+] = `Bearer ${JSON.parse(localStorage.getItem(TOKEN))}`;
 instance.defaults.headers.post["Content-Type"] = "application/json";
 instance.interceptors.response.use(
   response=>response,
   error=>{
     if(error.response.status===401){
-      localStorage.clear()
       window.location.href = nav.HOME;
     }
   }
