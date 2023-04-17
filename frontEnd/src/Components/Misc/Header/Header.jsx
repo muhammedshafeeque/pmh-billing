@@ -18,20 +18,18 @@ import React from "react";
 import "./header.scss";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { ImMenu } from "react-icons/im";
-
-import { useNavigate } from "react-router-dom";
 import './header.scss'
+import ModuleSelector from "../ModuleSelector/ModuleSelector";
 function Header() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigate=useNavigate()
 
   return (
     <div>
       <Box className="app_header">
         <ImMenu className="menu_button" onClick={onOpen} />
         <Text fontSize={"2xl"} fontFamily="-moz-initial">
-          Travellia-{module.name}
+          PMH STORE-{module.name}
         </Text>
 
         <Menu>
@@ -53,7 +51,7 @@ function Header() {
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader borderBottomWidth="1px">Menu</DrawerHeader>
-          {/* <ModuleSelector /> */}
+          <ModuleSelector />
           <DrawerBody></DrawerBody>
         </DrawerContent>
       </Drawer>

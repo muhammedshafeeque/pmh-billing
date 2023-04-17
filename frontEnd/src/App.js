@@ -7,6 +7,7 @@ import BillProvider from "./Context/Context";
 
 function App() {
   const Dashboard = React.lazy(() => import("./app/DashBoard/Dashboard"));
+  const Stock=React.lazy(()=>import('./app/Stock/Stock'))
   return (
     <div className="App">
       <Suspense>
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path={nav.HOME} exact element={<Login />} />
             <Route path={nav.DASHBOARD} element={<Dashboard />} />
+            <Route path={nav.STOCK} element={<Stock />} />
           </Routes>
         </BillProvider>
       </Suspense>
