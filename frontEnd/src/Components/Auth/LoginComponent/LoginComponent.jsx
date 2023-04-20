@@ -29,18 +29,21 @@ function LoginComponent() {
     axios
       .post("auth/login", { userName, password })
       .then((res) => {
-        setIsLoading(false);
-        toast({
-          title: "User logined Successfully",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          position: "top-right",
-        });
-
-        localStorage.setItem(TOKEN, JSON.stringify(res.data.token));
-        setUser(res.data);
-        navigate(`${nav.DASHBOARD}`);
+        if(res.status===200){
+          setIsLoading(false);
+          toast({
+            title: "User logined Successfully",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "top-right",
+          });
+  
+          localStorage.setItem(TOKEN, res.data.token);
+          setUser(res.data);
+          navigate(`${nav.DASHBOARD}`);
+        }
+        
       }).catch((err) => {
         
         toast({

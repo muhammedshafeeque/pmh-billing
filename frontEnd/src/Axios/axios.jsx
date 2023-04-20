@@ -8,7 +8,7 @@ const instance = axios.create({
 
 instance.defaults.headers.common[
   "Authorization"
-] = `Bearer ${JSON.parse(localStorage.getItem(TOKEN))}`;
+] = `Bearer ${localStorage.getItem(TOKEN)}`;
 instance.defaults.headers.post["Content-Type"] = "application/json";
 instance.interceptors.response.use(
   response=>response,
