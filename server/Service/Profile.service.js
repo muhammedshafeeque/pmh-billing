@@ -7,12 +7,7 @@ export const getProfile = (query) => {
     try {
      
       let keywords = {};
-      query.msrNumber && (keywords.msrNumber = query.msrNumber);
-      query.mobile && (keywords.mobile = query.mobile);
-      query.email && (keywords.email = query.email);
-      query.cluster && (keywords.cluster = query.cluster);
-      query.mahallu && (keywords.mahallu = query.mahallu);
-      query.skunit && (keywords.skunit = query.skunit);
+
 
       let profiles = await db()
         .collection(collections.PROFIL_COLLECTION)
