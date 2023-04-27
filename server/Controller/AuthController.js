@@ -14,7 +14,7 @@ export const makeProfile = async (req, res) => {
   try {
     let user = req.body;
     let userExist = await getUserByUserId(user.userName);
-    if (userExist) {
+    if (userExist.length) {
       res.status(400).send("userName   Allready Exist");
     } else {
       let password = await encriptString(user.password);
@@ -24,7 +24,7 @@ export const makeProfile = async (req, res) => {
       });
       await createProfile({
         userName:user.userName,
-        userId: User.insertedId,
+        userId: User._id,
       });
       res.send(
         "Profile Created Successfully"

@@ -1,25 +1,16 @@
-import { db } from "../Config/db.js";
-import { collections } from "../Constants/collections.js";
+import { User } from "../Models/userModa.js";
 
 export const getUserByUserId = (userName) => {
   return new Promise(async (resolve, reject) => {
-    try {
-      let user = await db()
-        .collection(collections.USER_COLLECTION)
-        .findOne({ userName: userName });
-      resolve(user);
-    } catch (error) {
-      reject(error);
-    }
+    let user =await User.find({userName:userName})
+    resolve (user)
   });
 };
 export const createUser = (user) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let User = await db()
-        .collection(collections.USER_COLLECTION)
-        .insertOne(user);
-      resolve(User);
+      let usrData=await User.create(user)
+      resolve(usrData)
     } catch (error) {
       reject(error);
     }
