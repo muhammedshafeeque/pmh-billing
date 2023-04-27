@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
-import { db } from "../Config/db.js";
-import { collections } from "../Constants/collections.js";
+import { Profile } from "../Models/profileModal.js";
 
 export const getProfile = (query) => {
   return new Promise(async (resolve, reject) => {
@@ -22,9 +21,7 @@ export const getProfile = (query) => {
 };
 export const createProfile = (profile) => {
   return new Promise(async (resolve, reject) => {
-    let user = await db()
-      .collection(collections.PROFIL_COLLECTION)
-      .insertOne(profile);
+    let user = await Profile.create(profile)
     resolve(user);
   });
 };

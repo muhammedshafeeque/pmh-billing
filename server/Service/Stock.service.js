@@ -1,5 +1,3 @@
-import { db } from "../Config/db.js";
-import { collections } from "../Constants/collections.js";
 export const postRack = async (data) => {
   await db().collection(collections.RACK_COLLLECTIONS).insertOne(data);
   return;
@@ -40,4 +38,3 @@ export const postSection = async (data) => {
   await db().collection(collections.SECTION_COLLECTION).insertOne(data);
   return;
 };
-

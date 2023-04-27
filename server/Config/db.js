@@ -1,19 +1,10 @@
-import { MongoClient } from "mongodb";
-const state = {
-  db: null,
-};
+import mongoose from "mongoose";
 export const connectDb = async () => {
-  const url = process.env.MONGO_URL;
-  const dbname = process.env.DB_NAME;
-
-  MongoClient.connect(url, { useUnifiedTopology: true }, (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      (state.db = data.db(dbname)), console.log("connected to databse");
-    }
-  });
-};
-export const db = () => {
-  return state.db;
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URL);
+    console.log("MongoDB Connected");
+  } catch (error) {
+    console.log(error);
+    process.exit();
+  }
 };
