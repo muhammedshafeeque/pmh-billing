@@ -1,30 +1,55 @@
-import {  Button, Col, Form, Input, Modal, Row } from "antd";
+import { Button, Col, Form, Input, Modal, Row } from "antd";
 import { useState } from "react";
 import axios from "../../../Axios/axios";
-function CreateSection() {
+import { useToast } from "@chakra-ui/react";
+function CreateSection({ section, setSection  }) {
   const [open, setOpen] = useState(false);
-  const handleSubmitForm=(values)=>{
-    axios.post('/stock/section',values).then((res)=>{
-        setOpen(false)
-    })
-  }
+  const toast = useToast();
+  const [form] = Form.useForm();
+  const handleSubmitForm = async (values) => {
+    try {
+      let res = await axios.post("/stock/section", values);
+      toast({
+        title: res.data,
+        description: "New Section Added Sucessfully",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+      values._id = 1;
+      setSection([...section, values]);
+      form.resetFields();
+      setOpen(false)
+    } catch (error) {
+      toast({
+        title: "Failed",
+        description: "Name or code Allready Exist",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+  };
   return (
     <>
       <Button
         type="primary"
         style={{ marginBottom: "2rem" }}
-        onClick={() => setOpen(true)}
+        onClick={() => {setOpen(true) 
+          form.resetFields()}}
       >
         Create New Section
       </Button>
       <Modal
-        title="Create Rack "
+        title="Create Section"
         centered
         open={open}
         onCancel={() => setOpen(false)}
         footer={[]}
       >
-        <Form onFinish={handleSubmitForm}>
+        <Form form={form} onFinish={handleSubmitForm}>
           <Row>
             <Col span={12}>
               <Form.Item
@@ -35,14 +60,30 @@ function CreateSection() {
               </Form.Item>
             </Col>
             <Form.Item
-            name={'code'}
+              name={"code"}
               rules={[{ required: true, message: "code is Mondatory!" }]}
             >
               <Input placeholder="code" />
             </Form.Item>
           </Row>
-          <Row span={24} > 
-            <Form.Item span={24} style={{width:'100%',display:"flex",justifyContent:"flex-end",paddingRight:'2rem'}} >
+          <Row span={24}>
+            <Form.Item
+              span={24}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingRight: "2rem",
+              }}
+            >
+              <Button
+                htmlType="button"
+                onClick={() => {
+                  form.resetFields();
+                }}
+              >
+                Reset
+              </Button>
               <Button type="primary" htmlType="submit">
                 Submit
               </Button>
