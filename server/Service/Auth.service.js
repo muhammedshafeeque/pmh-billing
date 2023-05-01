@@ -2,7 +2,7 @@ import { User } from "../Models/userModa.js";
 
 export const getUserByUserId = (userName) => {
   return new Promise(async (resolve, reject) => {
-    let user =await User.find({userName:userName})
+    let user =await User.findOne({userName:userName})
     resolve (user)
   });
 };

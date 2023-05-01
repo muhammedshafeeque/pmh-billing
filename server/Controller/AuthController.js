@@ -14,7 +14,7 @@ export const makeProfile = async (req, res) => {
   try {
     let user = req.body;
     let userExist = await getUserByUserId(user.userName);
-    if (userExist.length) {
+    if (userExist) {
       res.status(400).send("userName   Allready Exist");
     } else {
       let password = await encriptString(user.password);
@@ -26,23 +26,22 @@ export const makeProfile = async (req, res) => {
         userName:user.userName,
         userId: User._id,
       });
-      res.send(
+      res.send( 
         "Profile Created Successfully"
       );
     }
   } catch (error) {
     res.status(500).send("error:" + error);
-  }
+  } 
 };
 export const doLogin = async (req, res) => {
   let userExist = await getUserByUserId(req.body.userName);
-
   if (userExist) {
     let compare = await comparePassword(req.body.password, userExist.password);
     if (compare) {
       let profile = await getProfileByUserId(userExist._id);
-
-      profile.token = await generateToken(profile.userId);
+      let token = await generateToken(profile.userId);
+      profile._doc.token=token
       res.send(profile);
     } else {
       res.status(400).send("Invalid userId Or Password");

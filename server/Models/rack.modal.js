@@ -11,4 +11,4 @@ const rackModal = mongoose.Schema(
     timestaps: true,
   }
 );
-export const Rack = mongoose.model("rack", rackModal);
+export const Rack = mongoose.model("racks", rackModal);
