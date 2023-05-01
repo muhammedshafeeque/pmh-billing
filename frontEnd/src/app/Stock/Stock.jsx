@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../../Components/Misc/Header/Header";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import RackList from "../../Components/Stock/RackList/RackList";
+import SectionList from "../../Components/Stock/SectionList/SectionList";
 
 
 function Stock() {
@@ -14,6 +15,7 @@ function Stock() {
           <Tab>Category</Tab>
           <Tab>Groupe</Tab>
           <Tab>Rack</Tab>
+          <Tab>Section</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -27,6 +29,9 @@ function Stock() {
           </TabPanel>
           <TabPanel>
             <RackList/>
+          </TabPanel>
+          <TabPanel>
+            <SectionList/>
           </TabPanel>
         </TabPanels>
       </Tabs>
