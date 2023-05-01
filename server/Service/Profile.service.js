@@ -28,9 +28,7 @@ export const createProfile = (profile) => {
 export const getProfileByUserId = (id) => {
 
   return new Promise(async (resolve, reject) => {
-    let user = await db()
-      .collection(collections.PROFIL_COLLECTION)
-      .findOne({ userId: ObjectId(id) });
+    let user = await Profile.findOne({userId:ObjectId(id)})
     resolve(user);
   });
 };

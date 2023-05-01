@@ -8,4 +8,5 @@ const sectionModal = mongoose.Schema(
     timestaps: true,
   }
 );
-export const Section = mongoose.model("rack", sectionModal);
+export const Section = mongoose.model("section", sectionModal);
+ 
