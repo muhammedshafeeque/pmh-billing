@@ -12,8 +12,7 @@ function CreateSection({ update ,doc,setFlage}) {
     if(update){
       try {
         let res = await axios.patch(`/stock/section/${doc._id}`, values)
-        // form.resetFields();
-        if(res.status===200){
+        form.resetFields();
           toast({
             title: 'Success',
             description: "Section Updated Sucessfully",
@@ -22,16 +21,15 @@ function CreateSection({ update ,doc,setFlage}) {
             isClosable: true,
             position: "top-right",
           });
-        }
+        
         
         setFlage(res.data)
         setOpen(false)
       } catch (error) {
-        
         toast({
          
           title: "Failed",
-          description: 'Please Try Again',
+          description: error.response.data,
           status: "error",
           duration: 9000,
           isClosable: true,

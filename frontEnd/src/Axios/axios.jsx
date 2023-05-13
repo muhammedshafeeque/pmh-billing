@@ -12,10 +12,17 @@ instance.defaults.headers.common[
 ] = `Bearer ${localStorage.getItem(TOKEN)}`;
 instance.defaults.headers.post["Content-Type"] = "application/json";
 instance.interceptors.response.use(
-  (response) => response,
+  response => {
+    if(response.status===200){
+      return response
+    }
+
+  },
   (error) => {
     if (error.response.status === 401) {
       window.location.href = nav.HOME;
+    }else{
+      throw error
     }
   }
 );
