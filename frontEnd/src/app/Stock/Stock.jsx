@@ -3,8 +3,6 @@ import Header from "../../Components/Misc/Header/Header";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import RackList from "../../Components/Stock/RackList/RackList";
 import SectionList from "../../Components/Stock/SectionList/SectionList";
-
-
 function Stock() {
   return (
     <div>

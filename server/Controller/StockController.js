@@ -1,4 +1,4 @@
-import { getSections, postSection } from "../Service/SectionService.js";
+import { deleteSection, getSections, patchSection, postSection } from "../Service/SectionService.js";
 import {postRack,getRacks} from '../Service/RackService.js'
 export const createSection = async (req, res) => {
   try {
@@ -24,6 +24,23 @@ export const createRack = async (req, res) => {
     res.status(400).send("err" + error);
   }
 };
+export const updateSection=async(req,res)=>{
+  try {
+  let update= await patchSection(req.body,req.params.id)
+  res.send(update)
+
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+}
+export const removeSection=async(req,res)=>{
+  try {
+    await deleteSection(req.params.id)
+    res.send('Section Removed Successfully ')
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+}
 export const getRackList = async (req, res) => {
   try {
     let racks = await getRacks(req.query);
