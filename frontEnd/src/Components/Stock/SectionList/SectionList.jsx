@@ -10,18 +10,19 @@ import {
 import React, { useEffect, useState } from "react";
 import CreateSection from "../CreateSection/CreateSection";
 import axios from "../../../Axios/axios";
-import { AiFillEdit } from "react-icons/ai";
+import { AiFillDelete } from "react-icons/ai";
 function SectionList() {
   const [section, setSection] = useState([]);
+  const [flag,setFlag]=useState({})
   useEffect(() => {
     axios.get("stock/section").then((res) => {
       setSection(res.data);
     });
-  }, []);
+  }, [flag]);
 
   return (
     <div style={{ marginTop: "3rem" }}>
-      <CreateSection section={section} update={false} setSection={setSection} />
+      <CreateSection  update={false} setFlage={setFlag}  />
       <TableContainer>
         <Table size="sm">
           <Thead>
@@ -40,11 +41,12 @@ function SectionList() {
                   <Td display={"flex"} fontSize={'20px'}>
                     {" "}
                     <span  style={{color:'red',cursor:"pointer"}}>
-                    <CreateSection section={section} update={true} doc={item} setSection={setSection} />
+                      <AiFillDelete/>
+                    
                     </span>
                     <span></span>
                     <span style={{color:'blue',cursor:'pointer'}}>
-                      <AiFillEdit />
+                    <CreateSection update={true} doc={item} setFlage={setFlag}  />
                     </span>{" "}
                   </Td>
                 </Tr>

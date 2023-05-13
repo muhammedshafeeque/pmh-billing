@@ -2,41 +2,75 @@ import { Button, Col, Form, Input, Modal, Row } from "antd";
 import { useState } from "react";
 import axios from "../../../Axios/axios";
 import { useToast } from "@chakra-ui/react";
-import { AiFillDelete} from 'react-icons/ai'
-function CreateSection({ section, setSection,update }) {
+import { AiFillEdit} from 'react-icons/ai'
+function CreateSection({ update ,doc,setFlage}) {
   const [open, setOpen] = useState(false);
   const toast = useToast();
   const [form] = Form.useForm();
+  const [initialValue,setInitialValue]=useState({})
   const handleSubmitForm = async (values) => {
-    try {
-      let res = await axios.post("/stock/section", values);
-      toast({
-        title: res.data,
-        description: "New Section Added Sucessfully",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
-      values._id = 1;
-      setSection([...section, values]);
-      form.resetFields();
-      setOpen(false)
-    } catch (error) {
-      toast({
-        title: "Failed",
-        description: "Name or code Allready Exist",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
+    if(update){
+      try {
+        let res = await axios.patch(`/stock/section/${doc._id}`, values)
+        // form.resetFields();
+        if(res.status===200){
+          toast({
+            title: 'Success',
+            description: "Section Updated Sucessfully",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+            position: "top-right",
+          });
+        }
+        
+        setFlage(res.data)
+        setOpen(false)
+      } catch (error) {
+        
+        toast({
+         
+          title: "Failed",
+          description: 'Please Try Again',
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
+    }else{
+      try {
+        let res = await axios.post("/stock/section", values);
+        toast({
+          title: res.data,
+          description: "New Section Added Sucessfully",
+          status: "success",
+          duration: 9000, 
+          isClosable: true,
+          position: "top-right",
+        });
+        values._id = 1;
+        setFlage(values)
+        form.resetFields();
+        setOpen(false)
+      } catch (error) {
+        toast({
+          title: "Failed",
+          description: "Name or code Allready Exist",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
     }
+   
   };
   return (
     <>
-    {update? <AiFillDelete onClick={()=>{
+    {update? <AiFillEdit onClick={()=>{
       setOpen(true)
+      setInitialValue(doc)
     }} />:    <Button 
         type="primary"
         style={{ marginBottom: "2rem" }}
@@ -53,7 +87,7 @@ function CreateSection({ section, setSection,update }) {
         onCancel={() => setOpen(false)}
         footer={[]}
       >
-        <Form form={form} onFinish={handleSubmitForm}>
+        <Form form={form} initialValues={initialValue} onFinish={handleSubmitForm}>
           <Row>
             <Col span={12}>
               <Form.Item
@@ -83,13 +117,18 @@ function CreateSection({ section, setSection,update }) {
               <Button
                 htmlType="button"
                 onClick={() => {
-                  form.resetFields();
+                  form.resetFields()
+                  if(update){
+                    setInitialValue(doc)
+                  }
+        
                 }}
               >
                 Reset
               </Button>
+              
               <Button type="primary" htmlType="submit">
-                Submit
+                {update?'Update':'Submit'}
               </Button>
             </Form.Item>
           </Row>

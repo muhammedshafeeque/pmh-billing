@@ -32,7 +32,7 @@ export const updateSection=async(req,res)=>{
   } catch (error) {
     res.status(400).send("Err:" + error);
   }
-}
+} 
 export const removeSection=async(req,res)=>{
   try {
     await deleteSection(req.params.id)

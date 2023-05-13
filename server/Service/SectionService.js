@@ -19,8 +19,15 @@ export const postSection = async (data) => {
   return result
 };
 export const patchSection=async (data,id)=>{
-  let updated=await this.Section.findByIdAndUpdate(id,data)
-  return updated
+  return new Promise(async(resolve,reject)=>{
+    try {
+      let updated=await Section.findByIdAndUpdate(id,data)
+      resolve(updated)
+    } catch (error) {
+      reject(error)
+    }
+  })
+ 
 
 }
 export const deleteSection=async(id)=>{
