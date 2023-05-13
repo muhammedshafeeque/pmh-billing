@@ -18,3 +18,12 @@ export const postSection = async (data) => {
  let result= await Section.create(data)
   return result
 };
+export const patchSection=async (data,id)=>{
+  let updated=await this.Section.findByIdAndUpdate(id,data)
+  return updated
+
+}
+export const deleteSection=async(id)=>{
+  await this.Section.remove({_id:id})
+  return 'removed Success Fully'
+}

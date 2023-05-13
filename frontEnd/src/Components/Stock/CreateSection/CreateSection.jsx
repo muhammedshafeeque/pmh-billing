@@ -2,7 +2,8 @@ import { Button, Col, Form, Input, Modal, Row } from "antd";
 import { useState } from "react";
 import axios from "../../../Axios/axios";
 import { useToast } from "@chakra-ui/react";
-function CreateSection({ section, setSection  }) {
+import { AiFillDelete} from 'react-icons/ai'
+function CreateSection({ section, setSection,update }) {
   const [open, setOpen] = useState(false);
   const toast = useToast();
   const [form] = Form.useForm();
@@ -34,14 +35,17 @@ function CreateSection({ section, setSection  }) {
   };
   return (
     <>
-      <Button
+    {update? <AiFillDelete onClick={()=>{
+      setOpen(true)
+    }} />:    <Button 
         type="primary"
         style={{ marginBottom: "2rem" }}
         onClick={() => {setOpen(true) 
           form.resetFields()}}
       >
         Create New Section
-      </Button>
+      </Button>}
+  
       <Modal
         title="Create Section"
         centered
