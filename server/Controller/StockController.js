@@ -16,14 +16,7 @@ export const getSectionList = async (req, res) => {
     res.status(400).send("err" + error);
   }
 };
-export const createRack = async (req, res) => {
-  try {
-    await postRack(req.body);
-    res.send("done");
-  } catch (error) {
-    res.status(400).send("err" + error);
-  }
-};
+
 export const updateSection=async(req,res)=>{
   try {
   let update= await patchSection(req.body,req.params.id)
@@ -41,6 +34,14 @@ export const removeSection=async(req,res)=>{
     res.status(400).send("Err:" + error);
   }
 }
+export const createRack = async (req, res) => {
+  try {
+    await postRack(req.body);
+    res.send("done");
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+};
 export const getRackList = async (req, res) => {
   try {
     let racks = await getRacks(req.query);
