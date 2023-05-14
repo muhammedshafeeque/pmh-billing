@@ -16,3 +16,9 @@ export const getRacks = (query) => {
     resolve(racks);
   });
 };
+export const patchRack=()=>{
+
+}
+export const deleteRack=()=>{
+  
+}

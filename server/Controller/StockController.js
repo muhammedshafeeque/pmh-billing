@@ -50,4 +50,14 @@ export const getRackList = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
+export const updateRack=()=>{
+  try {
+    
+  } catch (error) {
+    
+  }
+}
+export const RemoveRack=()=>{
+
+}
  
