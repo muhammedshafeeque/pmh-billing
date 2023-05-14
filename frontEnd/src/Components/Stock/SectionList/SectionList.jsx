@@ -10,16 +10,19 @@ import {
 import React, { useEffect, useState } from "react";
 import CreateSection from "../CreateSection/CreateSection";
 import axios from "../../../Axios/axios";
-import { AiFillDelete } from "react-icons/ai";
+import DeleteModal from "../../Misc/DeleteModal/DeleteModal";
 function SectionList() {
   const [section, setSection] = useState([]);
   const [flag,setFlag]=useState({})
+  
   useEffect(() => {
     axios.get("stock/section").then((res) => {
       setSection(res.data);
     });
   }, [flag]);
+  const handleDelete=()=>{
 
+  }
   return (
     <div style={{ marginTop: "3rem" }}>
       <CreateSection  update={false} setFlage={setFlag}  />
@@ -41,7 +44,7 @@ function SectionList() {
                   <Td display={"flex"} fontSize={'20px'}>
                     {" "}
                     <span  style={{color:'red',cursor:"pointer"}}>
-                      <AiFillDelete/>
+                      <DeleteModal delete={()=>{handleDelete()}}/>
                     
                     </span>
                     <span></span>
