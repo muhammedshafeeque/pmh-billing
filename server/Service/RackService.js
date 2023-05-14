@@ -16,9 +16,11 @@ export const getRacks = (query) => {
     resolve(racks);
   });
 };
-export const patchRack=()=>{
-
+export const patchRack=async(id,data)=>{
+  let update= await Rack.findByIdAndUpdate(id,data) 
+  return update
 }
-export const deleteRack=()=>{
-  
+export const deleteRack=async(id)=>{
+  let update= await Rack.findByIdAndRemove(id)
+  return update
 }
