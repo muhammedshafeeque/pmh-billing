@@ -10,17 +10,9 @@ function CreateRack({ update, doc, setFlage }) {
   const toast = useToast();
   const [form] = Form.useForm();
   const [initialValue, setInitialValue] = useState({});
-  const handleSearch = (value) => {
-    let res = [];
-    if (!value || value.indexOf('@') >= 0) {
-      res = [];
-    } else {
-      res = ['gmail.com', '163.com', 'qq.com'].map((domain) => ({
-        value,
-        label: `${value}@${domain}`,
-      }));
-    }
-    setOptions(res);
+  const handleSearch = async(value) => {
+    let res=await axios.get(`/stock/section?query=${value}`)
+    setOptions(res.data);
   };
   const handleSubmitForm = async (values) => {
     if (update) {
@@ -130,9 +122,10 @@ function CreateRack({ update, doc, setFlage }) {
         width: 200,
       }}
       onSearch={handleSearch}
-      placeholder="input here"
+      placeholder="Section"
       options={options}
     />
+    {/* <Input/> */}
 
           </Row>
           <Row span={24}>
