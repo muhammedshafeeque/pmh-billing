@@ -3,12 +3,25 @@ import { useState } from "react";
 import axios from "../../../Axios/axios";
 import { useToast } from "@chakra-ui/react";
 import { AiFillEdit } from "react-icons/ai";
-
+import { AutoComplete } from 'antd';
 function CreateRack({ update, doc, setFlage }) {
+  const [options, setOptions] = useState([]);
   const [open, setOpen] = useState(false);
   const toast = useToast();
   const [form] = Form.useForm();
   const [initialValue, setInitialValue] = useState({});
+  const handleSearch = (value) => {
+    let res = [];
+    if (!value || value.indexOf('@') >= 0) {
+      res = [];
+    } else {
+      res = ['gmail.com', '163.com', 'qq.com'].map((domain) => ({
+        value,
+        label: `${value}@${domain}`,
+      }));
+    }
+    setOptions(res);
+  };
   const handleSubmitForm = async (values) => {
     if (update) {
       try {
@@ -111,7 +124,15 @@ function CreateRack({ update, doc, setFlage }) {
               <Input placeholder="code" />
             </Form.Item>
           </Row>
-          <Row>
+          <Row span={24}>
+          <AutoComplete span={12}
+      style={{
+        width: 200,
+      }}
+      onSearch={handleSearch}
+      placeholder="input here"
+      options={options}
+    />
 
           </Row>
           <Row span={24}>
