@@ -6,6 +6,7 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import CreateSection from "../CreateSection/CreateSection";
@@ -14,14 +15,37 @@ import DeleteModal from "../../Misc/DeleteModal/DeleteModal";
 function SectionList() {
   const [section, setSection] = useState([]);
   const [flag,setFlag]=useState({})
-  
+  const toast=useToast()
+
   useEffect(() => {
+  
     axios.get("stock/section").then((res) => {
       setSection(res.data);
     });
   }, [flag]);
-  const handleDelete=()=>{
-
+  const handleDelete=async(item)=>{
+    try {
+     let res= await axios.delete(`stock/section/${item._id}`)
+     setSection([])
+      setFlag(res.data)
+      toast({
+        title: 'Success',
+        description: 'Item Removed Successfully ',
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } catch (error) {
+      toast({
+        title: 'Failed',
+        description: error.response.data,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    };
   }
   return (
     <div style={{ marginTop: "3rem" }}>
@@ -44,7 +68,7 @@ function SectionList() {
                   <Td display={"flex"} fontSize={'20px'}>
                     {" "}
                     <span  style={{color:'red',cursor:"pointer"}}>
-                      <DeleteModal delete={()=>{handleDelete()}}/>
+                      <DeleteModal handleDelete={()=>handleDelete(item)}/>
                     
                     </span>
                     <span></span>

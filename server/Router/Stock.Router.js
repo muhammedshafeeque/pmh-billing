@@ -1,5 +1,5 @@
 import express from 'express'
-import { createRack, createSection, getRackList, getSectionList, updateSection } from '../Controller/StockController.js'
+import { createRack, createSection, getRackList, getSectionList, removeSection, updateSection } from '../Controller/StockController.js'
 import { Validate } from '../MiddleWare/Validation.js'
 import { RackValidation, SectionValidation } from '../Validations/Stock.Validations.js'
 const router=express.Router()
@@ -10,7 +10,7 @@ router.delete('/rack/:id',)
 router.post('/section',Validate(SectionValidation),createSection)
 router.get('/section',getSectionList)
 router.patch('/section/:id',updateSection)
-router.delete('/section/:id',) 
+router.delete('/section/:id',removeSection) 
 router.post('/groupe',)
 router.get('/groupe')
 router.patch('/groupe/:id',)

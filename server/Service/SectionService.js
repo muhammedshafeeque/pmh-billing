@@ -31,6 +31,6 @@ export const patchSection=async (data,id)=>{
 
 }
 export const deleteSection=async(id)=>{
-  await this.Section.remove({_id:id})
+  await Section.deleteOne({_id:id})
   return 'removed Success Fully'
 }
