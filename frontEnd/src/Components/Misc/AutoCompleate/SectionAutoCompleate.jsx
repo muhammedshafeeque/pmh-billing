@@ -1,18 +1,23 @@
 import { AutoComplete, Input } from "antd";
 import React, { useState } from "react";
 import axios from "../../../Axios/axios";
-function SectionAutoCompleate() {
+function SectionAutoCompleate({ changeValue }) {
   const [value, setValue] = useState("");
   const [options, setOptions] = useState([]);
   const handleSearch = async (value) => {
     setValue(value);
     let res = await axios.get(`/stock/section?query=${value}`);
-    setOptions(res.data);
+    const formattedOptions = res.data.map((option) => ({
+      value: option.code + " -  " + option.name,
+      object: option,
+    }));
+    setOptions(formattedOptions);
   };
-  const handleSelect=(item)=>{
-    console.log(item)
+  const handleSelect = (item, option) => {
+    setValue(item);
+    changeValue(option.object);
+  };
 
-  }
   return (
     <AutoComplete
       span={24}
@@ -23,10 +28,7 @@ function SectionAutoCompleate() {
       onSelect={handleSelect}
       placeholder="Section"
       value={value}
-      dataSource={options.map((option) => ({
-        value: option.code + " - " + option.name,
-        label:option
-      }))}
+      options={options}
     >
       <Input />
     </AutoComplete>

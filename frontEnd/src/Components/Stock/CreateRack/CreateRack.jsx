@@ -11,56 +11,57 @@ function CreateRack({ update, doc, setFlage }) {
   const [initialValue, setInitialValue] = useState({});
 
   const handleSubmitForm = async (values) => {
-    if (update) {
-      try {
-        let res = await axios.patch(`/stock/rack/${doc._id}`, values);
-        form.resetFields();
-        toast({
-          title: "Success",
-          description: "Rack Updated Sucessfully",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
+    console.log(values);
+    // if (update) {
+    //   try {
+    //     let res = await axios.patch(`/stock/rack/${doc._id}`, values);
+    //     form.resetFields();
+    //     toast({
+    //       title: "Success",
+    //       description: "Rack Updated Sucessfully",
+    //       status: "success",
+    //       duration: 9000,
+    //       isClosable: true,
+    //       position: "top-right",
+    //     });
 
-        setFlage(res.data);
-        setOpen(false);
-      } catch (error) {
-        toast({
-          title: "Failed",
-          description: error.response.data,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
-      }
-    } else {
-      try {
-        let res = await axios.post("/stock/rack", values);
-        toast({
-          title: res.data,
-          description: "New Rack Added Sucessfully",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
-        setFlage(values);
-        form.resetFields();
-        setOpen(false);
-      } catch (error) {
-        toast({
-          title: "Failed",
-          description: "Name or code Allready Exist",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
-      }
-    }
+    //     setFlage(res.data);
+    //     setOpen(false);
+    //   } catch (error) {
+    //     toast({
+    //       title: "Failed",
+    //       description: error.response.data,
+    //       status: "error",
+    //       duration: 9000,
+    //       isClosable: true,
+    //       position: "top-right",
+    //     });
+    //   }
+    // } else {
+    //   try {
+    //     let res = await axios.post("/stock/rack", values);
+    //     toast({
+    //       title: res.data,
+    //       description: "New Rack Added Sucessfully",
+    //       status: "success",
+    //       duration: 9000,
+    //       isClosable: true,
+    //       position: "top-right",
+    //     });
+    //     setFlage(values);
+    //     form.resetFields();
+    //     setOpen(false);
+    //   } catch (error) {
+    //     toast({
+    //       title: "Failed",
+    //       description: "Name or code Allready Exist",
+    //       status: "error",
+    //       duration: 9000,
+    //       isClosable: true,
+    //       position: "top-right",
+    //     });
+    //   }
+    // }
   };
   return (
     <>
@@ -113,7 +114,16 @@ function CreateRack({ update, doc, setFlage }) {
             </Form.Item>
           </Row>
           <Row span={24}>
-            <SectionAutoCompleate></SectionAutoCompleate>
+            <Form.Item
+              name={"section"}
+              rules={[{ required: true, message: "section is Mondatory!" }]}
+            >
+              <SectionAutoCompleate
+                changeValue={(value) => {
+                  form.setFieldsValue({ section: value });
+                }}
+              ></SectionAutoCompleate>
+            </Form.Item>
           </Row>
           <Row span={24}>
             <Form.Item
