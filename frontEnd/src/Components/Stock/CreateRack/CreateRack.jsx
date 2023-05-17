@@ -3,17 +3,13 @@ import { useState } from "react";
 import axios from "../../../Axios/axios";
 import { useToast } from "@chakra-ui/react";
 import { AiFillEdit } from "react-icons/ai";
-import { AutoComplete } from 'antd';
+import SectionAutoCompleate from "../../Misc/AutoCompleate/SectionAutoCompleate";
 function CreateRack({ update, doc, setFlage }) {
-  const [options, setOptions] = useState([]);
   const [open, setOpen] = useState(false);
   const toast = useToast();
   const [form] = Form.useForm();
   const [initialValue, setInitialValue] = useState({});
-  const handleSearch = async(value) => {
-    let res=await axios.get(`/stock/section?query=${value}`)
-    setOptions(res.data);
-  };
+
   const handleSubmitForm = async (values) => {
     if (update) {
       try {
@@ -117,16 +113,17 @@ function CreateRack({ update, doc, setFlage }) {
             </Form.Item>
           </Row>
           <Row span={24}>
-          <AutoComplete span={12}
-      style={{
-        width: 200,
-      }}
-      onSearch={handleSearch}
-      placeholder="Section"
-      options={options}
-    />
-    {/* <Input/> */}
-
+            <Form.Item
+              name={"section"}
+              rules={[{ required: true, message: "section is Mondatory!" }]}
+            >
+              <SectionAutoCompleate
+                section={doc?doc.section:null}
+                changeValue={(value) => {
+                  form.setFieldsValue({ section: value });
+                }}
+              ></SectionAutoCompleate>
+            </Form.Item>
           </Row>
           <Row span={24}>
             <Form.Item
