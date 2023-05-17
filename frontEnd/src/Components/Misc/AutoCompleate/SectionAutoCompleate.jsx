@@ -1,7 +1,7 @@
 import { AutoComplete, Input } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "../../../Axios/axios";
-function SectionAutoCompleate({ changeValue }) {
+function SectionAutoCompleate({ changeValue,section }) {
   const [value, setValue] = useState("");
   const [options, setOptions] = useState([]);
   const handleSearch = async (value) => {
@@ -15,8 +15,14 @@ function SectionAutoCompleate({ changeValue }) {
   };
   const handleSelect = (item, option) => {
     setValue(item);
-    changeValue(option.object);
+    changeValue(option.object._id);
   };
+  useEffect(()=>{
+    if(section){
+      setValue(section.code+'-'+section.name)
+      changeValue(section._id)
+    }
+  },[section,changeValue])
 
   return (
     <AutoComplete

@@ -11,57 +11,56 @@ function CreateRack({ update, doc, setFlage }) {
   const [initialValue, setInitialValue] = useState({});
 
   const handleSubmitForm = async (values) => {
-    console.log(values);
-    // if (update) {
-    //   try {
-    //     let res = await axios.patch(`/stock/rack/${doc._id}`, values);
-    //     form.resetFields();
-    //     toast({
-    //       title: "Success",
-    //       description: "Rack Updated Sucessfully",
-    //       status: "success",
-    //       duration: 9000,
-    //       isClosable: true,
-    //       position: "top-right",
-    //     });
+    if (update) {
+      try {
+        let res = await axios.patch(`/stock/rack/${doc._id}`, values);
+        form.resetFields();
+        toast({
+          title: "Success",
+          description: "Rack Updated Sucessfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
 
-    //     setFlage(res.data);
-    //     setOpen(false);
-    //   } catch (error) {
-    //     toast({
-    //       title: "Failed",
-    //       description: error.response.data,
-    //       status: "error",
-    //       duration: 9000,
-    //       isClosable: true,
-    //       position: "top-right",
-    //     });
-    //   }
-    // } else {
-    //   try {
-    //     let res = await axios.post("/stock/rack", values);
-    //     toast({
-    //       title: res.data,
-    //       description: "New Rack Added Sucessfully",
-    //       status: "success",
-    //       duration: 9000,
-    //       isClosable: true,
-    //       position: "top-right",
-    //     });
-    //     setFlage(values);
-    //     form.resetFields();
-    //     setOpen(false);
-    //   } catch (error) {
-    //     toast({
-    //       title: "Failed",
-    //       description: "Name or code Allready Exist",
-    //       status: "error",
-    //       duration: 9000,
-    //       isClosable: true,
-    //       position: "top-right",
-    //     });
-    //   }
-    // }
+        setFlage(res.data);
+        setOpen(false);
+      } catch (error) {
+        toast({
+          title: "Failed",
+          description: error.response.data,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
+    } else {
+      try {
+        let res = await axios.post("/stock/rack", values);
+        toast({
+          title: res.data,
+          description: "New Rack Added Sucessfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+        setFlage(values);
+        form.resetFields();
+        setOpen(false);
+      } catch (error) {
+        toast({
+          title: "Failed",
+          description: "Name or code Allready Exist",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
+    }
   };
   return (
     <>
@@ -119,6 +118,7 @@ function CreateRack({ update, doc, setFlage }) {
               rules={[{ required: true, message: "section is Mondatory!" }]}
             >
               <SectionAutoCompleate
+                section={doc?doc.section:null}
                 changeValue={(value) => {
                   form.setFieldsValue({ section: value });
                 }}
