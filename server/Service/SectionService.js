@@ -4,13 +4,15 @@ export const getSections = (query) => {
     let keywords = {};
     query.query &&
       (keywords = {
-        $or: [{ code: { $regex: query.query, $options: "i" } }],
-        $or: [{ name: { $regex: query.query, $options: "i" } }],
+        $or: [
+          { code: { $regex: query.query, $options: "i" } },
+          { name: { $regex: query.query, $options: "i" } },
+        ],
       });
-    let racks = await Section.find(keywords)
+    let sections = await Section.find(keywords)
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
-    resolve(racks);
+    resolve(sections);
   });
 };
 export const postSection = async (data) => {
