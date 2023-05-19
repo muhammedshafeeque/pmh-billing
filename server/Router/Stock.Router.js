@@ -19,6 +19,10 @@ router.post('/category',)
 router.get('/category')
 router.patch('/category/:id',)
 router.delete('/category/:id',)
+router.post('/item'),
+router.get('/item'),
+router.patch('/item')
+router.delete('/item')
 router.post('/stock'),
 router.patch('/stock')
 
