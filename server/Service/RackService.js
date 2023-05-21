@@ -24,3 +24,10 @@ export const deleteRack=async(id)=>{
   let update= await Rack.findByIdAndRemove(id)
   return update
 }
+export const updateItems=async()=>{
+  try {
+    
+  } catch (error) {
+    
+  }
+}

@@ -5,7 +5,12 @@ const rackModal = mongoose.Schema(
     code: { type: String, required: true, unique: true },
     section:{type: mongoose.Schema.Types.ObjectId,
         ref: "section",
-        required: true,}
+        required: true,},
+    items:[{item:{type:mongoose.Schema.Types.ObjectId,
+      ref: "item"},
+      quatity:{type:Number},
+      unit:{type:String}
+    }]
   },
   {
     timestaps: true,

@@ -1,5 +1,6 @@
 import { deleteSection, getSections, patchSection, postSection } from "../Service/SectionService.js";
 import {postRack,getRacks, patchRack, deleteRack} from '../Service/RackService.js'
+import { postItem } from "../Service/itmeCotroller.js";
 export const createSection = async (req, res) => {
   try {
     await postSection(req.body);
@@ -68,9 +69,10 @@ export const RemoveRack=async(req,res)=>{
 }
 export const createItem=async(req,res)=>{
   try {
-    
+    let item=await  postItem(req.body)
+    res.send(item)
   } catch (error) {
-    
+    res.status(400).send("Err:" + error);
   }
 }
  
