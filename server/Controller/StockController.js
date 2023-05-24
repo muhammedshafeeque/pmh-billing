@@ -1,6 +1,21 @@
-import { deleteSection, getSections, patchSection, postSection } from "../Service/SectionService.js";
-import {postRack,getRacks, patchRack, deleteRack} from '../Service/RackService.js'
-import { postItem } from "../Service/itmeCotroller.js";
+import {
+  deleteSection,
+  getSections,
+  patchSection,
+  postSection,
+} from "../Service/SectionService.js";
+import {
+  postRack,
+  getRacks,
+  patchRack,
+  deleteRack,
+} from "../Service/RackService.js";
+import {
+  deleteItem,
+  getItem,
+  patchItem,
+  postItem,
+} from "../Service/itmeCotroller.js";
 export const createSection = async (req, res) => {
   try {
     await postSection(req.body);
@@ -18,23 +33,22 @@ export const getSectionList = async (req, res) => {
   }
 };
 
-export const updateSection=async(req,res)=>{
+export const updateSection = async (req, res) => {
   try {
-  let update= await patchSection(req.body,req.params.id)
-  res.send(update)
-
+    let update = await patchSection(req.body, req.params.id);
+    res.send(update);
   } catch (error) {
     res.status(400).send("Err:" + error);
   }
-} 
-export const removeSection=async(req,res)=>{
+};
+export const removeSection = async (req, res) => {
   try {
-    await deleteSection(req.params.id)
-    res.send('Section Removed Successfully ')
+    await deleteSection(req.params.id);
+    res.send("Section Removed Successfully ");
   } catch (error) {
     res.status(400).send("Err:" + error);
   }
-}
+};
 export const createRack = async (req, res) => {
   try {
     await postRack(req.body);
@@ -51,28 +65,56 @@ export const getRackList = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
-export const updateRack=async(req,res)=>{
+export const updateRack = async (req, res) => {
   try {
-    let rack=await patchRack(req.params.id,req.body)
-    res.send(rack)
+    let rack = await patchRack(req.params.id, req.body);
+    res.send(rack);
   } catch (error) {
     res.status(400).send("Err:" + error);
   }
-}
-export const RemoveRack=async(req,res)=>{
+};
+export const RemoveRack = async (req, res) => {
   try {
-    await deleteRack(req.params.id)
-    res.send('Deleted Successfully')
-  } catch (error) {
-    res.status(400).send("Err:" + error);
-  } 
-}
-export const createItem=async(req,res)=>{
-  try {
-    let item=await  postItem(req.body)
-    res.send(item)
+    await deleteRack(req.params.id);
+    res.send("Deleted Successfully");
   } catch (error) {
     res.status(400).send("Err:" + error);
   }
-}
- 
+};
+export const createItem = async (req, res) => {
+  try {
+    let item = await postItem(req.body);
+    res.send(item);
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+};
+export const updateItem = async (req, res) => {
+  try {
+    let item = await patchItem(req.params.id, req.body);
+    res.send(item);
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+};
+export const removeItem = async (req, res) => {
+  try {
+    let item = await deleteItem(req.params.id);
+    res.send(item);
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+};
+export const getItemList = async (req, res) => {
+  try {
+    let itmes = await getItem(req.query);
+    req.send(itmes);
+  } catch (error) {
+    res.status(400).send("Err:" + error);
+  }
+};
+export const createStock = async (req, res) => {
+  try {
+    get
+  } catch (error) {}
+};

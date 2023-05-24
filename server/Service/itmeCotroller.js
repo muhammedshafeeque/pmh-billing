@@ -2,8 +2,12 @@ import { item } from "../Models/itemModal.js";
 
 export const postItem = (data) => {
   return new Promise(async (resolve, reject) => {
-    let item = await item.create(data);
-    resolve(item);
+    try {
+      let items = await item.create(data);
+      resolve(items);
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 export const getItem = (query) => {
@@ -26,13 +30,20 @@ export const getItem = (query) => {
 };
 export const patchItem = (id, data) => {
   return new Promise(async (Resolve, reject) => {
-    let item = await item.fintByIdAndUpdate(id, data);
-    resolve(item);
+    let items = await item.fintByIdAndUpdate(id, data);
+    resolve(items);
   });
 };
 export const deleteItem = (id) => {
   return new Promise(async (resolve, reject) => {
-    let item = await item.deleteOne({ _id: id });
-    resolve(item);
+    let items = await item.deleteOne({ _id: id });
+    resolve(items);
   });
+};
+export const getItemById = (id) => {
+  try {
+    return item.findById(id);
+  } catch (error) {
+    throw error;
+  }
 };
