@@ -9,10 +9,12 @@ import {
   getRacks,
   patchRack,
   deleteRack,
+  updateItems,
 } from "../Service/RackService.js";
 import {
   deleteItem,
   getItem,
+  getItemById,
   patchItem,
   postItem,
 } from "../Service/itmeCotroller.js";
@@ -115,6 +117,13 @@ export const getItemList = async (req, res) => {
 };
 export const createStock = async (req, res) => {
   try {
-    get
+   let item=await getItemById(req.body.item)
+   if(item){
+    let stock=await createStock(req.body)
+    let updateRack=''
+    let updateItem=await updateItems(req.body)
+   }else{
+    res.status(400).send('Itme note Fount')
+   }
   } catch (error) {}
 };
