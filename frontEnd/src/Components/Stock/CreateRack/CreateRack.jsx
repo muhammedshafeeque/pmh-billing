@@ -118,7 +118,7 @@ function CreateRack({ update, doc, setFlage }) {
               rules={[{ required: true, message: "section is Mondatory!" }]}
             >
               <SectionAutoCompleate
-                section={doc?doc.section:null}
+                section={doc ? doc.section : null}
                 changeValue={(value) => {
                   form.setFieldsValue({ section: value });
                 }}

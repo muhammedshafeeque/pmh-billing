@@ -1,12 +1,12 @@
 import { AutoComplete, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "../../../Axios/axios";
-function SectionAutoCompleate({ changeValue, section }) {
+function RackAutoCompleate({ changeValue, rack }) {
   const [value, setValue] = useState("");
   const [options, setOptions] = useState([]);
   const handleSearch = async (value) => {
     setValue(value);
-    let res = await axios.get(`/stock/section?query=${value}`);
+    let res = await axios.get(`/stock/rack?query=${value}`);
     const formattedOptions = res.data.map((option) => ({
       value: option.code + " -  " + option.name,
       object: option,
@@ -15,15 +15,14 @@ function SectionAutoCompleate({ changeValue, section }) {
   };
   const handleSelect = (item, option) => {
     setValue(item);
-    console.log(option)
     changeValue(option.object._id);
   };
   useEffect(() => {
-    if (section) {
-      setValue(section.code + "-" + section.name);
-      changeValue(section._id);
+    if (rack) {
+      setValue(rack.code + "-" + rack.name);
+      changeValue(rack._id);
     }
-  }, [section, changeValue]);
+  }, [rack, changeValue]);
 
   return (
     <AutoComplete
@@ -33,7 +32,7 @@ function SectionAutoCompleate({ changeValue, section }) {
       }}
       onSearch={handleSearch}
       onSelect={handleSelect}
-      placeholder="Section"
+      placeholder="Rack"
       value={value}
       options={options}
     >
@@ -42,4 +41,4 @@ function SectionAutoCompleate({ changeValue, section }) {
   );
 }
 
-export default SectionAutoCompleate;
+export default RackAutoCompleate;
