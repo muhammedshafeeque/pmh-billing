@@ -10,6 +10,7 @@ import {
   patchRack,
   deleteRack,
   getRackById,
+  pushItemToRack,
 } from "../Service/RackService.js";
 import {
   deleteItem,
@@ -123,13 +124,18 @@ export const createStock = async (req, res, next) => {
       let Item = await getItemById(req.body.item);
       if (Item) {
         let rack = await getRackById(req.body.rack);
-        if (String(rack.item) === req.body.item) {
+        let itemExist = await rack.items.find((str) => {
+          return String(str) === req.body.item;
+        });
+
+        if (itemExist) {
           let Stock = req.body;
           Stock.qouantity = Stock.purchasedQouantity;
+          Stock.purchaseDate = new Date();
           let stock = await postStock(Stock);
           await patchRack(req.body.rack, { item: req.body.item });
           await pushStockToItem(stock);
-          res.send("Item Added Successfully");
+          res.send("Stock Added Successfully");
         } else {
           next({
             status: 400,
@@ -142,5 +148,13 @@ export const createStock = async (req, res, next) => {
     } catch (error) {
       next(error);
     }
+  }
+};
+export const addItemToRack = async (req, res, next) => {
+  try {
+    await pushItemToRack(req.params.id, req.body.item);
+    res.send("Updated Successfully");
+  } catch (error) {
+    next(error);
   }
 };

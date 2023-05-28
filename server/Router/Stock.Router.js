@@ -1,6 +1,7 @@
 import express from "express";
 import {
   RemoveRack,
+  addItemToRack,
   createItem,
   createRack,
   createSection,
@@ -25,6 +26,7 @@ router.post("/rack", Validate(RackValidation), createRack);
 router.get("/rack", getRackList);
 router.patch("/rack/:id", updateRack);
 router.delete("/rack/:id", RemoveRack);
+router.patch('/rack/add-item/:id',addItemToRack)
 router.post("/section", Validate(SectionValidation), createSection);
 router.get("/section", getSectionList);
 router.patch("/section/:id", updateSection);

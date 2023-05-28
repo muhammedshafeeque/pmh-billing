@@ -11,29 +11,40 @@ export const getRacks = (query) => {
     query.name && (keywords.name = query.name);
     let racks = await Rack.find(keywords)
       .populate("section")
+      .populate("items")
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
     resolve(racks);
   });
 };
-export const patchRack=async(id,data)=>{
+export const patchRack = async (id, data) => {
   try {
-    let update= await Rack.findByIdAndUpdate(id,data) 
-    return update
+    let update = await Rack.findByIdAndUpdate(id, data);
+    return update;
   } catch (error) {
-   throw error
+    throw error;
   }
-
-}
-export const deleteRack=async(id)=>{
-  let update= await Rack.findByIdAndRemove(id)
-  return update
-}
-export const getRackById=async(id)=>{
+};
+export const deleteRack = async (id) => {
+  let update = await Rack.findByIdAndRemove(id);
+  return update;
+};
+export const getRackById = async (id) => {
   try {
-      return Rack.findById(id)
+    return Rack.findById(id);
+  } catch (error) {
+    throw error;
+  }
+};
+export const pushItemToRack=async(id,item)=>{ 
+  try {
+   let data=await Rack.findByIdAndUpdate(id,{
+      $push:{
+        items:item
+      }
+    })
+    return data
   } catch (error) {
     throw error
   }
 }
-
