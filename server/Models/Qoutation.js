@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-const billModal = mongoose.Schema(
+const QoutModal = mongoose.Schema(
   {
     number: { type: String, required: true },
     customerName: { type: String },
     customerMobile: { type: Number },
-    billDate: { type: Date, default: Date.now },
     items: [
       {
         item: { id: mongoose.Schema.Types.ObjectId, ref: "item" },
@@ -14,10 +13,9 @@ const billModal = mongoose.Schema(
       },
     ],
     billAmount: { type: Number, required: true },
-    payableAmount: { type: Number, required: true },
   },
   {
     timestaps: true,
   }
 );
-export const Bill = mongoose.model("bill", billModal);
+export const Qoutation = mongoose.model("qoute", QoutModal);
