@@ -1,13 +1,14 @@
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import React from 'react'
+import { Col, Row } from 'antd'
 import './ItemList.scss'
 function ItemList() {
   return (
     <div>
         <Table size="sm">
-            <div className="search_area">
-                
-            </div>
+          <Row span={24}>
+              <Col span={8}></Col>
+          </Row>
           <Thead>
             <Tr>
               <Th>Name</Th>
