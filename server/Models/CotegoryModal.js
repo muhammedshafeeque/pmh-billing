@@ -6,7 +6,6 @@ const cateGoryModal = mongoose.Schema(
     racks: [
       { type: mongoose.Schema.Types.ObjectId, ref: "rack", required: true },
     ],
-    
   },
   {
     timestaps: true,
