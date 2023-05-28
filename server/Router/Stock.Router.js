@@ -4,6 +4,7 @@ import {
   createItem,
   createRack,
   createSection,
+  createStock,
   getItemList,
   getRackList,
   getSectionList,
@@ -16,6 +17,7 @@ import { Validate } from "../MiddleWare/Validation.js";
 import {
   RackValidation,
   SectionValidation,
+  StockValidation,
 } from "../Validations/Stock.Validations.js";
 import { deleteItem } from "../Service/itmeCotroller.js";
 const router = express.Router();
@@ -39,7 +41,7 @@ router.post("/item", createItem),
 router.get("/item", getItemList),
 router.patch("/item", updateItem);
 router.delete("/item", deleteItem);
-router.post("/stock"),
+router.post("/stock",Validate(StockValidation),createStock),
 router.patch("/stock");
 
 export default router;

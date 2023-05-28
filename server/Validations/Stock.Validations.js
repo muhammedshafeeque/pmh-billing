@@ -12,3 +12,12 @@ export const SectionValidation = {
     code: Joi.string().required(),
   }),
 };
+export const StockValidation = {
+  body: Joi.object().keys({
+    item:Joi.string().required(),
+    rack:Joi.string().required(),
+    purchaseRate:Joi.string().required(),
+    purchasedQouantity:Joi.string().required(),
+    status:Joi.string().required()
+  }),
+};

@@ -9,7 +9,7 @@ const itemModal = mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "stock", required: true },
     ],
     activeracks: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "rack", required: true },
+      { type: mongoose.Schema.Types.ObjectId, ref: "rack", unique:true},
     ],
   },
   {

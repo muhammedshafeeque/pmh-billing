@@ -22,7 +22,6 @@ export const getItem = (query) => {
       });
     let items = await item
       .find()
-      .toArray()
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
     resolve(items);
@@ -43,6 +42,17 @@ export const deleteItem = (id) => {
 export const getItemById = (id) => {
   try {
     return item.findById(id);
+  } catch (error) {
+    throw error;
+  }
+};
+export const pushStockToItem = (stock) => {
+  try {
+    return item.findByIdAndUpdate(stock.item, {
+      $push: {
+        stocks: stock._id,
+      },
+    });
   } catch (error) {
     throw error;
   }

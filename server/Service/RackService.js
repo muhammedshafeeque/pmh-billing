@@ -17,17 +17,23 @@ export const getRacks = (query) => {
   });
 };
 export const patchRack=async(id,data)=>{
-  let update= await Rack.findByIdAndUpdate(id,data) 
-  return update
+  try {
+    let update= await Rack.findByIdAndUpdate(id,data) 
+    return update
+  } catch (error) {
+   throw error
+  }
+
 }
 export const deleteRack=async(id)=>{
   let update= await Rack.findByIdAndRemove(id)
   return update
 }
-export const updateItems=async()=>{
+export const getRackById=async(id)=>{
   try {
-    
+      return Rack.findById(id)
   } catch (error) {
-    
+    throw error
   }
 }
+

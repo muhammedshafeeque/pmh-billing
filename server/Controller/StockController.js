@@ -9,7 +9,7 @@ import {
   getRacks,
   patchRack,
   deleteRack,
-  updateItems,
+  getRackById,
 } from "../Service/RackService.js";
 import {
   deleteItem,
@@ -17,7 +17,9 @@ import {
   getItemById,
   patchItem,
   postItem,
+  pushStockToItem,
 } from "../Service/itmeCotroller.js";
+import { postStock } from "../Service/StockService.js";
 export const createSection = async (req, res) => {
   try {
     await postSection(req.body);
@@ -107,23 +109,38 @@ export const removeItem = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
-export const getItemList = async (req, res) => {
+export const getItemList = async (req, res, next) => {
   try {
     let itmes = await getItem(req.query);
-    req.send(itmes);
+    res.send(itmes);
   } catch (error) {
-    res.status(400).send("Err:" + error);
+    next(error);
   }
 };
-export const createStock = async (req, res) => {
-  try {
-   let item=await getItemById(req.body.item)
-   if(item){
-    let stock=await createStock(req.body)
-    let updateRack=''
-    let updateItem=await updateItems(req.body)
-   }else{
-    res.status(400).send('Itme note Fount')
-   }
-  } catch (error) {}
+export const createStock = async (req, res, next) => {
+  if (req.body) {
+    try {
+      let Item = await getItemById(req.body.item);
+      if (Item) {
+        let rack = await getRackById(req.body.rack);
+        if (String(rack.item) === req.body.item) {
+          let Stock = req.body;
+          Stock.qouantity = Stock.purchasedQouantity;
+          let stock = await postStock(Stock);
+          await patchRack(req.body.rack, { item: req.body.item });
+          await pushStockToItem(stock);
+          res.send("Item Added Successfully");
+        } else {
+          next({
+            status: 400,
+            message: "Rack Note Fount Or It is not Assigned to Given Item",
+          });
+        }
+      } else {
+        next({ status: 400, message: "Item Not Fount" });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 };
