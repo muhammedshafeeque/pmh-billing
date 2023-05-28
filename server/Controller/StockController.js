@@ -134,7 +134,7 @@ export const createStock = async (req, res, next) => {
           Stock.purchaseDate = new Date();
           let stock = await postStock(Stock);
           await patchRack(req.body.rack, { item: req.body.item });
-          await pushStockToItem(stock);
+          await pushStockToItem(stock,Item);
           res.send("Stock Added Successfully");
         } else {
           next({

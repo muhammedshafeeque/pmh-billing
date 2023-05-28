@@ -5,6 +5,7 @@ const itemModal = mongoose.Schema(
     code: { type: String, require: true, unique: true },
     CateGory: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
     unit: { type: String, required: true },
+    totalStock:{type:Number, default:0},
     stocks: [
       { type: mongoose.Schema.Types.ObjectId, ref: "stock", required: true },
     ],

@@ -46,13 +46,17 @@ export const getItemById = (id) => {
     throw error;
   }
 };
-export const pushStockToItem = (stock) => {
+export const pushStockToItem = async (stock, Item) => {
   try {
-    return item.findByIdAndUpdate(stock.item, {
+    await item.findByIdAndUpdate(stock.item, {
       $push: {
         stocks: stock._id,
       },
+      $set: {
+        totalStock: Item.totalStock + stock.purchasedQouantity,
+      },
     });
+    return;
   } catch (error) {
     throw error;
   }
