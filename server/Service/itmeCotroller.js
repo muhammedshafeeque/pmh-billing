@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { item } from "../Models/itemModal.js";
 
 export const postItem = (data) => {
@@ -12,7 +13,8 @@ export const postItem = (data) => {
 };
 export const getItem = (query) => {
   return new Promise(async (resolve, reject) => {
-    let keywords = {};
+    try {
+      let keywords = {};
     query.query &&
       (keywords = {
         $or: [
@@ -20,11 +22,18 @@ export const getItem = (query) => {
           { name: { $regex: query.query, $options: "i" } },
         ],
       });
+      query.id&&(keywords._id=new mongoose.Types.ObjectId(query.id))
+      query.rack&&(keywords.activeracks={ "$in": [new mongoose.Types.ObjectId(query.rack)] } )
+      console.log(keywords)
     let items = await item
-      .find()
+      .find(keywords)
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
     resolve(items);
+    } catch (error) {
+      reject(error)
+    }
+    
   });
 };
 export const patchItem = (id, data) => {

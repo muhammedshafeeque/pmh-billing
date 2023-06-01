@@ -11,9 +11,15 @@ function CreateRack({ update, doc, setFlage }) {
   const [initialValue, setInitialValue] = useState({});
 
   const handleSubmitForm = async (values) => {
+    let data={
+      name:values.name,
+      code:values.code,
+      section:values.section._id
+    }
     if (update) {
+
       try {
-        let res = await axios.patch(`/stock/rack/${doc._id}`, values);
+        let res = await axios.patch(`/stock/rack/${doc._id}`, data);
         form.resetFields();
         toast({
           title: "Success",
@@ -38,7 +44,7 @@ function CreateRack({ update, doc, setFlage }) {
       }
     } else {
       try {
-        let res = await axios.post("/stock/rack", values);
+        let res = await axios.post("/stock/rack", data);
         toast({
           title: res.data,
           description: "New Rack Added Sucessfully",

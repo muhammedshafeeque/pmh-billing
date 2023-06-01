@@ -15,12 +15,12 @@ function RackAutoCompleate({ changeValue, rack }) {
   };
   const handleSelect = (item, option) => {
     setValue(item);
-    changeValue(option.object._id);
+    changeValue(option.object);
   };
   useEffect(() => {
     if (rack) {
       setValue(rack.code + "-" + rack.name);
-      changeValue(rack._id);
+      changeValue(rack);
     }
   }, [rack, changeValue]);
 

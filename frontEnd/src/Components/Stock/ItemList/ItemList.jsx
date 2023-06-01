@@ -1,48 +1,104 @@
-import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { Form, Row } from "antd";
+import {
+  Box,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from "@chakra-ui/react";
+import { SearchOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Button, Form, Row } from "antd";
 import "./ItemList.scss";
 import SectionAutoCompleate from "../../Misc/AutoCompleate/SectionAutoCompleate";
 import RackAutoCompleate from "../../Misc/AutoCompleate/RackAutoCompleate";
 import ItemAutoCompleate from "../../Misc/AutoCompleate/ItemAutoCompleate";
+import axios from "../../../Axios/axios";
 function ItemList() {
   const [form] = Form.useForm();
-  const [initialSearch, setInitialSearch] = useState({});
-  const handleSearch = () => {};
+  const [items, setItems] = useState([]);
+  const toast = useToast();
+  const handleSearch = async (values) => {
+    try {
+      let { data } = await axios.get(
+        `/stock/item?id=${values.item ? values.item._id : ""}&rack=${
+          values.rack ? values.rack._id : ""
+        }&section=${values.section ? values.section._id : ""}`
+      );
+      setItems(data);
+    } catch (error) {
+      toast({
+        title: "Failed",
+        
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position:'top-right'
+      });
+    }
+  };
+  useEffect(() => {
+    axios.get(`/stock/item?limit=10`).then((res) => {
+      setItems(res.data);
+    });
+  }, []);
+
   return (
     <div>
-      <Form form={form} initialValues={initialSearch} onFinish={handleSearch}>
-        <Row span={24}>
-          <Form.Item name={"item"} className="search-input">
-            <ItemAutoCompleate
-              changeValue={(value) => {
-                
-                form.setFieldsValue({ item: value });
-              }}
-            />
-          </Form.Item>
-          <Form.Item
-            name={"rack"}
-            changeValue={(value) => {
-              console.log(value)
-              form.setFieldsValue({ rack: value });
-            }}
-            className="search-input"
-          >
-            <RackAutoCompleate />
-          </Form.Item>
-          <Form.Item
-            name={"section"}
-            className="search-input"
-            changeValue={(value) => {
-              console.log(value)
-              form.setFieldsValue({ section: value });
-            }} 
-          >
-            <SectionAutoCompleate />
-          </Form.Item>
-        </Row>
-      </Form>
+      <Text mt={5}>Search Item</Text>
+      <Box display={"flex"} justifyContent={"space-between"} mt={3}>
+        <Form form={form} onFinish={handleSearch}>
+          <Row span={24}>
+            <Form.Item name={"item"} className="search-input">
+              <ItemAutoCompleate
+                changeValue={(value) => {
+                  form.setFieldsValue({ item: value });
+                }}
+              />
+            </Form.Item>
+            <Form.Item name={"rack"} className="search-input">
+              <RackAutoCompleate
+                changeValue={(value) => {
+                  form.setFieldsValue({ rack: value });
+                }}
+              />
+            </Form.Item>
+            <Form.Item name={"section"} className="search-input">
+              <SectionAutoCompleate
+                changeValue={(value) => {
+                  console.log(value);
+                  form.setFieldsValue({ section: value });
+                }}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Row>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    form.resetFields();
+                  }}
+                  style={{ marginRight: "10px" }}
+                >
+                  Clear
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SearchOutlined />}
+                >
+                  Search
+                </Button>
+              </Row>
+            </Form.Item>
+          </Row>
+        </Form>
+      </Box>
+      <h5>Results</h5>
       <Table size="sm">
         <Thead>
           <Tr>
@@ -53,12 +109,16 @@ function ItemList() {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td></Td>
-            <Td></Td>
-            <Td></Td>
-            <Td></Td>
-          </Tr>
+          {items.map((item) => {
+            return (
+              <Tr key={item._id}>
+                <Td>{item.name}</Td>
+                <Td></Td>
+                <Td></Td>
+                <Td></Td>
+              </Tr>
+            );
+          })}
         </Tbody>
       </Table>
     </div>

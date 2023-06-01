@@ -16,12 +16,12 @@ function ItemAutoCompleate({ changeValue, section }) {
   const handleSelect = (item, option) => {
     console.log(option)
     setValue(item);
-    changeValue(option.object._id);
+    changeValue(option.object);
   };
   useEffect(() => {
     if (section) {
       setValue(section.code + "-" + section.name);
-      changeValue(section._id);
+      changeValue(section);
     }
   }, [section, changeValue]);
 
