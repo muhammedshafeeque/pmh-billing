@@ -24,7 +24,6 @@ export const getItem = (query) => {
       });
       query.id&&(keywords._id=new mongoose.Types.ObjectId(query.id))
       query.rack&&(keywords.activeracks={ "$in": [new mongoose.Types.ObjectId(query.rack)] } )
-      console.log(keywords)
     let items = await item
       .find(keywords)
       .limit(query.limit ? parseInt(query.limit) : 10)
@@ -70,3 +69,10 @@ export const pushStockToItem = async (stock, Item) => {
     throw error;
   }
 };
+export const pushRackToActiveRacks=async()=>{
+  try {
+    
+  } catch (error) {
+    
+  }
+}
