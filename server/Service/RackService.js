@@ -7,6 +7,13 @@ export const postRack = async (data) => {
 export const getRacks = (query) => {
   return new Promise(async (resolve, reject) => {
     let keywords = {};
+    query.query &&
+      (keywords = {
+        $or: [
+          { code: { $regex: query.query, $options: "i" } },
+          { name: { $regex: query.query, $options: "i" } },
+        ],
+      });
     query.code && (keywords.code = query.code);
     query.name && (keywords.name = query.name);
     let racks = await Rack.find(keywords)
@@ -36,15 +43,15 @@ export const getRackById = async (id) => {
     throw error;
   }
 };
-export const pushItemToRack=async(id,item)=>{ 
+export const pushItemToRack = async (id, item) => {
   try {
-   let data=await Rack.findByIdAndUpdate(id,{
-      $push:{
-        items:item
-      }
-    })
-    return data
+    let data = await Rack.findByIdAndUpdate(id, {
+      $push: {
+        items: item,
+      },
+    });
+    return data;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};

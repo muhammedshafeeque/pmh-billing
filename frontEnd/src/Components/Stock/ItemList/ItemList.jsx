@@ -32,12 +32,12 @@ function ItemList() {
     } catch (error) {
       toast({
         title: "Failed",
-        
+
         description: error.response.data.message,
         status: "error",
         duration: 5000,
         isClosable: true,
-        position:'top-right'
+        position: "top-right",
       });
     }
   };
@@ -53,28 +53,32 @@ function ItemList() {
       <Box display={"flex"} justifyContent={"space-between"} mt={3}>
         <Form form={form} onFinish={handleSearch}>
           <Row span={24}>
-            <Form.Item name={"item"} className="search-input">
-              <ItemAutoCompleate
+            <Form.Item name={"section"} className="search-input">
+              <SectionAutoCompleate
                 changeValue={(value) => {
-                  form.setFieldsValue({ item: value });
+                  form.setFieldsValue({ section: value });
                 }}
               />
             </Form.Item>
+
             <Form.Item name={"rack"} className="search-input">
               <RackAutoCompleate
+                // section={form.getFieldValue('section')!==''?form.getFieldValue('section')._id:''}
                 changeValue={(value) => {
                   form.setFieldsValue({ rack: value });
                 }}
               />
             </Form.Item>
-            <Form.Item name={"section"} className="search-input">
-              <SectionAutoCompleate
+            <Form.Item name={"item"} className="search-input">
+              <ItemAutoCompleate
+                // section={form.getFieldValue('section')!==''?form.getFieldValue('section')._id:''}
+                // rack={form.getFieldValue('rack')!==''?form.getFieldValue('rack')._id:''}
                 changeValue={(value) => {
-                  console.log(value);
-                  form.setFieldsValue({ section: value });
+                  form.setFieldsValue({ item: value });
                 }}
               />
             </Form.Item>
+
             <Form.Item>
               <Row>
                 <Button

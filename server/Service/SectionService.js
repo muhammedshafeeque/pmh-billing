@@ -33,3 +33,6 @@ export const deleteSection = async (id) => {
   await Section.deleteOne({ _id: id });
   return "removed Success Fully";
 };
+export const getSectionById=(id)=>{
+  return Section.findById(id)
+}
