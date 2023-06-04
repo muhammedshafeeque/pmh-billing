@@ -19,7 +19,12 @@ function CreateItem({ update, doc, setFlage }) {
       name: values.name,
       code: values.code,
       section: values.section._id,
+      unit:values.unit,
+      activeracks:[]
     };
+    values.rack.forEach((item)=>{
+      data.activeracks.push(item._id)
+    })
     if (update) {
       try {
         let res = await axios.patch(`/stock/rack/${doc._id}`, data);
@@ -114,12 +119,15 @@ function CreateItem({ update, doc, setFlage }) {
                 <Input placeholder="Name" />
               </Form.Item>
             </Col>
+            <Col span={12}>
             <Form.Item
               name={"code"}
               rules={[{ required: true, message: "code is Mondatory!" }]}
             >
               <Input placeholder="code" />
             </Form.Item>
+            </Col>
+            
           </Row>
           <Row span={24}>
             <Col span={12}>
@@ -138,31 +146,25 @@ function CreateItem({ update, doc, setFlage }) {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
+              <Form.Item span={12}
                 name={"rack"}
                 rules={[{ required: true, message: "Rack is Mondatory!" }]}
               >
-                {/* <RackMultiSelect selectValue={(value)=>{
+                <RackMultiSelect selectValue={(value)=>{
                     form.setFieldsValue({ rack: value });
                 }}>
 
-                </RackMultiSelect> */}
-                <RackAutoCompleate
-                  rack={doc ? doc.section : null}
-                  section={section ? section._id : ""}
-                  changeValue={(value) => {
-                    form.setFieldsValue({ rack: value });
-                  }}
-                ></RackAutoCompleate>
+                </RackMultiSelect>
               </Form.Item>
             </Col>
           </Row>
           <Row span={24}>
             <Col span={12}>
               <Form.Item name={"unit"}
-                rules={[{ required: true, message: "Unit is Mondatory!" }]} >
+                rules={[{ required: true, message: "Unit is Mondatory!" }]} 
+                >
                 <UnitDropDown selectValue={(value)=>{
-                    form.setFieldValue({unit:value})
+                   form.setFieldsValue({unit:value})   
                 }} />
               </Form.Item>
             </Col>

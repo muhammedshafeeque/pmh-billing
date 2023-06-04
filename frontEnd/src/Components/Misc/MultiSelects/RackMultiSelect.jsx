@@ -5,8 +5,14 @@ function RackMultiSelect({section,selectValue}) {
   const { Option } = Select;
     const [racks,setRacks]=useState([])
     function handleChange(value) {
-      console.log(value)
-        // selectValue(value)
+     let data=[]
+      value.forEach((item)=>{
+        let rack=racks.find((obj)=>{
+          return obj.code===item
+        })
+        data.push(rack)
+      })
+      selectValue(data)
       }
       useEffect(()=>{
         axios.get(`/stock/rack?section=${section?section:''}`).then((res)=>{

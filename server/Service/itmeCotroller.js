@@ -21,7 +21,11 @@ export const getItem = (query) => {
           (keywords.section = new mongoose.Types.ObjectId(query.section));
         query.rack && (keywords._id = new mongoose.Types.ObjectId(query.rack));
 
-        let racks = await Rack.find(keywords).populate("items");
+        let racks = await Rack.find(keywords).populate({path:"items",populate:{
+          path:'activeracks',
+          model:'racks'
+        }});
+    
         let items = [];
         racks.forEach((obj) => {
           obj.items.forEach((data) => {
@@ -62,6 +66,7 @@ export const getItem = (query) => {
             $in: [new mongoose.Types.ObjectId(query.rack)],
           });
         let items = await item.find(keywords)
+        .populate('activeracks')
           .limit(query.limit ? parseInt(query.limit) : 10)
           .skip(query.offset ? parseInt(query.offset) : 0);
           

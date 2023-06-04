@@ -9,6 +9,6 @@ export const units = [
   },
   {
     name: "Number",
-    code: "No",
+    code: "NO",
   },
 ];

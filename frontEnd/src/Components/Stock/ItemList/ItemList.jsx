@@ -110,8 +110,13 @@ function ItemList() {
           <Tr>
             <Th>Name</Th>
             <Th>code</Th>
-            <Th>Section</Th>
-            <Th>Actions</Th>
+            <Th>Racks</Th>
+            <Th>Total Stock</Th>
+            <Th>Total Cost in Stock</Th>
+            <Th>Expect Profit in Stock</Th>
+            
+
+            
           </Tr>
         </Thead>
         <Tbody>
@@ -119,7 +124,7 @@ function ItemList() {
             return (
               <Tr key={item._id}>
                 <Td>{item.name}</Td>
-                <Td></Td>
+                <Td>{item.code}</Td>
                 <Td></Td>
                 <Td></Td>
               </Tr>
