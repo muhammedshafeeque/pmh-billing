@@ -142,18 +142,18 @@ function CreateItem({ update, doc, setFlage }) {
                 name={"rack"}
                 rules={[{ required: true, message: "Rack is Mondatory!" }]}
               >
-                <RackMultiSelect selectValue={(value)=>{
+                {/* <RackMultiSelect selectValue={(value)=>{
                     form.setFieldsValue({ rack: value });
                 }}>
 
-                </RackMultiSelect>
-                {/* <RackAutoCompleate
+                </RackMultiSelect> */}
+                <RackAutoCompleate
                   rack={doc ? doc.section : null}
                   section={section ? section._id : ""}
                   changeValue={(value) => {
                     form.setFieldsValue({ rack: value });
                   }}
-                ></RackAutoCompleate> */}
+                ></RackAutoCompleate>
               </Form.Item>
             </Col>
           </Row>
