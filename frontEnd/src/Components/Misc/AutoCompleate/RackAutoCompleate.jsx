@@ -5,7 +5,6 @@ function RackAutoCompleate({ changeValue, rack, section }) {
   const [value, setValue] = useState("");
   const [options, setOptions] = useState([]);
   const handleSearch = async (value) => {
-    console.log(section)
     setValue(value);
     let res = await axios.get(
       `/stock/rack?query=${value}&section=${section ? section : ""}`

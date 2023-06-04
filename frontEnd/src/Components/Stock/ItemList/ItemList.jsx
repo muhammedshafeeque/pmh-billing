@@ -17,6 +17,7 @@ import SectionAutoCompleate from "../../Misc/AutoCompleate/SectionAutoCompleate"
 import RackAutoCompleate from "../../Misc/AutoCompleate/RackAutoCompleate";
 import ItemAutoCompleate from "../../Misc/AutoCompleate/ItemAutoCompleate";
 import axios from "../../../Axios/axios";
+import CreateItem from "../CreateItem/CreateItem";
 function ItemList() {
   const [form] = Form.useForm();
   const [items, setItems] = useState([]);
@@ -63,7 +64,7 @@ function ItemList() {
 
             <Form.Item name={"rack"} className="search-input">
               <RackAutoCompleate
-                // section={form.getFieldValue('section')!==''?form.getFieldValue('section')._id:''}
+                section={form.getFieldValue('section')?form.getFieldValue('section')._id:''}
                 changeValue={(value) => {
                   form.setFieldsValue({ rack: value });
                 }}
@@ -71,8 +72,8 @@ function ItemList() {
             </Form.Item>
             <Form.Item name={"item"} className="search-input">
               <ItemAutoCompleate
-                // section={form.getFieldValue('section')!==''?form.getFieldValue('section')._id:''}
-                // rack={form.getFieldValue('rack')!==''?form.getFieldValue('rack')._id:''}
+                section={form.getFieldValue('section')?form.getFieldValue('section')._id:''}
+                rack={form.getFieldValue('rack')?form.getFieldValue('rack')._id:''}
                 changeValue={(value) => {
                   form.setFieldsValue({ item: value });
                 }}
@@ -101,6 +102,7 @@ function ItemList() {
             </Form.Item>
           </Row>
         </Form>
+        <CreateItem/>
       </Box>
       <h5>Results</h5>
       <Table size="sm">

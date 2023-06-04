@@ -36,7 +36,8 @@ function SectionAutoCompleate({ changeValue, section }) {
       value={value}
       options={options}
     >
-      <Input />
+      <Input span={24} />
+      
     </AutoComplete>
   );
 }
