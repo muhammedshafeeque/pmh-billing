@@ -31,10 +31,6 @@ router.post("/section", Validate(SectionValidation), createSection);
 router.get("/section", getSectionList);
 router.patch("/section/:id", updateSection);
 router.delete("/section/:id", removeSection);
-// router.post('/groupe',)
-// router.get('/groupe')
-// router.patch('/groupe/:id',)
-// router.delete('/groupe/:id',)
 router.post("/category");
 router.get("/category");
 router.patch("/category/:id");

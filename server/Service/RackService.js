@@ -57,3 +57,15 @@ export const pushItemToRack = async (id, item) => {
     throw error;
   }
 };
+export const pullItemFromRack = async (id, item) => {
+  try {
+    let data = await Rack.findByIdAndUpdate(id, {
+      $pull: {
+        items: item,
+      },
+    });
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};

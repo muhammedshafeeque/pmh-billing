@@ -11,6 +11,7 @@ import {
   deleteRack,
   getRackById,
   pushItemToRack,
+  pullItemFromRack,
 } from "../Service/RackService.js";
 import {
   deleteItem,
@@ -86,32 +87,39 @@ export const RemoveRack = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
-export const createItem = async (req, res,next) => {
+export const createItem = async (req, res, next) => {
   try {
     let item = await postItem(req.body);
-    req.body.activeracks.forEach(element => {
-      pushItemToRack(element,item._id)
+    req.body.activeracks.forEach((element) => {
+      pushItemToRack(element, item._id);
     });
     res.send(item);
   } catch (error) {
-    console.log(error)
-    next(error)
+    next(error);
   }
 };
-export const updateItem = async (req, res) => {
+export const updateItem = async (req, res, next) => {
   try {
+    let existItem = await getItemById(req.params.id);
+    existItem.activeracks.forEach((obj) => {
+      pullItemFromRack(obj, req.params.id);
+    });
     let item = await patchItem(req.params.id, req.body);
+    req.body.activeracks.forEach((rack) => {
+      pushItemToRack(rack, Item._id);
+    });
+
     res.send(item);
   } catch (error) {
-    res.status(400).send("Err:" + error);
+    next(error);
   }
 };
-export const removeItem = async (req, res) => {
+export const removeItem = async (req, res, next) => {
   try {
     let item = await deleteItem(req.params.id);
     res.send(item);
   } catch (error) {
-    res.status(400).send("Err:" + error);
+    next(error);
   }
 };
 export const getItemList = async (req, res, next) => {
@@ -138,7 +146,7 @@ export const createStock = async (req, res, next) => {
           Stock.purchaseDate = new Date();
           let stock = await postStock(Stock);
           await patchRack(req.body.rack, { item: req.body.item });
-          await pushStockToItem(stock,Item);
+          await pushStockToItem(stock, Item);
           res.send("Stock Added Successfully");
         } else {
           next({

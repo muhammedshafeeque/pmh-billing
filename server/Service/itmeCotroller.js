@@ -91,7 +91,7 @@ export const deleteItem = (id) => {
 };
 export const getItemById = (id) => {
   try {
-    return item.findById(id);
+    return item.findById(id)
   } catch (error) {
     throw error;
   }
@@ -122,7 +122,7 @@ export const pushRackToActiveRacks = async (id, rack) => {
     throw error;
   }
 };
-export const pullRackDromActiveRacks = async (id, rack) => {
+export const pullRackFromActiveRacks = async (id, rack) => {
   try {
     await Item.findByIdAndUpdate(id, {
       $pull: {
