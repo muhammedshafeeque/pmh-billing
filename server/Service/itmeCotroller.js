@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { item } from "../Models/itemModal.js";
 import { Rack } from "../Models/rack.modal.js";
 
-export const postItem = (data) => {
+export const postItem = (data) => { 
   return new Promise(async (resolve, reject) => {
     try {
       let items = await item.create(data);

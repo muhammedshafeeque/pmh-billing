@@ -86,7 +86,7 @@ export const RemoveRack = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
-export const createItem = async (req, res) => {
+export const createItem = async (req, res,next) => {
   try {
     let item = await postItem(req.body);
     req.body.activeracks.forEach(element => {
@@ -94,7 +94,8 @@ export const createItem = async (req, res) => {
     });
     res.send(item);
   } catch (error) {
-    res.status(400).send("Err:" + error);
+    console.log(error)
+    next(error)
   }
 };
 export const updateItem = async (req, res) => {

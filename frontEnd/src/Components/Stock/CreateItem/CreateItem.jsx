@@ -4,7 +4,6 @@ import axios from "../../../Axios/axios";
 import { useToast } from "@chakra-ui/react";
 import { AiFillEdit } from "react-icons/ai";
 import SectionAutoCompleate from "../../Misc/AutoCompleate/SectionAutoCompleate";
-import RackAutoCompleate from "../../Misc/AutoCompleate/RackAutoCompleate";
 import UnitDropDown from "../../Misc/DropDowns/UnitDropDown";
 import RackMultiSelect from "../../Misc/MultiSelects/RackMultiSelect";
 function CreateItem({ update, doc, setFlage }) {
@@ -52,9 +51,9 @@ function CreateItem({ update, doc, setFlage }) {
       }
     } else {
       try {
-        let res = await axios.post("/stock/item", data);
+        await axios.post("/stock/item", data);
         toast({
-          title: res.data,
+          title:'Added Successfully ',
           description: "New Rack Added Sucessfully",
           status: "success",
           duration: 9000,
@@ -67,7 +66,7 @@ function CreateItem({ update, doc, setFlage }) {
       } catch (error) {
         toast({
           title: "Failed",
-          description: "Name or code Allready Exist",
+          description: error.response.data.message,
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -150,7 +149,7 @@ function CreateItem({ update, doc, setFlage }) {
                 name={"rack"}
                 rules={[{ required: true, message: "Rack is Mondatory!" }]}
               >
-                <RackMultiSelect selectValue={(value)=>{
+                <RackMultiSelect section={section} selectValue={(value)=>{
                     form.setFieldsValue({ rack: value });
                 }}>
 

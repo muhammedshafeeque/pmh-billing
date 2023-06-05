@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Rack } from "../Models/rack.modal.js";
 
 export const postRack = async (data) => {
@@ -16,6 +17,7 @@ export const getRacks = (query) => {
       });
     query.code && (keywords.code = query.code);
     query.name && (keywords.name = query.name);
+    query.section&&(keywords.section=new mongoose.Types.ObjectId(query.section))
     let racks = await Rack.find(keywords)
       .populate("section")
       .populate("items")

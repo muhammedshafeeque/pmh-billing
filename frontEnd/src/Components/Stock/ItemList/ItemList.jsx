@@ -112,9 +112,9 @@ function ItemList() {
             <Th>code</Th>
             <Th>Racks</Th>
             <Th>Total Stock</Th>
-            <Th>Total Cost in Stock</Th>
-            <Th>Expect Profit in Stock</Th>
-            
+            {/* <Th>Total Cost in Stock</Th>
+            <Th>Expect Profit in Stock</Th> */}
+
 
             
           </Tr>
@@ -125,8 +125,11 @@ function ItemList() {
               <Tr key={item._id}>
                 <Td>{item.name}</Td>
                 <Td>{item.code}</Td>
-                <Td></Td>
-                <Td></Td>
+                <Td> {item.activeracks.map((rack)=>{
+                  return <span key={rack._id} style={{backgroundColor:'#dce0dd',margin:'5px',padding:'5px',borderRadius:'5px'}}>{rack.code}</span>
+                })}</Td>
+                <Td>{item.totalStock} {item.unit}</Td>
+                <td></td>
               </Tr>
             );
           })}
