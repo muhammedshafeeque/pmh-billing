@@ -71,7 +71,7 @@ function CreateRack({ update, doc, setFlage }) {
   return (
     <>
       {update ? (
-        <AiFillEdit
+        <AiFillEdit 
           onClick={() => {
             setOpen(true);
             setInitialValue(doc);

@@ -18,12 +18,12 @@ function CreateItem({ update, doc, setFlage }) {
       name: values.name,
       code: values.code,
       section: values.section._id,
-      unit:values.unit,
-      activeracks:[]
+      unit: values.unit,
+      activeracks: [],
     };
-    values.rack.forEach((item)=>{
-      data.activeracks.push(item._id)
-    })
+    values.rack.forEach((item) => {
+      data.activeracks.push(item._id);
+    });
     if (update) {
       try {
         let res = await axios.patch(`/stock/rack/${doc._id}`, data);
@@ -53,7 +53,7 @@ function CreateItem({ update, doc, setFlage }) {
       try {
         await axios.post("/stock/item", data);
         toast({
-          title:'Added Successfully ',
+          title: "Added Successfully ",
           description: "New Rack Added Sucessfully",
           status: "success",
           duration: 9000,
@@ -78,7 +78,7 @@ function CreateItem({ update, doc, setFlage }) {
   return (
     <>
       {update ? (
-        <AiFillEdit
+        <AiFillEdit fontSize={'25px'}
           onClick={() => {
             setOpen(true);
             setInitialValue(doc);
@@ -119,14 +119,13 @@ function CreateItem({ update, doc, setFlage }) {
               </Form.Item>
             </Col>
             <Col span={12}>
-            <Form.Item
-              name={"code"}
-              rules={[{ required: true, message: "code is Mondatory!" }]}
-            >
-              <Input placeholder="code" />
-            </Form.Item>
+              <Form.Item
+                name={"code"}
+                rules={[{ required: true, message: "code is Mondatory!" }]}
+              >
+                <Input placeholder="code" />
+              </Form.Item>
             </Col>
-            
           </Row>
           <Row span={24}>
             <Col span={12}>
@@ -145,26 +144,31 @@ function CreateItem({ update, doc, setFlage }) {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item span={12}
+              <Form.Item
+                span={12}
                 name={"rack"}
                 rules={[{ required: true, message: "Rack is Mondatory!" }]}
               >
-                <RackMultiSelect section={section} selectValue={(value)=>{
+                <RackMultiSelect
+                  section={section}
+                  selectValue={(value) => {
                     form.setFieldsValue({ rack: value });
-                }}>
-
-                </RackMultiSelect>
+                  }}
+                ></RackMultiSelect>
               </Form.Item>
             </Col>
           </Row>
           <Row span={24}>
             <Col span={12}>
-              <Form.Item name={"unit"}
-                rules={[{ required: true, message: "Unit is Mondatory!" }]} 
-                >
-                <UnitDropDown selectValue={(value)=>{
-                   form.setFieldsValue({unit:value})   
-                }} />
+              <Form.Item
+                name={"unit"}
+                rules={[{ required: true, message: "Unit is Mondatory!" }]}
+              >
+                <UnitDropDown
+                  selectValue={(value) => {
+                    form.setFieldsValue({ unit: value });
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>
