@@ -53,7 +53,7 @@ function ItemList() {
     axios
       .delete(`/stock/item/${item._id}`)
       .then(() => {
-        setReload(['d'])
+        setReload(["d"]);
         toast({
           title: "Deleted Successfully",
           status: "success",
