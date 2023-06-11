@@ -49,7 +49,31 @@ function ItemList() {
       setItems(res.data);
     });
   }, [reload]);
-  const handleDelete = () => {};
+  const handleDelete = async (item) => {
+    axios
+      .delete(`/stock/item/${item._id}`)
+      .then(() => {
+        setReload(['d'])
+        toast({
+          title: "Deleted Successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Failed",
+
+          description: error.response.data.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      });
+  };
 
   return (
     <div>
