@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { collections } from "../Constants/collections.js";
 const itemModal = mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -7,14 +8,14 @@ const itemModal = mongoose.Schema(
     unit: { type: String, required: true },
     totalStock:{type:Number, default:0},
     stocks: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "stock", required: true },
+      { type: mongoose.Schema.Types.ObjectId, ref: collections.STOCK_COLLECTION, required: true },
     ],
     activeracks: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "racks"},
+      { type: mongoose.Schema.Types.ObjectId, ref: collections.RACK_COLLLECTIONS},
     ],
   },
   {
     timestaps: true,
   }
 );
-export const item = mongoose.model("item", itemModal);
+export const item = mongoose.model(collections.ITEM_COLLECTION, itemModal);

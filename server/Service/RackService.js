@@ -69,3 +69,4 @@ export const pullItemFromRack = async (id, item) => {
     throw error;
   }
 };
+

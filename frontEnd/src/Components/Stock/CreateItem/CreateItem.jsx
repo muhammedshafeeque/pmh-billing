@@ -75,14 +75,23 @@ function CreateItem({ update, doc, setFlage }) {
       }
     }
   };
+  const patchValue=()=>{
+   
+    axios.get(`/stock/item/${doc._id}`).then(({data})=>{
+      setSection(data.activeracks.section[0])
+      form.setFieldsValue({
+          name:data.name,
+          code:data.code,
+          section:data.activeracks.section[0]
+      })
+      setOpen(true);
+    })
+  }
   return (
     <>
-      {update ? (
+      {update ? ( 
         <AiFillEdit fontSize={'25px'}
-          onClick={() => {
-            setOpen(true);
-            setInitialValue(doc);
-          }}
+          onClick={patchValue}
         />
       ) : (
         <Button
@@ -135,7 +144,7 @@ function CreateItem({ update, doc, setFlage }) {
                 //   rules={[{ required: true, message: "section is Mondatory!" }]}
               >
                 <SectionAutoCompleate
-                  section={doc ? doc.section : null}
+                  section={section?section : null}
                   changeValue={(value) => {
                     setSection(value);
                     form.setFieldsValue({ section: value });

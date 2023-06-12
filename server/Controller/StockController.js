@@ -17,6 +17,7 @@ import {
   deleteItem,
   getItem,
   getItemById,
+  getItemByIdFullPopulate,
   patchItem,
   postItem,
   pushStockToItem,
@@ -130,6 +131,14 @@ export const getItemList = async (req, res, next) => {
     next(error);
   }
 };
+export const getItemWithId=async(req,res,next)=>{
+  try {
+    let item=await getItemByIdFullPopulate(req.params.id)
+    res.send(item)
+  } catch (error) {
+      next(error)
+  }
+}
 export const createStock = async (req, res, next) => {
   if (req.body) {
     try {

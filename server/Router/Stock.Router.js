@@ -7,6 +7,7 @@ import {
   createSection,
   createStock,
   getItemList,
+  getItemWithId,
   getRackList,
   getSectionList,
   removeItem,
@@ -40,6 +41,7 @@ router.post("/item", createItem),
   router.get("/item", getItemList),
   router.patch("/item", updateItem);
 router.delete("/item/:id", removeItem);
+router.get('/item/:id',getItemWithId)
 router.post("/stock", Validate(StockValidation), createStock),
   router.patch("/stock");
 

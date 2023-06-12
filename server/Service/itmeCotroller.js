@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import { item } from "../Models/itemModal.js";
 import { Rack } from "../Models/rack.modal.js";
+import { collections } from "../Constants/collections.js";
 
-export const postItem = (data) => { 
+export const postItem = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let items = await item.create(data);
@@ -15,17 +16,20 @@ export const postItem = (data) => {
 export const getItem = (query) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (query.section||query.rack) {
-        let keywords = {}; 
+      if (query.section || query.rack) {
+        let keywords = {};
         query.section &&
           (keywords.section = new mongoose.Types.ObjectId(query.section));
         query.rack && (keywords._id = new mongoose.Types.ObjectId(query.rack));
 
-        let racks = await Rack.find(keywords).populate({path:"items",populate:{
-          path:'activeracks',
-          model:'racks'
-        }});
-    
+        let racks = await Rack.find(keywords).populate({
+          path: "items",
+          populate: {
+            path: "activeracks",
+            model: "racks",
+          },
+        });
+
         let items = [];
         racks.forEach((obj) => {
           obj.items.forEach((data) => {
@@ -51,7 +55,6 @@ export const getItem = (query) => {
           resolve(Items);
         }
       } else {
-       
         let keywords = {};
         query.query &&
           (keywords = {
@@ -65,13 +68,14 @@ export const getItem = (query) => {
           (keywords.activeracks = {
             $in: [new mongoose.Types.ObjectId(query.rack)],
           });
-        let items = await item.find(keywords)
-        .populate('activeracks')
+        let items = await item
+          .find(keywords)
+          .populate("activeracks")
           .limit(query.limit ? parseInt(query.limit) : 10)
           .skip(query.offset ? parseInt(query.offset) : 0);
-          
+
         resolve(items);
-      } 
+      }
     } catch (error) {
       reject(error);
     }
@@ -91,7 +95,7 @@ export const deleteItem = (id) => {
 };
 export const getItemById = (id) => {
   try {
-    return item.findById(id)
+    return item.findById(id);
   } catch (error) {
     throw error;
   }
@@ -113,7 +117,7 @@ export const pushStockToItem = async (stock, Item) => {
 };
 export const pushRackToActiveRacks = async (id, rack) => {
   try {
-    await Item.findByIdAndUpdate(id, {
+    await item.findByIdAndUpdate(id, {
       $push: {
         activeracks: rack,
       },
@@ -124,7 +128,7 @@ export const pushRackToActiveRacks = async (id, rack) => {
 };
 export const pullRackFromActiveRacks = async (id, rack) => {
   try {
-    await Item.findByIdAndUpdate(id, {
+    await item.findByIdAndUpdate(id, {
       $pull: {
         activeracks: rack,
       },
@@ -133,3 +137,42 @@ export const pullRackFromActiveRacks = async (id, rack) => {
     throw error;
   }
 };
+export const getItemByIdFullPopulate = async (id) => {
+  try {
+    let Item = await item.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(id) },
+      },
+      {
+        $unwind: "$activeracks",
+      },
+      {
+        $lookup: {
+          from: collections.RACK_COLLLECTIONS,
+          localField: "activeracks",
+          foreignField: "_id",
+          as: "activeracks",
+        },
+      },
+      {
+        $unwind: {
+          path: "$activeracks",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: collections.SECTION_COLLECTION,
+          localField: "activeracks.section",
+          foreignField: "_id",
+          as: "activeracks.section",
+        },
+      },
+    ]);
+    return Item[0]
+  } catch (error) { 
+    throw error;
+  }
+};
+ 
