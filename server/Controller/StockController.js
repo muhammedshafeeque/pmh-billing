@@ -22,7 +22,7 @@ import {
   postItem,
   pushStockToItem,
 } from "../Service/itmeCotroller.js";
-import { postStock } from "../Service/StockService.js";
+import { patchStock, postStock } from "../Service/StockService.js";
 export const createSection = async (req, res) => {
   try {
     await postSection(req.body);
@@ -131,14 +131,14 @@ export const getItemList = async (req, res, next) => {
     next(error);
   }
 };
-export const getItemWithId=async(req,res,next)=>{
+export const getItemWithId = async (req, res, next) => {
   try {
-    let item=await getItemByIdFullPopulate(req.params.id)
-    res.send(item)
+    let item = await getItemByIdFullPopulate(req.params.id);
+    res.send(item);
   } catch (error) {
-      next(error)
+    next(error);
   }
-}
+};
 export const createStock = async (req, res, next) => {
   if (req.body) {
     try {
@@ -179,3 +179,11 @@ export const addItemToRack = async (req, res, next) => {
     next(error);
   }
 };
+export const updateStock = async (req, res, next) => {
+  try {
+    await patchStock(req.params.id, req.body);
+  } catch (error) {
+    res.send(error);
+  }
+};
+// export const

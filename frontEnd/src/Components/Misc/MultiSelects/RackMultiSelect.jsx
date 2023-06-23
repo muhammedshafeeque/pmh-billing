@@ -1,26 +1,35 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../../Axios/axios";
 import { Select } from "antd";
-function RackMultiSelect({ section, selectValue }) {
+function RackMultiSelect({ section, selectValue,docs }) {
   const { Option } = Select;
   const [racks, setRacks] = useState([]);
   const [value, setValue] = useState([]);
   function handleChange(value) {
+    console.log(value)
     setValue(value)
     let data = [];
-    value.forEach((item) => {
-      let rack = racks.find((obj) => {
-        return obj.code === item;
-      });
-      data.push(rack);
-    });
-    selectValue(data);
+    // value.forEach((item) => {
+    //   let rack = racks.find((obj) => {
+    //     return obj.code === item;
+    //   });
+    //   data.push(rack);
+    // });
+    // selectValue(data);
   }
   useEffect(() => {
     axios.get(`/stock/rack?section=${section ? section._id : ""}`).then((res) => {
       setValue([]);
       setRacks(res.data);
     });
+    console.log(docs)
+    if(docs){
+      docs.activeracks.forEach((item)=>{
+        handleChange(item)
+      })
+//       console.log(docs.activeracks)
+// selectValue(docs.activeracks)
+    }
   }, [section]);
   return (
     <Select

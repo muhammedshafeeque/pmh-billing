@@ -12,6 +12,7 @@ function CreateItem({ update, doc, setFlage }) {
   const [form] = Form.useForm();
   const [initialValue, setInitialValue] = useState({});
   const [section, setSection] = useState(null);
+  const [itemObj,setItemObj]=useState(null)
 
   const handleSubmitForm = async (values) => {
     let data = {
@@ -52,6 +53,7 @@ function CreateItem({ update, doc, setFlage }) {
     } else {
       try {
         await axios.post("/stock/item", data);
+        setOpen(false);
         toast({
           title: "Added Successfully ",
           description: "New Rack Added Sucessfully",
@@ -62,7 +64,7 @@ function CreateItem({ update, doc, setFlage }) {
         });
         setFlage(values);
         form.resetFields();
-        setOpen(false);
+        
       } catch (error) {
         toast({
           title: "Failed",
@@ -78,12 +80,18 @@ function CreateItem({ update, doc, setFlage }) {
   const patchValue=()=>{
    
     axios.get(`/stock/item/${doc._id}`).then(({data})=>{
-      setSection(data.activeracks.section[0])
+      let results=[]
+    data.activeracks.forEach((obj)=>{
+      results.push(obj.section)
+    })
+      setSection(data.activeracks.section)
+
       form.setFieldsValue({
           name:data.name,
           code:data.code,
-          section:data.activeracks.section[0]
+          section:data.activeracks[0].section
       })
+      setItemObj(data)
       setOpen(true);
     })
   }
@@ -163,6 +171,7 @@ function CreateItem({ update, doc, setFlage }) {
                   selectValue={(value) => {
                     form.setFieldsValue({ rack: value });
                   }}
+                  docs={itemObj}
                 ></RackMultiSelect>
               </Form.Item>
             </Col>

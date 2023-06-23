@@ -139,40 +139,15 @@ export const pullRackFromActiveRacks = async (id, rack) => {
 };
 export const getItemByIdFullPopulate = async (id) => {
   try {
-    let Item = await item.aggregate([
-      {
-        $match: { _id: new mongoose.Types.ObjectId(id) },
+    let Item = await item.findById(id).populate({
+      path: "activeracks",
+      populate: {
+        path: "section",
+        model: collections.SECTION_COLLECTION,
       },
-      {
-        $unwind: "$activeracks",
-      },
-      {
-        $lookup: {
-          from: collections.RACK_COLLLECTIONS,
-          localField: "activeracks",
-          foreignField: "_id",
-          as: "activeracks",
-        },
-      },
-      {
-        $unwind: {
-          path: "$activeracks",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      {
-        $lookup: {
-          from: collections.SECTION_COLLECTION,
-          localField: "activeracks.section",
-          foreignField: "_id",
-          as: "activeracks.section",
-        },
-      },
-    ]);
-    return Item[0]
-  } catch (error) { 
+    });
+    return Item;
+  } catch (error) {
     throw error;
   }
 };
- 

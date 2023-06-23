@@ -37,12 +37,12 @@ router.post("/category");
 router.get("/category");
 router.patch("/category/:id");
 router.delete("/category/:id");
-router.post("/item", createItem),
-  router.get("/item", getItemList),
-  router.patch("/item", updateItem);
+router.post("/item", createItem);
+router.get("/item", getItemList);
+router.patch("/item", updateItem);
 router.delete("/item/:id", removeItem);
-router.get('/item/:id',getItemWithId)
-router.post("/stock", Validate(StockValidation), createStock),
-  router.patch("/stock");
+router.get("/item/:id", getItemWithId);
+router.post("/stock", Validate(StockValidation), createStock);
+router.patch("/stock",);
 
 export default router;

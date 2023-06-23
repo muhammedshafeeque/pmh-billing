@@ -8,3 +8,10 @@ export const postStock = (data) => {
     throw error;
   }
 };
+export const patchStock=(id,data)=>{
+  try {
+    return Stock.findByIdAndUpdate(id,data)
+  } catch (error) {
+    throw error
+  }
+}
