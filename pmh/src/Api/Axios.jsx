@@ -1,14 +1,13 @@
 import axios from "axios";
-import { BASE_URL, TOKEN } from "../Constants/constant";
+import { BASE_URL } from "../Constants/constant";
+import { getToken } from "../Common/auth";
 import { nav } from "../Constants/routes";
 
 const instance = axios.create({
   baseURL: BASE_URL,
 });
 
-instance.defaults.headers.common[
-  "Authorization"
-] = `Bearer ${localStorage.getItem(TOKEN)}`;
+instance.defaults.headers.common["Authorization"] = `Bearer ${getToken()}`;
 instance.defaults.headers.post["Content-Type"] = "application/json";
 instance.interceptors.response.use(
   (response) => {
@@ -18,7 +17,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
-      window.location.href = nav.HOME;
+      window.location.href = nav.LOGIN;
     } else {
       throw error;
     }
