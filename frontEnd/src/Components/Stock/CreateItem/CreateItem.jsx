@@ -84,7 +84,7 @@ function CreateItem({ update, doc, setFlage }) {
     data.activeracks.forEach((obj)=>{
       results.push(obj.section)
     })
-      setSection(data.activeracks.section)
+      setSection(data.activeracks[0].section)
 
       form.setFieldsValue({
           name:data.name,
