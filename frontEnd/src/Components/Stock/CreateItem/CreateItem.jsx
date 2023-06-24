@@ -12,7 +12,7 @@ function CreateItem({ update, doc, setFlage }) {
   const [form] = Form.useForm();
   const [initialValue, setInitialValue] = useState({});
   const [section, setSection] = useState(null);
-  const [itemObj,setItemObj]=useState(null)
+  const [itemObj, setItemObj] = useState(null);
 
   const handleSubmitForm = async (values) => {
     let data = {
@@ -64,7 +64,6 @@ function CreateItem({ update, doc, setFlage }) {
         });
         setFlage(values);
         form.resetFields();
-        
       } catch (error) {
         toast({
           title: "Failed",
@@ -77,30 +76,25 @@ function CreateItem({ update, doc, setFlage }) {
       }
     }
   };
-  const patchValue=()=>{
-   
-    axios.get(`/stock/item/${doc._id}`).then(({data})=>{
-      let results=[]
-    data.activeracks.forEach((obj)=>{
-      results.push(obj.section)
-    })
-      setSection(data.activeracks[0].section)
+  const patchValue = () => {
+    axios.get(`/stock/item/${doc._id}`).then(({ data }) => {
+      setSection(data.activeracks[0].section);
 
       form.setFieldsValue({
-          name:data.name,
-          code:data.code,
-          section:data.activeracks[0].section
-      })
-      setItemObj(data)
+        name: data.name,
+        code: data.code,
+        section: data.activeracks[0].section,
+        unit: data.unit,
+        rack: data.activeracks,
+      });
+      setItemObj(data);
       setOpen(true);
-    })
-  }
+    });
+  };
   return (
     <>
-      {update ? ( 
-        <AiFillEdit fontSize={'25px'}
-          onClick={patchValue}
-        />
+      {update ? (
+        <AiFillEdit fontSize={"25px"} onClick={patchValue} />
       ) : (
         <Button
           type="primary"
@@ -152,9 +146,8 @@ function CreateItem({ update, doc, setFlage }) {
                 //   rules={[{ required: true, message: "section is Mondatory!" }]}
               >
                 <SectionAutoCompleate
-                  section={section?section : null}
+                  section={section ? section : null}
                   changeValue={(value) => {
-                    setSection(value);
                     form.setFieldsValue({ section: value });
                   }}
                 ></SectionAutoCompleate>
@@ -169,6 +162,7 @@ function CreateItem({ update, doc, setFlage }) {
                 <RackMultiSelect
                   section={section}
                   selectValue={(value) => {
+                    console.log(value);
                     form.setFieldsValue({ rack: value });
                   }}
                   docs={itemObj}
@@ -183,6 +177,7 @@ function CreateItem({ update, doc, setFlage }) {
                 rules={[{ required: true, message: "Unit is Mondatory!" }]}
               >
                 <UnitDropDown
+                  unit={itemObj}
                   selectValue={(value) => {
                     form.setFieldsValue({ unit: value });
                   }}
