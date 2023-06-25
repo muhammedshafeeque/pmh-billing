@@ -9,20 +9,26 @@ import { getToken, setToken } from "../../Common/auth";
 import { useAlert } from "react-alert";
 import { useNavigate } from "react-router-dom";
 import { nav } from "../../Constants/routes";
+import { Stor } from "../../Context/BillerContext";
 
 function Login() {
   const alert = useAlert();
+  const {setBlockUi,setUser} =Stor()
   const navigate = useNavigate("");
   const { register, handleSubmit } = useForm();
   const onSubmit = (data) => {
+    setBlockUi(true)
     axios
       .post("auth/login", data)
       .then((res) => {
+        setBlockUi(false)
         setToken(res.data.token);
+        setUser(res.data)
         alert.success("Login Success");
         navigate(nav.HOME);
       })
       .catch((err) => {
+        setBlockUi(false)
         alert.error(err.response.data);
       });
   };

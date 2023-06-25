@@ -4,6 +4,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
+import BillProvider from "./Context/BillerContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const options = {
   position: "top right",
@@ -14,9 +15,11 @@ const options = {
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AlertProvider template={AlertTemplate} {...options}>
-        <App />
-      </AlertProvider>
+      <BillProvider>
+        <AlertProvider template={AlertTemplate} {...options}>
+          <App />
+        </AlertProvider>
+      </BillProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
