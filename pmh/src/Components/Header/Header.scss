@@ -1,0 +1,13 @@
+.header_main_div {
+  width: 100%;
+  min-height: 4rem;
+  background-color: var(--blue);
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color:  var(--white);
+}
+
