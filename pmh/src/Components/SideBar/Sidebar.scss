@@ -1,0 +1,35 @@
+.sidebar {
+  background-color: var(--blue);
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  border-right: solid 2px var(--border);
+  padding: 10px;
+}
+.sidebar-item {
+  background-color: var(--card-backGroud);
+  color: var(--white);
+  padding-top: 5px;
+  padding-left: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+.sidebar-item :hover {
+  width: 100%;
+  height: 100%;
+  background-color: var(--white);
+  color: var(--blue);
+  padding-top: 10px;
+  padding-left: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+.sidebar-item > h6 > span {
+  font-size: 25px;
+}
+.selected {
+  background-color: var(--white);
+  color: var(--blue);
+}
