@@ -16,7 +16,7 @@ function App() {
       <Suspense fallback={<BlockUi block={BlockUi} />}>
         <Routes>
           <Route path={nav.LOGIN} exact element={<Login />} />
-          <Route path={nav.HOME} element={<Home />} />
+          <Route path={nav.HOME+'/*'} element={<Home />} />
         </Routes>
       </Suspense>
     </div>
