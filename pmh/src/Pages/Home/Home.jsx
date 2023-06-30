@@ -7,6 +7,8 @@ import BlockUi from "../../Components/BlockUi/BlockUi";
 function Home() {
   const Home = React.lazy(() => import("../../Modules/Home/Dashboard"));
   const ShopConfig = React.lazy(() => import("../../Modules/Shop/ShopConfig"));
+  const Section = React.lazy(() => import("../../Modules/Shop/Section"));
+  const Rack = React.lazy(() => import("../../Modules/Shop/Racks"));
   return (
     <div>
       <Header />
@@ -20,6 +22,8 @@ function Home() {
             <Routes>
               <Route path={mainRoutes.home} element={<Home />} />
               <Route path={mainRoutes.shopConfig} element={<ShopConfig />} />
+              <Route path={mainRoutes.section} element={<Section />} />
+              <Route path={mainRoutes.rack} element={<Rack />} />
             </Routes>
           </Suspense>
         </div>
