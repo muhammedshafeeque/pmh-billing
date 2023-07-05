@@ -1,4 +1,5 @@
 import React from 'react'
+import SectionAutoCompleate from '../../Components/AutoCompleat/SectionAutoCompleate'
 
 function Section() {
   return (
@@ -8,15 +9,20 @@ function Section() {
           <h5>Search Section</h5>
       </div>
       <div className="row col-md-12" >
-        <div className="col-9">
-
+        <div className="col-md-10" >
+            <div className="col-md-3">
+                <SectionAutoCompleate/>
+            </div>
+        </div>
+        <div className="col-md-2">
+          
         </div>
       </div>
-      <table className="table table-bordered">
+      <table className="table table-bordered mt-4">
       <thead >
           <tr className='thead-light'>
             <th>Name</th>
-            <th>Code</th>
+            <th>Code</th> 
             <th>Number of Racks</th>
             <th>Total Investment</th>
           </tr>
