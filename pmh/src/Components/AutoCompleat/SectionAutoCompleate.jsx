@@ -25,8 +25,10 @@ function SectionAutoCompleate() {
     <div>
       <AsyncTypeahead
         id="basic-example"
+        labelKey={option => `${option.name}`}
         onChange={(e) => {
           setSelected(e);
+          console.log(e)
         }}
         onSearch={handleSearch}
         options={options}
