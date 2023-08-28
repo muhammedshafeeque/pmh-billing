@@ -1,8 +1,9 @@
 export const commonFilters={
-    QOUERY:'qoury',
+    QOUERY:'qoury=',
     LIMIT:'limit=',
-    OFFSET:'offset'
+    OFFSET:'offset=',
+    ID:'_id='
 }
 export const configFiltes={
-
+    
 }

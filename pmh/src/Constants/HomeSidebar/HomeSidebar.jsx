@@ -6,7 +6,7 @@ import {BsHddRack} from 'react-icons/bs'
 export const HomeSidebar = [
   { name: "Home", nav: nav.HOME + mainRoutes.home, icon: AiOutlineHome },
   {
-    name: "Shope Configorarions",
+    name: "Shope Configorarion",
     nav: nav.HOME + mainRoutes.shopConfig,
     icon: GrSettingsOption,
     sub: [

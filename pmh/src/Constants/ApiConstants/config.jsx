@@ -1,3 +1,3 @@
-export const confiEndPoints={
+export const configEndPoints={
     SECTION:'section'
 }

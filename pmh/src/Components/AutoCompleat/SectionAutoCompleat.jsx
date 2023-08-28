@@ -2,21 +2,21 @@ import React, { useState } from "react";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import axios from "../../Api/Axios";
 import { mainEndPoint } from "../../Constants/ApiConstants/mainRoutes";
-import { confiEndPoints } from "../../Constants/ApiConstants/config";
+import { configEndPoints } from "../../Constants/ApiConstants/config";
 import { commonFilters } from "../../Constants/ApiConstants/apiFilters";
-import { ApiDefaltValues } from "../../Constants/ApiConstants/ApiDefaultFilterValues";
-function SectionAutoCompleate() {
-  const [loading, setLoading] = useState(false);
+import { ApiDefaultValues } from "../../Constants/ApiConstants/ApiDefaultFilterValues";
+function SectionAutoCompleat({setSection}) {
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState();
   const handleSearch = async (e) => {
+   
     try {
       let { data } = await axios.get(
         mainEndPoint.STOCK +
-          confiEndPoints.SECTION +
+          configEndPoints.SECTION +
           "?" +
           commonFilters.LIMIT +
-          ApiDefaltValues.TYPEAHEAD_LIMIT
+          ApiDefaultValues.TYPEAHEAD_LIMIT
       );
       setOptions(data)
     } catch (error) {}
@@ -28,7 +28,7 @@ function SectionAutoCompleate() {
         labelKey={option => `${option.name}`}
         onChange={(e) => {
           setSelected(e);
-          console.log(e)
+          setSection(e)
         }}
         onSearch={handleSearch}
         options={options}
@@ -39,4 +39,4 @@ function SectionAutoCompleate() {
   );
 }
 
-export default SectionAutoCompleate;
+export default SectionAutoCompleat;
