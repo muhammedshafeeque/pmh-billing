@@ -62,7 +62,7 @@ function Racks() {
           <Button onClick={handleModal}>Create Rack</Button>
         </div>
       </div>
-      <ModalComponent show={modal} popup_head='Create Section' >
+      <ModalComponent show={modal} popup_head="Create Section">
         <CreateAndUpdateSection onHide={() => handleModal()} />
       </ModalComponent>
 
@@ -92,4 +92,4 @@ function Racks() {
   );
 }
 
-export default Racks
+export default Racks;

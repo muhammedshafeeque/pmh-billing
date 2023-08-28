@@ -1,9 +1,9 @@
 export const commonFilters={
-    QOUERY:'qoury=',
+    QUERY:'query=',
     LIMIT:'limit=',
     OFFSET:'offset=',
     ID:'_id='
 }
-export const configFiltes={
+export const configFilters={
     
 }

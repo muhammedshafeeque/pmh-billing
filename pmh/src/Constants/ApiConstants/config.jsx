@@ -1,3 +1,4 @@
 export const configEndPoints={
-    SECTION:'section'
+    SECTION:'section',
+    RACK:'rack'
 }
