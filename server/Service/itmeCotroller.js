@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
-import { item } from "../Models/itemModal.js";
 import { Rack } from "../Models/rack.modal.js";
 import { collections } from "../Constants/collections.js";
-
+import {ITEM} from "../Models/itemModal.js"
 export const postItem = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let items = await item.create(data);
+      let items = await ITEM.create(data);
       resolve(items);
     } catch (error) {
       reject(error);
@@ -40,12 +39,12 @@ export const getItem = (query) => {
           (item, index) => items.indexOf(item) === index
         );
         if (query.query) {
-          let responseData = Items.filter((value) => {
+          let responsData = Items.filter((value) => {
             return value.destination
               .toLowerCase()
               .includes(query.query.toLowerCase());
           });
-          resolve(responseData);
+          resolve(responsData);
         } else if (query.id) {
           let response = Items.filter((obj) => {
             return String(obj._id) === query.id;
@@ -83,7 +82,7 @@ export const getItem = (query) => {
 };
 export const patchItem = (id, data) => {
   return new Promise(async (Resolve, reject) => {
-    let items = await item.findByIdAndUpdate(id, data);
+    let items = await item.fintByIdAndUpdate(id, data);
     resolve(items);
   });
 };

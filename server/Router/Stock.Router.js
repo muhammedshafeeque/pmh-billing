@@ -21,6 +21,7 @@ import {
   RackValidation,
   SectionValidation,
   StockValidation,
+  itemValidations,
 } from "../Validations/Stock.Validations.js";
 
 const router = express.Router();
@@ -37,7 +38,7 @@ router.post("/category");
 router.get("/category");
 router.patch("/category/:id");
 router.delete("/category/:id");
-router.post("/item", createItem);
+router.post("/item",Validate(itemValidations), createItem);
 router.get("/item", getItemList);
 router.patch("/item", updateItem);
 router.delete("/item/:id", removeItem);
