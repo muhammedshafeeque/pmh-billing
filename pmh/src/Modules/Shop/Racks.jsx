@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import SectionAutoCompleat from "../../Components/AutoCompleat/SectionAutoCompleat";
 import axios from "../../Api/Axios";
-import { mainEndPoint } from "../../Constants/ApiConstants/mainRoutes";
-import { configEndPoints } from "../../Constants/ApiConstants/config";
-import { commonFilters } from "../../Constants/ApiConstants/apiFilters";
-import { ApiDefaultValues } from "../../Constants/ApiConstants/ApiDefaultFilterValues";
 import { useAlert } from "react-alert";
 import { Stor } from "../../Context/BillerContext";
-import CreateAndUpdateSection from "../../Components/CreateAndUpdateSection/CreateAndUpdateSection";
 import Button from "react-bootstrap/esm/Button";
 import ModalComponent from "../../Components/Modal/Modal";
+import CreateAndUpdateRack from "../../Components/CreateAndUpdateRack/CreateAndUpdateRack";
 function Racks() {
   const [section, setSection] = useState();
   const [results, setResults] = useState([]);
@@ -20,14 +16,7 @@ function Racks() {
     setBlockUi(true);
 
     axios
-      .get(
-        mainEndPoint.STOCK +
-          configEndPoints.SECTION +
-          "?" +
-          commonFilters.LIMIT +
-          ApiDefaultValues.LIMIT +
-          `${section ? "&" + commonFilters.ID + section._id : ""}`
-      )
+      .get("/stock/rack")
       .then(({ data }) => {
         setBlockUi(false);
         setResults(data);
@@ -62,8 +51,8 @@ function Racks() {
           <Button onClick={handleModal}>Create Rack</Button>
         </div>
       </div>
-      <ModalComponent show={modal} popup_head="Create Section">
-        <CreateAndUpdateSection onHide={() => handleModal()} />
+      <ModalComponent show={modal} popup_head="Create Rack">
+        <CreateAndUpdateRack onHide={() => handleModal()} />
       </ModalComponent>
 
       <table className="table table-bordered mt-4">
@@ -81,7 +70,8 @@ function Racks() {
               <tr key={item._id}>
                 <td>{item.name}</td>
                 <td>{item.code}</td>
-                <td>{item.numberOfRacks}</td>
+                <td>{item.section.name}</td>
+                <td>0</td>
                 <td></td>
               </tr>
             );
