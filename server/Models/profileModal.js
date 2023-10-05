@@ -9,7 +9,7 @@ const profileModal = mongoose.Schema(
     },
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const Profile = mongoose.model("profile", profileModal);

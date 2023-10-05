@@ -11,11 +11,11 @@ const itemModal = mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: collections.STOCK_COLLECTION, required: true },
     ],
     activeracks: [
-      { type: mongoose.Schema.Types.ObjectId, ref: collections.RACK_COLLLECTIONS},
+      { type: mongoose.Schema.Types.ObjectId, ref: collections.RACK_COLLECTIONS},
     ],
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const item = mongoose.model(collections.ITEM_COLLECTION, itemModal);

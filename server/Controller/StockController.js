@@ -151,7 +151,7 @@ export const createStock = async (req, res, next) => {
 
         if (itemExist) {
           let Stock = req.body;
-          Stock.qouantity = Stock.purchasedQouantity;
+          Stock.quantity = Stock.purchasedQuantity;
           Stock.purchaseDate = new Date();
           let stock = await postStock(Stock);
           await patchRack(req.body.rack, { item: req.body.item });

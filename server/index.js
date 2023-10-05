@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { connectDb } from "./Config/db.js";
 import Router from "./Router/index.js";
 
-// ==========Congfigs=========
+// ==========Configs=========
 const app = express();
 dotenv.config();
 app.use(cors());

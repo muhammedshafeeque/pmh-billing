@@ -40,12 +40,12 @@ export const getItem = (query) => {
           (item, index) => items.indexOf(item) === index
         );
         if (query.query) {
-          let responsData = Items.filter((value) => {
+          let responseData = Items.filter((value) => {
             return value.destination
               .toLowerCase()
               .includes(query.query.toLowerCase());
           });
-          resolve(responsData);
+          resolve(responseData);
         } else if (query.id) {
           let response = Items.filter((obj) => {
             return String(obj._id) === query.id;
@@ -83,7 +83,7 @@ export const getItem = (query) => {
 };
 export const patchItem = (id, data) => {
   return new Promise(async (Resolve, reject) => {
-    let items = await item.fintByIdAndUpdate(id, data);
+    let items = await item.findByIdAndUpdate(id, data);
     resolve(items);
   });
 };

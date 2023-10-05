@@ -13,7 +13,7 @@ const rackModal = mongoose.Schema(
     items: [{ type: mongoose.Schema.Types.ObjectId, ref: collections.ITEM_COLLECTION }],
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const Rack = mongoose.model("racks", rackModal);

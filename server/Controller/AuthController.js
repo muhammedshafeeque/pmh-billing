@@ -6,7 +6,7 @@ import {
 } from "../Service/Profile.service.js";
 import {
   comparePassword,
-  encriptString,
+encryptString,
   generateToken,
 } from "../Utils/utils.js";
 
@@ -15,9 +15,9 @@ export const makeProfile = async (req, res) => {
     let user = req.body;
     let userExist = await getUserByUserId(user.userName);
     if (userExist) {
-      res.status(400).send("userName   Allready Exist");
+      res.status(400).send("userName   Already Exist");
     } else {
-      let password = await encriptString(user.password);
+      let password = await encryptString(user.password);
       let User = await createUser({
         password,
         userName: user.userName,
@@ -50,6 +50,6 @@ export const doLogin = async (req, res) => {
     res.status(400).send("Invalid userId Or Password");
   }
 };
-export const getReqestUser=(req,res)=>{
+export const getRequestUser=(req,res)=>{
   res.send(req.user)
 }

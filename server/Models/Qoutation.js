@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const QoutModal = mongoose.Schema(
+const QuotModal = mongoose.Schema(
   {
     number: { type: String, required: true },
     customerName: { type: String },
@@ -7,7 +7,7 @@ const QoutModal = mongoose.Schema(
     items: [
       {
         item: { id: mongoose.Schema.Types.ObjectId, ref: "item" },
-        qouantity: { type: Number, required: true },
+        quantity: { type: Number, required: true },
         prise: { type: Number, required: true },
         Stock: { type: mongoose.Schema.Types.ObjectId, ref: "stock" },
       },
@@ -15,7 +15,7 @@ const QoutModal = mongoose.Schema(
     billAmount: { type: Number, required: true },
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
-export const Qoutation = mongoose.model("qoute", QoutModal);
+export const Quotation = mongoose.model("quote", QuotModal);

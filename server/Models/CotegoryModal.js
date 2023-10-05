@@ -8,7 +8,7 @@ const cateGoryModal = mongoose.Schema(
     ],
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const CateGory = mongoose.model("category", cateGoryModal);

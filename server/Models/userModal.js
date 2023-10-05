@@ -5,7 +5,7 @@ const userModel = mongoose.Schema(
     password: { type: String, required: true },
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const User = mongoose.model("user", userModel);

@@ -11,4 +11,7 @@ export const mainRoutes = {
   // shop config Routes
   section: "/section",
   rack: "/rack",
+  item:'/item',
+  stock:'/stock'
+
 };

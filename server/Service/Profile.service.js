@@ -7,7 +7,7 @@ export const getProfile = (query) => {
       let keywords = {};
 
       let profiles = await db()
-        .collection(collections.PROFIL_COLLECTION)
+        .collection(collections.PROFILE_COLLECTION)
         .find(keywords)
         .toArray();
 

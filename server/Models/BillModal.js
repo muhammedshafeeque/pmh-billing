@@ -8,7 +8,7 @@ const billModal = mongoose.Schema(
     items: [
       {
         item: { id: mongoose.Schema.Types.ObjectId, ref: "item" },
-        qouantity: { type: Number, required: true },
+        quantity: { type: Number, required: true },
         prise: { type: Number, required: true },
         Stock: { type: mongoose.Schema.Types.ObjectId, ref: "stock" },
       },
@@ -17,7 +17,7 @@ const billModal = mongoose.Schema(
     payableAmount: { type: Number, required: true },
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const Bill = mongoose.model("bill", billModal);

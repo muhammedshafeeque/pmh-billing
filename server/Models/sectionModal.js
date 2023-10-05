@@ -6,7 +6,7 @@ const sectionModal = mongoose.Schema(
     code: { type: String, required: true, unique: true },
   },
   {
-    timestaps: true,
+    timestamps: true,
   }
 );
 export const Section = mongoose.model(collections.SECTION_COLLECTION, sectionModal);

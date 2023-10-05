@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { InvoiceNumber } from "invoice-number";
-export const encriptString = async (password) => {
+export const encryptString = async (password) => {
   let hash = await bcrypt.hashSync(password, 10);
   return hash;
 };
