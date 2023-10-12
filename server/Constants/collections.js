@@ -3,7 +3,8 @@ export const collections={
     PROFILE_COLLECTION:'profile',
     RACK_COLLECTIONS:'racks',
     SECTION_COLLECTION:"sections",
-    ITEM_COLLECTION:'item',
-    STOCK_COLLECTION:'stock'
+    ITEM_COLLECTION:'items',
+    STOCK_COLLECTION:'stocks',
+    UNIT_COLLECTION:'units'
 
 } 
