@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { Form } from "react-bootstrap";
 import UnitTypeAhead from "../AutoCompleat/UnitTypeAhead";
@@ -10,7 +10,9 @@ function CreateAndUpdateItem() {
   const { register, handleSubmit, control, watch, setValue } = useForm();
   const unitValue = watch("Unit");
   const sections = watch("sections");
-  const onSubmit = (value) => {};
+  const onSubmit = (value) => {
+    console.log(value)
+  };
   const [selectedSections, setSelectedSections] = useState([]);
   useEffect(() => {
     if (unitValue) {
@@ -71,6 +73,9 @@ function CreateAndUpdateItem() {
               />
             </Form.Group>
           </Row>
+          <div  style={{display:"flex",justifyContent:"flex-end"}}>
+            <Button className="mt-4" type="submit">Submit</Button>
+          </div>
         </Form>
       </Container>
     </div>
