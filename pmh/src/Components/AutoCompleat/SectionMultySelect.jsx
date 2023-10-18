@@ -1,9 +1,43 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import axios from "../../Api/Axios";
+import { Stor } from "../../Context/BillerContext";
+import Select from "react-select";
+import { Controller } from "react-hook-form";
+import { useAlert } from "react-alert";
 
-function SectionMultiSelect() {
+function SectionMultiSelect({ control, rules, name }) {
+  const { setBlockUi } = Stor();
+  const [options, setOptions] = useState([]);
+  const alert = useAlert();
+  useEffect(() => {
+    setBlockUi(true);
+    axios
+      .get("stock/section?limit=100")
+      .then(({ data }) => {
+        setBlockUi(false);
+        let arr = [];
+        data.forEach((item) => {
+          arr.push({ value: item._id, label: item.name });
+        });
+        setOptions(arr);
+      })
+      .catch((err) => {
+        setBlockUi(false);
+        alert.error(err.response.data.message);
+      });
+  }, [setBlockUi, alert]);
+
   return (
-    <div>SectionMultiSelect</div>
-  )
+    <div>
+      <Controller
+        name={name?name:'sections'}
+        control={control}
+        rules={rules}
+        defaultValue={null}
+        render={({ field }) => <Select {...field} options={options} isMulti />}
+      />
+    </div>
+  );
 }
 
-export default SectionMultiSelect
+export default SectionMultiSelect;

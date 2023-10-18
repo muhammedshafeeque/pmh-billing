@@ -4,7 +4,11 @@ const itemModal = mongoose.Schema(
   {
     name: { type: String, required: true },
     code: { type: String, require: true, unique: true },
-    unit: { type: String, required: true },
+    unit: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.UNIT_COLLECTION,
+      required: true,
+    },
     totalStock: { type: Number, default: 0 },
     stocks: [
       {
@@ -18,10 +22,6 @@ const itemModal = mongoose.Schema(
         rackId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: collections.RACK_COLLECTIONS,
-        },
-        sectionId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: collections.SECTION_COLLECTION,
         },
       },
     ],

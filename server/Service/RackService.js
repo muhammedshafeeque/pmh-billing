@@ -7,6 +7,7 @@ export const postRack = async (data) => {
 };
 export const getRacks = (query) => {
   return new Promise(async (resolve, reject) => {
+   try {
     let keywords = {};
     query.query &&
       (keywords = {
@@ -17,13 +18,19 @@ export const getRacks = (query) => {
       });
     query.code && (keywords.code = query.code);
     query.name && (keywords.name = query.name);
-    query.section&&(keywords.section=new mongoose.Types.ObjectId(query.section))
+    if (query.section) {
+      const sectionIds = query.section.split(',').map(id => new mongoose.Types.ObjectId(id));
+      keywords.section = { $in: sectionIds };
+    }
     let racks = await Rack.find(keywords)
       .populate("section")
       .populate("items")
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
     resolve(racks);
+   } catch (error) {
+      reject(error)
+   }
   });
 };
 export const patchRack = async (id, data) => {

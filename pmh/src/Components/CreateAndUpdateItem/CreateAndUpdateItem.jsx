@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { Form } from "react-bootstrap";
 import UnitTypeAhead from "../AutoCompleat/UnitTypeAhead";
+import SectionMultiSelect from "../AutoCompleat/SectionMultySelect";
+import RackMultiSelect from "../AutoCompleat/RackMultiSelect";
 
 function CreateAndUpdateItem() {
-  const { register, handleSubmit, control } = useForm();
+  const { register, handleSubmit, control, watch, setValue } = useForm();
+  const unitValue = watch("Unit");
+  const sections = watch("sections");
   const onSubmit = (value) => {};
+  const [selectedSections, setSelectedSections] = useState([]);
+  useEffect(() => {
+    if (unitValue) {
+      setValue("measurement", unitValue.Quantity);
+    }
+    if (sections) {
+      setSelectedSections(sections);
+      setValue('racks',null) 
+    }
+  }, [unitValue, sections]);
   return (
     <div>
       <Container>
@@ -30,14 +44,32 @@ function CreateAndUpdateItem() {
               />
             </Form.Group>
             <Form.Group as={Col} md="4" controlId="validationCustom01">
-            <Form.Label>Unit</Form.Label>
-              <UnitTypeAhead control={control} />
+              <Form.Label>Unit</Form.Label>
+              <UnitTypeAhead control={control} name={"Unit"} />
             </Form.Group>
           </Row>
-          <Row>
-            <Col sm="8">
-              {/* <UnitTypeAhead control={control} /> */}
-            </Col>
+          <Row className="mt-3">
+            <Form.Group as={Col} md="4" controlId="validationCustom01">
+              <Form.Label>Measurement</Form.Label>
+              <Form.Control
+                {...register("measurement", { required: true })}
+                type="text"
+                disabled={true}
+                placeholder="measurement"
+              />
+            </Form.Group>
+            <Form.Group as={Col} md="4" controlId="validationCustom01">
+              <Form.Label>Sections</Form.Label>
+              <SectionMultiSelect control={control} name={"sections"} />
+            </Form.Group>
+            <Form.Group as={Col} md="4" controlId="validationCustom01">
+              <Form.Label>Racks</Form.Label>
+              <RackMultiSelect
+                control={control}
+                sections={selectedSections}
+                name={"racks"}
+              />
+            </Form.Group>
           </Row>
         </Form>
       </Container>
