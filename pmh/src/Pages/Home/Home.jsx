@@ -4,12 +4,14 @@ import Sidebar from "../../Components/SideBar/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import { mainRoutes } from "../../Constants/routes";
 import BlockUi from "../../Components/BlockUi/BlockUi";
+
 function Home() {
   const Home = React.lazy(() => import("../../Modules/Home/Dashboard"));
   const ShopConfig = React.lazy(() => import("../../Modules/Shop/ShopConfig"));
   const Section = React.lazy(() => import("../../Modules/Shop/Section"));
   const Rack = React.lazy(() => import("../../Modules/Shop/Racks"));
-  const Items=React.lazy(()=>import('../../Modules/Store/Items'))
+  const Items = React.lazy(() => import("../../Modules/Store/Items"));
+  const Stocks = React.lazy(() => import("../../Modules/Store/Stocks"));
   return (
     <div>
       <Header />
@@ -25,7 +27,8 @@ function Home() {
               <Route path={mainRoutes.shopConfig} element={<ShopConfig />} />
               <Route path={mainRoutes.section} element={<Section />} />
               <Route path={mainRoutes.rack} element={<Rack />} />
-              <Route path={mainRoutes.item} element={<Items/>}/>
+              <Route path={mainRoutes.item} element={<Items />} />
+              <Route path={mainRoutes.stock} element={<Stocks />} />
             </Routes>
           </Suspense>
         </div>

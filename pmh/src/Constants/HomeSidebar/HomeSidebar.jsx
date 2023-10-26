@@ -4,7 +4,7 @@ import { GrSettingsOption } from "react-icons/gr";
 import { TbNewSection } from "react-icons/tb";
 import { BsHddRack } from "react-icons/bs";
 import { CiShoppingCart } from "react-icons/ci";
-import {MdClass} from 'react-icons/md'
+import { MdClass } from "react-icons/md";
 export const HomeSidebar = [
   { name: "Home", nav: nav.HOME + mainRoutes.home, icon: AiOutlineHome },
   {
@@ -31,6 +31,7 @@ export const HomeSidebar = [
         icon: AiOutlineAppstore,
       },
       { name: "class", nav: nav.HOME + mainRoutes.rack, icon: MdClass },
+      { name: "Stock", nav: nav.HOME + mainRoutes.stock, icon: MdClass },
     ],
   },
 ];

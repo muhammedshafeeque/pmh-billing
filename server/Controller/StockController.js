@@ -122,8 +122,8 @@ export const removeItem = async (req, res, next) => {
 };
 export const getItemList = async (req, res, next) => {
   try {
-    let itmes = await getItem(req.query);
-    res.send(itmes);
+    let items = await getItem(req.query);
+    res.send(items);
   } catch (error) {
     next(error);
   }

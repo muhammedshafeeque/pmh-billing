@@ -12,17 +12,17 @@ function CreateAndUpdateRack(props) {
     const alert = useAlert();
     const { setBlockUi } = Stor();
     const onSubmit = (value) => {
-      setBlockUi(true);
+      ;
       axios
         .post(mainEndPoint.STOCK + configEndPoints.RACK, value)
         .then(({ data }) => {
           alert.success("Rack Created Successfully");
-          setBlockUi(false);
+          ;
           props.onHide();
         })
         .catch((err) => {
           alert.error(err.message);
-          setBlockUi(false);
+          ;
         });
     };
     return (

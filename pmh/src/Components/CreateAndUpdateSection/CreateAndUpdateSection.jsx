@@ -5,23 +5,22 @@ import axios from "../../Api/Axios";
 import { mainEndPoint } from "../../Constants/ApiConstants/mainRoutes";
 import { configEndPoints } from "../../Constants/ApiConstants/config";
 import { useAlert } from "react-alert";
-import { Stor } from "../../Context/BillerContext";
+
 function CreateAndUpdateSection(props) {
   const { register, handleSubmit } = useForm();
   const alert = useAlert();
-  const { setBlockUi } = Stor();
   const onSubmit = (value) => {
-    setBlockUi(true);
+    ;
     axios
       .post(mainEndPoint.STOCK + configEndPoints.SECTION, value)
       .then(({ data }) => {
         alert.success("Section Created Successfully");
-        setBlockUi(false);
+        ;
         props.onHide();
       })
       .catch((err) => {
         alert.error(err.response.data.message);
-        setBlockUi(false);
+        ;
       });
   };
   return (

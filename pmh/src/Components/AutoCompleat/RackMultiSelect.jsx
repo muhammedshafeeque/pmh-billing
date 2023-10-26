@@ -4,31 +4,39 @@ import { Stor } from "../../Context/BillerContext";
 import Select from "react-select";
 import { Controller } from "react-hook-form";
 import { useAlert } from "react-alert";
-function RackMultiSelect({ control, rules, name ,sections}) {
+function RackMultiSelect({ control, rules, name, sections, racks }) {
   const { setBlockUi } = Stor();
   const [options, setOptions] = useState([]);
   const alert = useAlert();
   useEffect(() => {
-    setBlockUi(true);
-    let sectionKeys=[]
-    sections.forEach((item)=>{
-        sectionKeys.push(item.value)
-    })
-    axios
-      .get(`stock/rack?section=${sectionKeys}&limit=100`)
-      .then(({ data }) => {
-        setBlockUi(false);
-        let arr = [];
-        data.forEach((item) => {
-          arr.push({ value: item._id, label: item.code });
+    if (!racks) {
+      let sectionKeys = [];
+      if (sections) {
+        sections.forEach((item) => {
+          sectionKeys.push(item.value);
         });
-        setOptions(arr);
-      })
-      .catch((err) => {
-        setBlockUi(false);
-        alert.error(err.response.data.message);
+      }
+
+      axios
+        .get(`stock/rack?section=${sectionKeys}&limit=100`)
+        .then(({ data }) => {
+          let arr = [];
+          data.forEach((item) => {
+            arr.push({ value: item._id, label: item.code });
+          });
+          setOptions(arr);
+        })
+        .catch((err) => {
+          alert.error(err.response.data.message);
+        });
+    } else {
+      let arr = [];
+      racks.forEach((item) => {
+        arr.push({ value: item._id, label: item.code });
       });
-  }, [setBlockUi, alert,sections]);
+      setOptions(arr);
+    }
+  }, [setBlockUi, alert, sections, racks]);
 
   return (
     <div>

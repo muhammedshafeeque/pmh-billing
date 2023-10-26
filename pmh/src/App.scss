@@ -1,18 +1,24 @@
+/* Reset and Libraries */
 @import "~bootstrap/scss/bootstrap";
+
+/* Variables */
 :root {
   --blue: #0c0792;
-  --white:#f5f5fa;
-  --border:#a9cad1;
-  --card-backGroud:rgb(9, 70, 151);
-
+  --white: #f5f5fa;
+  --border: #a9cad1;
+  --card-backGroud: rgb(9, 70, 151);
 }
-.page_header{
+
+/* Page Header Styles */
+.page_header {
   text-align: center;
   font-weight: bold;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   margin-top: 2rem;
 }
-.thead-light > th{
+
+/* Table Header Styles */
+.thead-light > th {
   background-color: rgb(131, 131, 131);
   color: var(--white);
 }

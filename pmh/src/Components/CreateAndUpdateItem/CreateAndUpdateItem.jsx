@@ -5,13 +5,31 @@ import { Form } from "react-bootstrap";
 import UnitTypeAhead from "../AutoCompleat/UnitTypeAhead";
 import SectionMultiSelect from "../AutoCompleat/SectionMultySelect";
 import RackMultiSelect from "../AutoCompleat/RackMultiSelect";
+import axios from "../../Api/Axios";
+import { useAlert } from "react-alert";
 
-function CreateAndUpdateItem() {
+function CreateAndUpdateItem(props) {
   const { register, handleSubmit, control, watch, setValue } = useForm();
   const unitValue = watch("Unit");
   const sections = watch("sections");
+  const alert=useAlert()
   const onSubmit = (value) => {
-    console.log(value)
+
+    let data={name:value.name,code :value.code,unit:value.Unit._id,racks:[]}
+    value.racks.forEach((item)=>{
+      data.racks.push(item.value)
+    })
+    
+    axios.post('stock/item',data).then((res)=>{
+      alert.success('Item Created Successfully')
+      
+      props.onHide();
+    },(err)=>{
+      alert.error(err.message)
+      
+    })
+
+
   };
   const [selectedSections, setSelectedSections] = useState([]);
   useEffect(() => {

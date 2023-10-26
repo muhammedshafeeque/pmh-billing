@@ -25,10 +25,7 @@ export const itemValidations={
   body:Joi.object().keys({
     name:Joi.string().required(),
     code:Joi.string().required(),
-    rack:Joi.array().items({
-      rackId:Joi.string().required(),
-      sectionId:Joi.string().required()
-    }).required(),
+    racks:Joi.array().items(Joi.string()).required(),
     unit:Joi.string().required()
   })
 }

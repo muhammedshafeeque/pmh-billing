@@ -13,16 +13,16 @@ function Racks() {
   const { setBlockUi } = Stor();
   const [modal, setModal] = useState(false);
   useEffect(() => {
-    setBlockUi(true);
+    ;
 
     axios
       .get("/stock/rack")
       .then(({ data }) => {
-        setBlockUi(false);
+        ;
         setResults(data);
       })
       .catch((err) => {
-        setBlockUi(false);
+        ;
         alert.error(err.response.error);
       });
   }, [section, setBlockUi, alert]);

@@ -10,11 +10,11 @@ function SectionMultiSelect({ control, rules, name }) {
   const [options, setOptions] = useState([]);
   const alert = useAlert();
   useEffect(() => {
-    setBlockUi(true);
+    ;
     axios
       .get("stock/section?limit=100")
       .then(({ data }) => {
-        setBlockUi(false);
+        ;
         let arr = [];
         data.forEach((item) => {
           arr.push({ value: item._id, label: item.name });
@@ -22,7 +22,7 @@ function SectionMultiSelect({ control, rules, name }) {
         setOptions(arr);
       })
       .catch((err) => {
-        setBlockUi(false);
+        ;
         alert.error(err.response.data.message);
       });
   }, [setBlockUi, alert]);

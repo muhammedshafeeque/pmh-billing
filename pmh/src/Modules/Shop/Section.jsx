@@ -18,7 +18,7 @@ function Section() {
   const { setBlockUi } = Stor();
   const [modal, setModal] = useState(false);
   useEffect(() => {
-    setBlockUi(true);
+    ;
 
     axios
       .get(
@@ -30,11 +30,11 @@ function Section() {
           `${section ? "&" + commonFilters.ID + section._id : ""}`
       )
       .then(({ data }) => {
-        setBlockUi(false);
+        ;
         setResults(data);
       })
       .catch((err) => {
-        setBlockUi(false);
+        ;
         alert.error(err.response.error);
       });
   }, [section, setBlockUi, alert]);

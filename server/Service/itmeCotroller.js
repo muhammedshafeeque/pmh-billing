@@ -39,12 +39,12 @@ export const getItem = (query) => {
           (item, index) => items.indexOf(item) === index
         );
         if (query.query) {
-          let responsData = Items.filter((value) => {
+          let responseData = Items.filter((value) => {
             return value.destination
               .toLowerCase()
               .includes(query.query.toLowerCase());
           });
-          resolve(responsData);
+          resolve(responseData);
         } else if (query.id) {
           let response = Items.filter((obj) => {
             return String(obj._id) === query.id;
@@ -67,9 +67,17 @@ export const getItem = (query) => {
           (keywords.activeracks = {
             $in: [new mongoose.Types.ObjectId(query.rack)],
           });
-        let items = await item
+        let items = await ITEM
           .find(keywords)
-          .populate("activeracks")
+          .populate("racks").populate(
+            {
+              path:'racks',
+              populate:{
+                path:'section',
+                modal:collections.SECTION_COLLECTION
+              }
+            }
+          ).populate('unit')
           .limit(query.limit ? parseInt(query.limit) : 10)
           .skip(query.offset ? parseInt(query.offset) : 0);
 

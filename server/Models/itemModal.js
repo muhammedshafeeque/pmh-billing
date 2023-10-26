@@ -19,10 +19,8 @@ const itemModal = mongoose.Schema(
     ],
     racks: [
       {
-        rackId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: collections.RACK_COLLECTIONS,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: collections.RACK_COLLECTIONS,
       },
     ],
   },
