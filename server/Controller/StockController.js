@@ -21,7 +21,7 @@ import {
   patchItem,
   postItem,
   pushStockToItem,
-} from "../Service/itmeCotroller.js";
+} from "../Service/itmeService.js";
 import { patchStock, postStock } from "../Service/StockService.js";
 export const createSection = async (req, res) => {
   try {
@@ -142,11 +142,12 @@ export const createStock = async (req, res, next) => {
       let Item = await getItemById(req.body.item);
       if (Item) {
         let rack = await getRackById(req.body.rack);
-        let itemExist = await rack.items.find((str) => {
+        let itemExist = await rack.Item.find((str) => {
           return String(str) === req.body.item;
         });
-
+        console.log(req.body)
         if (itemExist) {
+  
           let Stock = req.body;
           Stock.quantity = Stock.purchasedQuantity;
           Stock.purchaseDate = new Date();
@@ -161,9 +162,11 @@ export const createStock = async (req, res, next) => {
           });
         }
       } else {
+      
         next({ status: 400, message: "Item Not Fount" });
       }
     } catch (error) {
+      console.log(error)
       next(error);
     }
   }

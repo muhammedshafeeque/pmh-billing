@@ -15,10 +15,11 @@ export const SectionValidation = {
 export const StockValidation = {
   body: Joi.object().keys({
     item:Joi.string().required(),
-    rack:Joi.string().required(),
-    purchaseRate:Joi.string().required(),
-    purchasedQuantity:Joi.string().required(),
-    status:Joi.string().required()
+    rack:Joi.array().items(Joi.string().required()).required(),
+    purchaseRate:Joi.number().required(),
+    purchasedQuantity:Joi.number().required(),
+    sellablePrice:Joi.number().required(),
+    expiry:Joi.date().required()
   }),
 };
 export const itemValidations={

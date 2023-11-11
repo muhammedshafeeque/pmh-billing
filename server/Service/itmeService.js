@@ -102,7 +102,7 @@ export const deleteItem = (id) => {
 };
 export const getItemById = (id) => {
   try {
-    return item.findById(id);
+    return ITEM.findById(id);
   } catch (error) {
     throw error;
   }
