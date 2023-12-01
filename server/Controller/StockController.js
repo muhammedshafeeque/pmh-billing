@@ -141,7 +141,7 @@ export const createStock = async (req, res, next) => {
     try {
       let Item = await getItemById(req.body.item);
       if (Item) {
-        let rack = await getRackById(req.body.rack);
+        let rack = await getRackById(req.body.rack)
         let itemExist = await rack.Item.find((str) => {
           return String(str) === req.body.item;
         });
