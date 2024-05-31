@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+@import "node_modules/bootstrap/scss/bootstrap";
+.action_button {
+  background: linear-gradient(
+    90.5deg,
+    rgba(58, 13, 13, 0.78) -8.02%,
+    rgba(205, 20, 22, 0.941477) -8.01%,
+    #ad1b1b 69.32%,
+    #991818 87.85%
+  );
+  outline: none;
+  border: none;
+  color: white;
+  font-family: Sansation;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 33.57px;
+  border-radius: 6px;
+  padding-right: 10px;
+  padding-left: 10px;
+  max-height: 40px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.action_button:hover {
+  background-color: #c92b2b;
+  transform: scale(1.05);
+}
+.action_button:disabled:hover {
+  background-color: #ccc; /* Change to the desired color for disabled state */
+  transform: none; /* Remove transform for disabled state */
+}
+.App {
+  overflow-y: scroll;
+}
+.App {
+width: 100vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 90vh; /* Ensures that the content fills at least the full height of the viewport */
+}
+
+main {
+  flex: 1; /* Allows the main content area to grow to fill the available space */
+  overflow-y: auto; /* Enables vertical scrolling if the content overflows */
+  padding-bottom: 50px; /* Adjust as needed to accommodate the footer height */
+}
+.second_heading {
+  font-family: Sansation;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  color: transparent;
+  background: linear-gradient(
+    89.84deg,
+    #f21c1c -3.05%,
+    rgba(108, 17, 17, 0.98) 90.94%,
+    rgba(31, 31, 31, 0) 112.87%,
+    rgba(37, 26, 26, 0.94) 122.58%,
+    rgba(37, 25, 25, 0.269078) 136.34%,
+    rgba(217, 5, 5, 0.283591) 145.25%,
+    rgba(10, 10, 10, 0) 152.35%
+  );
+  -webkit-background-clip: text; /* Apply gradient to the text */
+  background-clip: text; /* Apply gradient to the text */
+}
+.screen_header {
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase; /* Uppercase the text */
+  color: #333; /* Example color */
+  padding: 20px 0;
+  border-bottom: 1px solid #ccc; /* Example border */
+  margin-bottom: 20px;
+}

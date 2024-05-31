@@ -1,0 +1,28 @@
+.login_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .log_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .login_welcome {
+    font-size: 30px;
+    margin-top: 8vh;
+    height: 59px;
+    opacity: 0px;
+  }
+  .login_input_area{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .login_screen_reizen{
+    width: 250px;
+  }
+  

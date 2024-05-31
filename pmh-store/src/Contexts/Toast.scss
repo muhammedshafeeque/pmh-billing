@@ -1,0 +1,97 @@
+.custom-toast {
+    position: relative;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    margin-bottom: 10px; 
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+  
+  .custom-toast.hide {
+    opacity: 0;
+    animation: fadeOut 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+  
+  .toast-container {
+    position: fixed;
+    top: 20px; 
+    right: 20px; 
+    z-index: 9999;
+    display: flex;
+    flex-direction: column-reverse; 
+    align-items: flex-end;
+    width: 300px;
+  }
+  
+  .alert {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #333333;
+    padding: 12px;
+  }
+  
+  .toast-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 16px;
+    color: #dac2c2;
+  }
+  
+  .success .alert {
+    background-color: #106323;
+    color: white;
+    font-weight: bolder;
+  }
+  
+  .error .alert {
+    background-color: #ff0015;
+    color: white;
+    font-weight: bolder;
+  }
+  
+  .warning .alert {
+    background-color: #fff3cd;
+  }
+  
+  .info .alert {
+    background-color: #d1ecf1;
+  }
+  .close-button {
+    background: none;
+    border: none;
+    cursor: pointer; 
+    padding: 0;
+    font-size: 16px;
+    font-weight: bolder;
+    color: #d8c0c0;
+  }

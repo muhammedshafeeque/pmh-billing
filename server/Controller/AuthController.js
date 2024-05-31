@@ -44,10 +44,10 @@ export const doLogin = async (req, res) => {
       profile._doc.token=token
       res.send(profile);
     } else {
-      res.status(400).send("Invalid userId Or Password");
+      res.status(400).send({message:"Invalid userId Or Password"});
     }
   } else {
-    res.status(400).send("Invalid userId Or Password");
+    res.status(400).send({message:"Invalid userId Or Password"});
   }
 };
 export const getRequestUser=(req,res)=>{
