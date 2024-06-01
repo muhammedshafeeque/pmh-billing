@@ -10,6 +10,7 @@ export const SectionValidation = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     code: Joi.string().required(),
+    description:Joi.string()
   }),
 };
 export const StockValidation = {

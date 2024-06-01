@@ -1,18 +1,13 @@
 import { Section } from "../Models/sectionModal.js";
+import { queryGen } from "../Utils/utils.js";
 export const getSections = (query) => {
   return new Promise(async (resolve, reject) => {
-    let keywords = {};
-    query.query &&
-      (keywords = {
-        $or: [
-          { code: { $regex: query.query, $options: "i" } },
-          { name: { $regex: query.query, $options: "i" } },
-        ],
-      });
+    let keywords = await queryGen(query)
     let sections = await Section.find(keywords)
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
-    resolve(sections);
+      let count= await Section.find(keywords).count()
+    resolve({results:sections,count});
   });
 };
 export const postSection = async (data) => {

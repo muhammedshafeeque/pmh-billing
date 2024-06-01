@@ -5,20 +5,46 @@ import { Route, Routes } from "react-router-dom";
 import { ROUTERS } from "./Constants/Routes";
 import Loading from "./Components/Load/Lod";
 import Login from "./Pages/Login/Login";
+import Header from "./Components/Header/Header";
+import { usePmh } from "./Contexts/PmhContext";
+import SideBar from "./Components/SideBar/SideBar";
+import { SideBarItems } from "./Constants/SideBarMenu";
+import Home from "./Pages/Home/Home";
+import SectionList from "./Pages/Location/Section";
 
 // const Home = React.lazy(() => import("./Pages/Home/Home"));
 
 const App: React.FC = () => {
+  const { user } = usePmh();
   return (
     <div className="App">
       <Suspense fallback={<Loading />}>
-     
-          <Routes>
-         
-            <Route path={ROUTERS.LOGIN_ROUTER} element={<Login />} />
-               {/* <Route path={ROUTERS.HOME_ROUTER} element={<Home />} /> */}
-          </Routes>
-    
+        {user ? (
+          <>
+            <Header />
+            <div className="col-md-12 p-3">
+              <div className="admin_area">
+                <div className="col-md-12" style={{ display: "flex" }}>
+                  <div className="col-md-2">
+                    <SideBar items={SideBarItems} />
+                  </div>
+                  <div className="col-md-10">
+                    <Routes>
+                      <Route path={ROUTERS.HOME_ROUTER} element={<Home />} />
+                      <Route path={ROUTERS.SECTION} element={<SectionList />} />
+                    </Routes>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <Routes>
+              <Route path={ROUTERS.LOGIN_ROUTER} element={<Login />} />
+            </Routes>
+          </>
+        )}
       </Suspense>
     </div>
   );

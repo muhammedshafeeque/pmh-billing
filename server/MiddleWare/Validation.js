@@ -6,7 +6,7 @@ export const Validate = (schema) => (req, res, next) => {
   const object = pick(req, Object.keys(validSchema));
   const { value, error } = Joi.compile(validSchema).validate(object);
   if (error) {
-    res.status(400).send(error.details[0].message);
+    res.status(400).send({message:error.details[0].message});
   } else {
     next();
   }

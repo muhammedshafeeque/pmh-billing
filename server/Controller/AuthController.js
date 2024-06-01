@@ -50,6 +50,7 @@ export const doLogin = async (req, res) => {
     res.status(400).send({message:"Invalid userId Or Password"});
   }
 };
-export const getRequestUser=(req,res)=>{
-  res.send(req.user)
+export const getRequestUser=async(req,res)=>{
+  let token = await generateToken(req.user.userId);
+  res.send({ userData: req.user, token });
 }

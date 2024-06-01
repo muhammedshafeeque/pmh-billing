@@ -23,12 +23,12 @@ import {
   pushStockToItem,
 } from "../Service/itmeService.js";
 import { patchStock, postStock } from "../Service/StockService.js";
-export const createSection = async (req, res) => {
+export const createSection = async (req, res,next) => {
   try {
     await postSection(req.body);
     res.send("done");
   } catch (error) {
-    res.status(400).send("err" + error);
+    next(error)
   }
 };
 export const getSectionList = async (req, res) => {

@@ -1,0 +1,27 @@
+// AutoComplete.scss
+
+.auto-complete-wrapper {
+    position: relative;
+  }
+  
+  .auto-complete-dropdown {
+    position: absolute;
+    top: 100%; /* Position the dropdown below the input */
+    left: 0;
+    z-index: 1000; /* Ensure the dropdown appears above other content */
+    width: 100%; /* Make the dropdown full-width */
+    background-color: #fff; /* Background color of the dropdown */
+    border: 1px solid #ced4da; /* Border color */
+    border-top: none; /* Hide top border to merge with input */
+    border-radius: 0 0 0.25rem 0.25rem; /* Apply border radius to match input */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+  }
+  
+  .auto-complete-dropdown .list-group-item {
+    cursor: pointer; /* Show pointer cursor for list items */
+  }
+  
+  .auto-complete-dropdown .list-group-item:hover {
+    background-color: #f8f9fa; /* Change background color on hover */
+  }
+  

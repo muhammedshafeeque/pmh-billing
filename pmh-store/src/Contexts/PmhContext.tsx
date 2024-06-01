@@ -79,8 +79,7 @@ import {
         type: LOGIN,
         payload: { ...userData.userData, isLoggedIn: true },
       });
-      navigator();
-      window.location.reload();
+      navigate(ROUTERS.HOME_ROUTER);
     };
   
     const navigator = useCallback(
@@ -134,8 +133,8 @@ import {
     }, [logout, navigator, location]);
   
     useEffect(() => {
-    //   getUserDetailsOnReload();
-    }, [getUserDetailsOnReload]);
+      getUserDetailsOnReload();
+    }, []);
   
     return (
       <PmhContext.Provider

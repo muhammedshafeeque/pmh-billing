@@ -1,0 +1,50 @@
+.side_bar_button {
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    padding-left: 5%;
+    border-radius: 5px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    transition: transform 0.2s ease;
+  }
+  
+  .side_bar_button:hover {
+    transform: scale(1.05);
+  }
+  .side_bar_child_button{
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    padding-left: 5%;
+    border-radius: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    transition: transform 0.2s ease
+  }
+  .side_bar_child_button:hover{
+    transform: scale(1.05);
+  }
+  
+  .active {
+    background-color: #f0f0f0; 
+  }
+  
+  .side_bar {
+    position: fixed;
+    position: relative;
+  }
+  .child-items {
+    padding-left: 20px; 
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease; 
+  }
+  
+  .child-items.open {
+    max-height: 200px; 
+  }
+  
+  
