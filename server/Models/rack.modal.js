@@ -10,7 +10,7 @@ const rackModal = mongoose.Schema(
       ref: collections.SECTION_COLLECTION,
       required: true,
     },
-    items: [{ type: mongoose.Schema.Types.ObjectId, ref: collections.ITEM_COLLECTION }],
+    description:{ type: String },
   },
   {
     timestamps: true,

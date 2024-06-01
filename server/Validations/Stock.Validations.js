@@ -4,6 +4,7 @@ export const RackValidation = {
     name: Joi.string().required(),
     code: Joi.string().required(),
     section: Joi.string().required(),
+    description:Joi.string()
   }),
 };
 export const SectionValidation = {
