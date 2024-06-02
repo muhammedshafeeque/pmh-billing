@@ -9,6 +9,7 @@ import {
   createSection,
   createStock,
   getCategories,
+  getCategorySampleFile,
   getItemList,
   getItemWithId,
   getRackList,
@@ -40,6 +41,7 @@ router.patch("/section/:id", updateSection);
 router.delete("/section/:id", removeSection);
 router.post("/category",Validate(CateGoryValidation),createCategory);
 router.post("/category-excel-upload",categoryBulkUpload)
+router.get("/category-excel-sample-file",getCategorySampleFile)
 router.get("/category",getCategories);
 router.patch("/category/:id");
 router.delete("/category/:id");

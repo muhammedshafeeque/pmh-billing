@@ -31,6 +31,7 @@ import { Category } from "../Models/CategoryModal.js";
 import {
   ExcelDataExtractor,
   generateErrorExcelBlob,
+  generateExcelBlob,
   queryGen,
   uploadFile,
 } from "../Utils/utils.js";
@@ -135,7 +136,7 @@ export const removeItem = async (req, res, next) => {
 };
 export const getItemList = async (req, res, next) => {
   try {
-    let items = await getItem(req.query);
+    let items = await getItem(req.query)
     res.send(items);
   } catch (error) {
     next(error);
@@ -158,7 +159,6 @@ export const createStock = async (req, res, next) => {
         let itemExist = await rack.Item.find((str) => {
           return String(str) === req.body.item;
         });
-        console.log(req.body);
         if (itemExist) {
           let Stock = req.body;
           Stock.quantity = Stock.purchasedQuantity;
@@ -249,9 +249,30 @@ export const categoryBulkUpload = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    
     next(error);
   }
 };
+
+export const getCategorySampleFile=async(req,res,next)=>{
+  try {
+    let data=[{name:"sample",code:"SAM",description:""}]
+    const buffer = await generateExcelBlob(data)
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=error_report.xlsx"
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.status(200).send({
+        file: buffer,
+      });
+  } catch (error) {
+    next(error)
+  }
+}
 
 export const getCategories = async (req, res, next) => {
   try {

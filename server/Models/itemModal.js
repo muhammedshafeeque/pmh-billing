@@ -10,19 +10,16 @@ const itemModal = mongoose.Schema(
       required: true,
     },
     totalStock: { type: Number, default: 0 },
-    stocks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: collections.STOCK_COLLECTION,
-        required: true,
-      },
-    ],
     racks: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: collections.RACK_COLLECTIONS,
       },
     ],
+    category:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.CATEGORY_COLLECTIONS,
+    },
   },
   {
     timestamps: true,

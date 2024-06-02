@@ -1,17 +1,14 @@
 import { UNITS } from "../Models/UnitModal.js";
+import { queryGen } from "../Utils/utils.js";
 
 export const getUnits = async (req, res, next) => {
   try {
-    let keywords = {};
-    req.query.query &&
-      (keywords = {
-        $or: [
-          { Symbol: { $regex: req.query.query, $options: "i" } },
-          { Name: { $regex: req.query.query, $options: "i" } },
-        ],
-      });
-    let units = await UNITS.find(keywords);
-    res.send(units);
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let units = await UNITS.find(keywords).limit(limit).skip(skip);
+    let count = await UNITS.find(keywords).count();
+    res.send({ count, results: units });
   } catch (error) {
     next(error);
   }

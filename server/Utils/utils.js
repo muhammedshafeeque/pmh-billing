@@ -127,3 +127,21 @@ export const generateErrorExcelBlob = async (data) => {
     throw error;
   }
 };
+export const generateExcelBlob=async(data)=>{
+  try {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sample Sheet');
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error("Data must be a non-empty array.");
+    }
+    const columns = Object.keys(data[0]).map(key => ({ header: key, key: key }));
+    worksheet.columns = columns;
+    data.forEach(item => {
+      worksheet.addRow(item);
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
+  } catch (error) {
+    throw error;
+  }
+}

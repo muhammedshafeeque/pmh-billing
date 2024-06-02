@@ -4,7 +4,7 @@ import axios from "../../Api/Api";
 import { useToastService } from "../../Contexts/ToastContext";
 import { convertArrayBufferExcel } from "../../Utils/ExcelUtility";
 import { useLoading } from "../../Contexts/LoaderContext";
-const CategoryBulkUpload: React.FC<PopupChildeProp>  = ({ handleClose }) => {
+const CategoryBulkUpload: React.FC<PopupChildeProp> = ({ handleClose }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showAlertMessage } = useToastService();
   const { setLoadingState } = useLoading();
@@ -27,23 +27,32 @@ const CategoryBulkUpload: React.FC<PopupChildeProp>  = ({ handleClose }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      handleClose()
+      handleClose();
     } catch (error: any) {
-        if(error.response.data.file){
-            convertArrayBufferExcel(
-                error.response.data,
-                "Category Upload Error File"
-              );
-        }
-      
+      if (error.response.data.file) {
+        convertArrayBufferExcel(
+          error.response.data,
+          "Category Upload Error File"
+        );
+      }
     } finally {
       setLoadingState(false);
     }
   };
 
-  const handleDownloadSample = () => {
-    const sampleUrl = "/path-to-sample-file/sample.xlsx";
-    window.location.href = sampleUrl;
+  const handleDownloadSample = async() => {
+    try {
+      setLoadingState(true);
+      let {data}=await axios('/stock/category-excel-sample-file')
+      convertArrayBufferExcel(
+        data,
+        "Category Sample File"
+      );
+    } catch (error) {
+      
+    }finally{
+      setLoadingState(false);
+    }
   };
 
   return (

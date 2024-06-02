@@ -7,19 +7,11 @@ import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
-import CategoryBulkUpload from "../../Components/Stock/CategoryBulkUpload";
-import CreateAndUpdateCategory from "../../Components/Stock/CreateAndUpdateCategory";
-
-interface Groupe {
-  name: string;
-  code: string;
-  description: string;
-}
-
-const GroupeList: React.FC = () => {
+import CreateAndUpdateItem from "../../Components/Stock/CreateAndUpdateItem";
+const ItemsList: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
-  const [results, setResults] = useState<Groupe[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [count, setCount] = useState(0);
   const [clearChild, setClearChild] = useState(false);
   const { setLoadingState } = useLoading();
@@ -40,10 +32,12 @@ const GroupeList: React.FC = () => {
       let params = {
         name: formData.name ? formData.name.name : "",
         code: formData.code ? formData.code.code : "",
+        racks: formData.rack ? formData.rack._id : "",
+        category: formData.category ? formData.category._id : "",
         skip: offset,
       };
       let query = await queryString.stringify(params);
-      let { data } = await axios.get(`/stock/category?${query}`);
+      let { data } = await axios.get(`/stock/item?${query}`);
       setResults(data.results);
       setCount(data.count);
     } catch (error) {
@@ -75,7 +69,7 @@ const GroupeList: React.FC = () => {
 
   return (
     <div>
-      <h4 className="screen_header">Category List</h4>
+      <h4 className="screen_header">Items List</h4>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Row>
           <Col md={3}>
@@ -86,7 +80,7 @@ const GroupeList: React.FC = () => {
               label="Name"
               setValue={setValue}
               readField={"name"}
-              url={`/stock/category?nameContains`}
+              url={`/stock/item?nameContains`}
               clear={clearChild}
             />
           </Col>
@@ -98,7 +92,31 @@ const GroupeList: React.FC = () => {
               label="Code"
               setValue={setValue}
               readField={"code"}
-              url={`/stock/category?codeContains`}
+              url={`/stock/item?codeContains`}
+              clear={clearChild}
+            />
+          </Col>
+          <Col md={3}>
+            <AutoComplete
+              register={register}
+              errors={errors}
+              name="category"
+              label="Category"
+              setValue={setValue}
+              readField={"name"}
+              url={`/stock/category?nameContains`}
+              clear={clearChild}
+            />
+          </Col>
+          <Col md={3}>
+            <AutoComplete
+              register={register}
+              errors={errors}
+              name="rack"
+              label="Rack"
+              setValue={setValue}
+              readField={"code"}
+              url={`/stock/rack?codeContains`}
               clear={clearChild}
             />
           </Col>
@@ -126,14 +144,14 @@ const GroupeList: React.FC = () => {
         style={{ display: "flex", justifyContent: "flex-end" }}
         className="mt-5"
       >
-        <Button
+        {/* <Button
           variant="outline-primary"
           size="sm"
           style={{ marginRight: "10px" }}
           onClick={() => setShowBulkUploadModal(true)}
         >
           Bulk Upload
-        </Button>
+        </Button> */}
         <Button
           variant="primary"
           size="sm"
@@ -148,15 +166,27 @@ const GroupeList: React.FC = () => {
           <tr>
             <th>Name</th>
             <th>Code</th>
-            <th>Description</th>
+            <th>Category</th>
+            <th>Racks</th>
+            <th>Section</th>
+            <th>Unit</th>
+            <th>Existing Stocks</th>
           </tr>
         </thead>
         <tbody>
-          {results.map((obj: Groupe) => (
+          {results.map((obj: any) => (
             <tr key={obj.code}>
               <td>{obj.name}</td>
               <td>{obj.code}</td>
-              <td>{obj.description}</td>
+              <td>{obj.category}</td>
+              <td>
+                {obj.racks.map((rack: any) => {
+                  return <span key={rack._id}>{rack.name},</span>;
+                })}
+              </td>
+              <td></td>
+              <td>{obj.unit.unitName}</td>
+              <td>{obj.totalStock}</td>
             </tr>
           ))}
         </tbody>
@@ -170,25 +200,22 @@ const GroupeList: React.FC = () => {
         />
       </div>
       <ModalPopup
-        head="Create New Category"
+        head="Create New Items"
         size="lg"
         show={showCreateModal}
         handleClose={() => setShowCreateModal(false)}
       >
-        <CreateAndUpdateCategory
-          handleClose={() => setShowCreateModal(false)}
-        />
+        <CreateAndUpdateItem handleClose={() => setShowCreateModal(false)} />
       </ModalPopup>
-      <ModalPopup
+      {/* <ModalPopup
         head="Bulk Upload"
         size="lg"
         show={showBulkUploadModal}
         handleClose={() => setShowBulkUploadModal(false)}
       >
-        <CategoryBulkUpload  handleClose={() => setShowBulkUploadModal(false)}/>
-      </ModalPopup>
+        <CategoryBulkUpload handleClose={() => setShowBulkUploadModal(false)} />
+      </ModalPopup> */}
     </div>
   );
 };
-
-export default GroupeList;
+export default ItemsList;

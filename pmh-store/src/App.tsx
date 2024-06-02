@@ -13,6 +13,7 @@ import Home from "./Pages/Home/Home";
 import SectionList from "./Pages/Location/Section";
 import RackList from "./Pages/Location/Rack";
 import GroupeList from "./Pages/Stocks/Group";
+import ItemsList from "./Pages/Stocks/Item";
 
 // const Home = React.lazy(() => import("./Pages/Home/Home"));
 
@@ -36,6 +37,7 @@ const App: React.FC = () => {
                       <Route path={ROUTERS.SECTION} element={<SectionList />} />
                       <Route path={ROUTERS.RACK} element={<RackList/>}/>
                       <Route path={ROUTERS.GROUPE} element={<GroupeList/>}/>
+                      <Route path={ROUTERS.ITEM} element={<ItemsList/>}/>
                     </Routes>
                   </div>
                 </div>

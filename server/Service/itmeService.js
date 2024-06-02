@@ -1,11 +1,24 @@
 import mongoose from "mongoose";
 import { Rack } from "../Models/rack.modal.js";
 import { collections } from "../Constants/collections.js";
-import {ITEM} from "../Models/itemModal.js"
+import { ITEM } from "../Models/itemModal.js";
+import { itemCodeValidate, itemNameValidate } from "../Helper/StockHelpers.js";
+import { queryGen } from "../Utils/utils.js";
 export const postItem = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let items = await ITEM.create(data);
+      await Promise.all(
+        data.map(async (item) => {
+          try {
+            await itemCodeValidate(item);
+            await itemNameValidate(item);
+            return;
+          } catch (error) {
+            throw error;
+          }
+        })
+      );
+      let items = await ITEM.insertMany(data);
       resolve(items);
     } catch (error) {
       reject(error);
@@ -15,74 +28,22 @@ export const postItem = (data) => {
 export const getItem = (query) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (query.section || query.rack) {
-        let keywords = {};
-        query.section &&
-          (keywords.section = new mongoose.Types.ObjectId(query.section));
-        query.rack && (keywords._id = new mongoose.Types.ObjectId(query.rack));
+      let skip = query.skip ? parseInt(query.skip) : 0;
+      let limit = query.limit ? parseInt(query.limit) : 10;
+      let keywords = await queryGen(query);
+      let results = await ITEM.find(keywords)
+        .populate("unit")
+        .populate("racks")
+        .populate("category")
+        .limit(limit)
+        .skip(skip);
+      let count = await ITEM.find(keywords).count();
+      results = results.map((result) => ({
+        ...result.toObject(),
 
-        let racks = await Rack.find(keywords).populate({
-          path: "items",
-          populate: {
-            path: "activeracks",
-            model: "racks",
-          },
-        });
-
-        let items = [];
-        racks.forEach((obj) => {
-          obj.items.forEach((data) => {
-            items.push(data);
-          });
-        });
-        let Items = items.filter(
-          (item, index) => items.indexOf(item) === index
-        );
-        if (query.query) {
-          let responseData = Items.filter((value) => {
-            return value.destination
-              .toLowerCase()
-              .includes(query.query.toLowerCase());
-          });
-          resolve(responseData);
-        } else if (query.id) {
-          let response = Items.filter((obj) => {
-            return String(obj._id) === query.id;
-          });
-          resolve(response);
-        } else {
-          resolve(Items);
-        }
-      } else {
-        let keywords = {};
-        query.query &&
-          (keywords = {
-            $or: [
-              { code: { $regex: query.query, $options: "i" } },
-              { name: { $regex: query.query, $options: "i" } },
-            ],
-          });
-        query.id && (keywords._id = new mongoose.Types.ObjectId(query.id));
-        query.rack &&
-          (keywords.activeracks = {
-            $in: [new mongoose.Types.ObjectId(query.rack)],
-          });
-        let items = await ITEM
-          .find(keywords)
-          .populate("racks").populate(
-            {
-              path:'racks',
-              populate:{
-                path:'section',
-                modal:collections.SECTION_COLLECTION
-              }
-            }
-          ).populate('unit')
-          .limit(query.limit ? parseInt(query.limit) : 10)
-          .skip(query.offset ? parseInt(query.offset) : 0);
-
-        resolve(items);
-      }
+        category: result.category.name,
+      }));
+      resolve({ results, count });
     } catch (error) {
       reject(error);
     }
