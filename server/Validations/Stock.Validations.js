@@ -14,6 +14,13 @@ export const SectionValidation = {
     description:Joi.string()
   }),
 };
+export const CateGoryValidation = {
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    code: Joi.string().required(),
+    description:Joi.string()
+  }),
+};
 export const StockValidation = {
   body: Joi.object().keys({
     item:Joi.string().required(),

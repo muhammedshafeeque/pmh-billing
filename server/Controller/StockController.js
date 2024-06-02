@@ -23,12 +23,25 @@ import {
   pushStockToItem,
 } from "../Service/itmeService.js";
 import { patchStock, postStock } from "../Service/StockService.js";
-export const createSection = async (req, res,next) => {
+import {
+  CategoryCodeValidate,
+  CategoryNameValidate,
+} from "../Helper/StockHelpers.js";
+import { Category } from "../Models/CategoryModal.js";
+import {
+  ExcelDataExtractor,
+  generateErrorExcelBlob,
+  queryGen,
+  uploadFile,
+} from "../Utils/utils.js";
+import { Readable } from "stream";
+
+export const createSection = async (req, res, next) => {
   try {
     await postSection(req.body);
     res.send("done");
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 export const getSectionList = async (req, res) => {
@@ -141,13 +154,12 @@ export const createStock = async (req, res, next) => {
     try {
       let Item = await getItemById(req.body.item);
       if (Item) {
-        let rack = await getRackById(req.body.rack)
+        let rack = await getRackById(req.body.rack);
         let itemExist = await rack.Item.find((str) => {
           return String(str) === req.body.item;
         });
-        console.log(req.body)
+        console.log(req.body);
         if (itemExist) {
-  
           let Stock = req.body;
           Stock.quantity = Stock.purchasedQuantity;
           Stock.purchaseDate = new Date();
@@ -162,11 +174,10 @@ export const createStock = async (req, res, next) => {
           });
         }
       } else {
-      
         next({ status: 400, message: "Item Not Fount" });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       next(error);
     }
   }
@@ -186,4 +197,71 @@ export const updateStock = async (req, res, next) => {
     res.send(error);
   }
 };
-// export const
+export const createCategory = async (req, res, next) => {
+  try {
+    let validations = [
+      CategoryCodeValidate(req.body),
+      CategoryNameValidate(req.body),
+    ];
+    await Promise.all(validations);
+
+    await Category.create(req.body);
+    res.send({ message: "Category Added Successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+export const categoryBulkUpload = async (req, res, next) => {
+  try {
+    console.log("calling");
+    const file = await uploadFile(req.files);
+    const data = await ExcelDataExtractor(file);
+    const results = await Promise.all(
+      data.map(async (item) => {
+        try {
+          await CategoryCodeValidate(item);
+          await CategoryNameValidate(item);
+          return { item, success: true };
+        } catch (error) {
+          return { item, success: false, error };
+        }
+      })
+    );
+    const errorList = results.filter((obj) => !obj.success);
+
+    if (errorList.length) {
+      const buffer = await generateErrorExcelBlob(results);
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=error_report.xlsx"
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.status(400).send({
+        message: "Upload Failed! Please Check Error File",
+        file: buffer,
+      });
+    } else {
+      await Category.insertMany(data);
+      res.send({ message: "Categories Uploaded Successfully" });
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const getCategories = async (req, res, next) => {
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let results = await Category.find(keywords).limit(limit).skip(skip);
+    let count = await Category.find(keywords).count();
+    res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+};

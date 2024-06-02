@@ -3,7 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDb } from "./Config/db.js";
 import Router from "./Router/index.js";
-
+import fileUpload from "express-fileupload";
+import path from 'path'
+import bodyParser from "body-parser";
+import helmet from "helmet";
+import morgan from "morgan";
 // ==========Configs=========
 const app = express();
 dotenv.config();
@@ -16,6 +20,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(morgan("common"));
+app.use(bodyParser.json({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload());
 
 connectDb();
 // =========End Configs ======

@@ -12,6 +12,7 @@ import { SideBarItems } from "./Constants/SideBarMenu";
 import Home from "./Pages/Home/Home";
 import SectionList from "./Pages/Location/Section";
 import RackList from "./Pages/Location/Rack";
+import GroupeList from "./Pages/Stocks/Group";
 
 // const Home = React.lazy(() => import("./Pages/Home/Home"));
 
@@ -34,6 +35,7 @@ const App: React.FC = () => {
                       <Route path={ROUTERS.HOME_ROUTER} element={<Home />} />
                       <Route path={ROUTERS.SECTION} element={<SectionList />} />
                       <Route path={ROUTERS.RACK} element={<RackList/>}/>
+                      <Route path={ROUTERS.GROUPE} element={<GroupeList/>}/>
                     </Routes>
                   </div>
                 </div>

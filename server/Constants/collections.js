@@ -5,6 +5,7 @@ export const collections={
     SECTION_COLLECTION:"sections",
     ITEM_COLLECTION:'items',
     STOCK_COLLECTION:'stocks',
-    UNIT_COLLECTION:'units'
+    UNIT_COLLECTION:'units',
+    CATEGORY_COLLECTIONS:'categories'
 
 } 

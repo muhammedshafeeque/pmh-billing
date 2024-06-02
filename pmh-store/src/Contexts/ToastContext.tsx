@@ -31,7 +31,6 @@ const CustomToast: React.FC<CustomToastProps> = ({ show, status, message, onClos
   const [isVisible, setIsVisible] = useState(show);
 
   useEffect(() => {
-    console.log('Toast show state changed:', show);
     setIsVisible(show);
   }, [show]);
 

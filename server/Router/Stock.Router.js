@@ -2,10 +2,13 @@ import express from "express";
 import {
   RemoveRack,
   addItemToRack,
+  categoryBulkUpload,
+  createCategory,
   createItem,
   createRack,
   createSection,
   createStock,
+  getCategories,
   getItemList,
   getItemWithId,
   getRackList,
@@ -18,6 +21,7 @@ import {
 } from "../Controller/StockController.js";
 import { Validate } from "../MiddleWare/Validation.js";
 import {
+  CateGoryValidation,
   RackValidation,
   SectionValidation,
   StockValidation,
@@ -34,8 +38,9 @@ router.post("/section", Validate(SectionValidation), createSection);
 router.get("/section", getSectionList);
 router.patch("/section/:id", updateSection);
 router.delete("/section/:id", removeSection);
-router.post("/category");
-router.get("/category");
+router.post("/category",Validate(CateGoryValidation),createCategory);
+router.post("/category-excel-upload",categoryBulkUpload)
+router.get("/category",getCategories);
 router.patch("/category/:id");
 router.delete("/category/:id");
 router.post("/item",Validate(itemValidations), createItem);
