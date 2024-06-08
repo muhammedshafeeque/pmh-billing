@@ -15,6 +15,9 @@ interface AutoCompleteProps {
   url: string;
   readField: string;
   clear: boolean;
+  value?:any
+  onChange?: (value: string) => void; // Optional onChange function
+  onSelect?: (option: any) => void;   // Optional onSelect function
 }
 
 interface Option {
@@ -33,6 +36,9 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   url,
   readField,
   clear,
+  onChange,
+  onSelect,
+  value
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [options, setOptions] = useState<Option[]>([]);
@@ -75,6 +81,10 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     setSelectedOption(null);
     setIsValid(false);
     setDropdownOpen(true); // Open dropdown when typing
+
+    if (onChange) {
+      onChange(value);
+    }
   };
 
   const handleOptionSelect = (option: Option) => {
@@ -85,6 +95,10 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     setOptions([]);
     setIsValid(true);
     setDropdownOpen(false); // Close dropdown when an option is selected
+
+    if (onSelect) {
+      onSelect(option);
+    }
   };
 
   useEffect(() => {
@@ -103,6 +117,15 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     setTouched(true);
     setDropdownOpen(false); // Close dropdown on blur
   };
+  useEffect(()=>{
+    if(value&&value._id){
+      if(inputValue!==value[readField]){
+      setInputValue(value[readField])
+      setValue(name, value);
+      }
+    }
+  
+  },[value])
 
   return (
     <div className="auto-complete-wrapper" onBlur={handleBlur}>

@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
-import { Rack } from "../Models/rack.modal.js";
+
 import { collections } from "../Constants/collections.js";
 import { ITEM } from "../Models/itemModal.js";
 import { itemCodeValidate, itemNameValidate } from "../Helper/StockHelpers.js";
 import { queryGen } from "../Utils/utils.js";
+import { createAccountHead } from "./AccountsService.js";
 export const postItem = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -18,8 +18,16 @@ export const postItem = (data) => {
           }
         })
       );
-      let items = await ITEM.insertMany(data);
-      resolve(items);
+      let items = await Promise.all(
+        data.map(async (item) => {
+          let account = await createAccountHead({ name: item.name });
+          item.accountHead = account._id;
+          return item
+        })
+      );
+
+      let itemList = await ITEM.insertMany(items);
+      resolve(itemList);
     } catch (error) {
       reject(error);
     }

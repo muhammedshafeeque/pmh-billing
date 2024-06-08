@@ -1,18 +1,30 @@
 import mongoose from "mongoose";
+import { collections } from "../Constants/collections.js";
+
 const stockModel = mongoose.Schema(
   {
-    item: { type: mongoose.Schema.Types.ObjectId, ref: "item", required: true },
-    status: { type: String , required: true },
-    quantity: { type: Number , required: true},
-    purchaseDate: { type: Date,default:Date.now },
+    item: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.ITEM_COLLECTION,
+      required: true,
+    },
+    status: { type: String },
+    quantity: { type: Number },
+    purchaseDate: { type: Date, default: Date.now },
     purchasedQuantity: { type: Number, required: true },
-    purchaseRate: { type: Number , required: true},
-    ratePerUnit: { type: Number  },
+    purchaseRate: { type: Number, required: true },
+    purchasedRatePerUnit:{ type: Number, required: true },
+    sellablePricePerUnit: { type: Number },
     EndDate: { type: Date },
     wastage: { type: Number },
     profit: { type: Number },
     ProfitPercentage: { type: Number },
     ExpiryDate: { type: String },
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.VENDOR_COLLECTIONS,
+      required: true,
+    },
     history: [
       {
         date: { type: Date },
@@ -26,4 +38,4 @@ const stockModel = mongoose.Schema(
     timestamps: true,
   }
 );
-export const Stock = mongoose.model("stock", stockModel);
+export const Stock = mongoose.model(collections.STOCK_COLLECTION, stockModel);

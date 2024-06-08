@@ -113,8 +113,8 @@ const CreateAndUpdateItem: React.FC<PopupChildeProp> = ({ handleClose }) => {
                 name={`items[${index}].unit`}
                 label="Unit"
                 setValue={setValue}
-                readField={"unitCode"}
-                url={`/core/units?unitCodeContains`}
+                readField={"unitName"}
+                url={`/core/units?unitNameContains`}
                 clear={clearChild}
               />
             </Col>

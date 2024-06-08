@@ -31,6 +31,7 @@ connectDb();
 // =========End Configs ======
 app.use("/api", Router);
 app.use((err, req, res, next) => {
+  console.log(err)
   const errStatus = err.status || 500;
   const errMsg = err.message || "Something went wrong";
   res.status(errStatus).json({

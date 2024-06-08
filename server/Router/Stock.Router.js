@@ -14,6 +14,7 @@ import {
   getItemWithId,
   getRackList,
   getSectionList,
+  getStocks,
   removeItem,
   removeSection,
   updateItem,
@@ -51,7 +52,7 @@ router.patch("/item", updateItem);
 router.delete("/item/:id", removeItem);
 router.get("/item/:id", getItemWithId);
 router.post("/stock", Validate(StockValidation), createStock);
-router.get("/stock"),
+router.get("/stock",getStocks),
 router.patch("/stock",);
 
 export default router;

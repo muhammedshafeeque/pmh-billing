@@ -10,13 +10,17 @@ const itemModal = mongoose.Schema(
       required: true,
     },
     totalStock: { type: Number, default: 0 },
+    accountHead: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.ACCOUNT_HEAD_COLLECTIONS,
+    },
     racks: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: collections.RACK_COLLECTIONS,
       },
     ],
-    category:{
+    category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: collections.CATEGORY_COLLECTIONS,
     },

@@ -9,7 +9,6 @@ import {
   getRacks,
   patchRack,
   deleteRack,
-  getRackById,
   pushItemToRack,
   pullItemFromRack,
 } from "../Service/RackService.js";
@@ -20,7 +19,6 @@ import {
   getItemByIdFullPopulate,
   patchItem,
   postItem,
-  pushStockToItem,
 } from "../Service/itmeService.js";
 import { patchStock, postStock } from "../Service/StockService.js";
 import {
@@ -35,7 +33,16 @@ import {
   queryGen,
   uploadFile,
 } from "../Utils/utils.js";
-import { Readable } from "stream";
+import {
+  createPayment,
+  createTransaction,
+  transferDiscount,
+} from "../Service/AccountsService.js";
+import { VENDOR } from "../Models/VendorModal.js";
+import { ACCOUNT } from "../Models/AccountModal.js";
+import { BILL } from "../Models/BillModal.js";
+import { Stock } from "../Models/StockModal.js";
+import { collections } from "../Constants/collections.js";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -136,7 +143,7 @@ export const removeItem = async (req, res, next) => {
 };
 export const getItemList = async (req, res, next) => {
   try {
-    let items = await getItem(req.query)
+    let items = await getItem(req.query);
     res.send(items);
   } catch (error) {
     next(error);
@@ -151,35 +158,83 @@ export const getItemWithId = async (req, res, next) => {
   }
 };
 export const createStock = async (req, res, next) => {
-  if (req.body) {
-    try {
-      let Item = await getItemById(req.body.item);
-      if (Item) {
-        let rack = await getRackById(req.body.rack);
-        let itemExist = await rack.Item.find((str) => {
-          return String(str) === req.body.item;
-        });
-        if (itemExist) {
-          let Stock = req.body;
-          Stock.quantity = Stock.purchasedQuantity;
-          Stock.purchaseDate = new Date();
-          let stock = await postStock(Stock);
-          await patchRack(req.body.rack, { item: req.body.item });
-          await pushStockToItem(stock, Item);
-          res.send("Stock Added Successfully");
-        } else {
-          next({
-            status: 400,
-            message: "Rack Note Fount Or It is not Assigned to Given Item",
-          });
-        }
-      } else {
-        next({ status: 400, message: "Item Not Fount" });
-      }
-    } catch (error) {
-      console.log(error);
-      next(error);
+  try {
+    const [vendor, account, bill] = await Promise.all([
+      VENDOR.findById(req.body.vendor),
+      ACCOUNT.findOne({ name: "Store" }).populate("accountHead"),
+      BILL.create(req.body),
+    ]);
+    await createTransaction({
+      fromAccount: vendor.accountHEad._id,
+      toAccount: account.accountHead._id,
+      amount: req.body.payableAmount,
+      description: "Purchase Bill",
+    });
+    let Discount = req.body.billAmount - req.body.payableAmount;
+    if (Discount > 0) {
+      await transferDiscount({
+        fromAccount: vendor.accountHEad._id,
+        toAccount: account.accountHead._id,
+        amount: Discount,
+        description: "Purchase Bill",
+      });
     }
+
+    await Promise.all(
+      req.body.items.map(async (stock) => {
+        stock.vendor = vendor._id;
+        stock.mainAccount = account;
+        stock.bill = bill._id;
+        await postStock(stock);
+      })
+    );
+    if (req.body.isPayed) {
+      await createPayment({
+        fromAccount: account._id,
+        vendor,
+        amount: req.body.payedAmount,
+      });
+    }
+    res.send("Stock Added Successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+export const getStocks = async (req, res, next) => {
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let results = await Stock.find(keywords)
+      .populate({
+        path: "item",
+        populate: [
+          {
+            path: "unit",
+            model: collections.UNIT_COLLECTION,
+          },
+          {
+            path: "category",
+            model: collections.CATEGORY_COLLECTIONS,
+          },
+        ],
+      })
+      .populate("vendor")
+      .limit(limit)
+      .skip(skip);
+    let count = await Stock.find(keywords).count();
+    results = results.map((result) => ({
+      ...result.toObject(),
+      name: result.item.name,
+      item: result.item._id,
+      vendor: result.vendor.name,
+      unit: result.item.unit,
+      code: result.item.code,
+      category: result.item.category,
+    }));
+    res.send({ results, count });
+  } catch (error) {
+    next(error);
   }
 };
 export const addItemToRack = async (req, res, next) => {
@@ -248,31 +303,29 @@ export const categoryBulkUpload = async (req, res, next) => {
       res.send({ message: "Categories Uploaded Successfully" });
     }
   } catch (error) {
-    console.log(error);
-    
     next(error);
   }
 };
 
-export const getCategorySampleFile=async(req,res,next)=>{
+export const getCategorySampleFile = async (req, res, next) => {
   try {
-    let data=[{name:"sample",code:"SAM",description:""}]
-    const buffer = await generateExcelBlob(data)
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=error_report.xlsx"
-      );
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      );
-      res.status(200).send({
-        file: buffer,
-      });
+    let data = [{ name: "sample", code: "SAM", description: "" }];
+    const buffer = await generateExcelBlob(data);
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=error_report.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.status(200).send({
+      file: buffer,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export const getCategories = async (req, res, next) => {
   try {

@@ -1,13 +1,16 @@
-import { MdDashboard } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDashboard, MdLocationSearching, MdOutlineAccountBalance, MdPayments, MdPeople } from "react-icons/md";
 import { ROUTERS } from "./Routes";
-import { FaBoxes, FaSitemap } from "react-icons/fa";
+import { FaBoxes, FaFileInvoiceDollar, FaSitemap, FaStoreAlt } from "react-icons/fa";
 import {
   BsFillHddRackFill,
   BsFillInboxesFill,
   BsSignIntersectionSideFill,
 } from "react-icons/bs";
-import { MdLocationSearching } from "react-icons/md";
-import { RiAlignItemLeftFill } from "react-icons/ri";
+import { RiAlignItemLeftFill, RiBillFill } from "react-icons/ri";
+import { HiIdentification } from "react-icons/hi2";
+import { FaChartLine } from "react-icons/fa6";
+import { TbReportAnalytics } from "react-icons/tb";
+
 
 export const SideBarItems = [
   { icon: MdDashboard, name: "Dashboard", path: ROUTERS.HOME_ROUTER },
@@ -29,6 +32,59 @@ export const SideBarItems = [
         icon: FaSitemap,
         name: "Category",
         path: ROUTERS.GROUPE,
+      },
+    ],
+  },
+  {
+    icon: FaChartLine,
+    name: "Accounts",
+    children: [
+      {
+        icon: FaFileInvoiceDollar,
+        name: "Invoices",
+        path: "",
+      },
+      {
+        icon: RiBillFill,
+        name: "Bills",
+        path: "",
+      },
+      {
+        icon: MdPayments,
+        name: "Payments",
+        path: "",
+      },
+      {
+        icon: MdAccountBalanceWallet,
+        name: "Accounts",
+        path: ROUTERS.ACCOUNTS,
+      },
+      {
+        icon: TbReportAnalytics,
+        name: "Reports",
+        path: "",
+      },
+      {
+        icon: MdOutlineAccountBalance,
+        name: "Account Heads",
+        path: ROUTERS.ACCOUNT_HEAD,
+      },
+      
+    ],
+  },
+  {
+    icon: HiIdentification,
+    name: "Entity",
+    children: [
+      {
+        icon: FaStoreAlt,
+        name: "Vendors",
+        path: ROUTERS.VENDOR,
+      },
+      {
+        icon: MdPeople,
+        name: "Customers",
+        path: ROUTERS.CUSTOMERS,
       },
     ],
   },

@@ -1,7 +1,6 @@
 import React, { Suspense } from "react";
 import "./App.scss";
 import { Route, Routes } from "react-router-dom";
-
 import { ROUTERS } from "./Constants/Routes";
 import Loading from "./Components/Load/Lod";
 import Login from "./Pages/Login/Login";
@@ -14,8 +13,11 @@ import SectionList from "./Pages/Location/Section";
 import RackList from "./Pages/Location/Rack";
 import GroupeList from "./Pages/Stocks/Group";
 import ItemsList from "./Pages/Stocks/Item";
+import VendorList from "./Pages/Entity/Vender";
+import AccountHeadList from "./Pages/Accounts/AccoutHead";
+import AccountsList from "./Pages/Accounts/Accounts";
+import StocksList from "./Pages/Stocks/Stocks";
 
-// const Home = React.lazy(() => import("./Pages/Home/Home"));
 
 const App: React.FC = () => {
   const { user } = usePmh();
@@ -38,6 +40,10 @@ const App: React.FC = () => {
                       <Route path={ROUTERS.RACK} element={<RackList/>}/>
                       <Route path={ROUTERS.GROUPE} element={<GroupeList/>}/>
                       <Route path={ROUTERS.ITEM} element={<ItemsList/>}/>
+                      <Route path={ROUTERS.VENDOR} element={<VendorList/>}/>
+                      <Route path={ROUTERS.ACCOUNT_HEAD} element={<AccountHeadList/>}/>
+                      <Route path={ROUTERS.ACCOUNTS} element={<AccountsList/>}/>
+                      <Route path={ROUTERS.STOCK} element={<StocksList/>}/>
                     </Routes>
                   </div>
                 </div>

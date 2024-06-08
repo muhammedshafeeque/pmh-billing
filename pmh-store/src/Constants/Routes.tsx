@@ -6,5 +6,11 @@ export const ROUTERS = {
     RACK:'/rack',
     STOCK:'/stock',
     ITEM:'/item',
-    GROUPE:'/groupe'
+    GROUPE:'/groupe',
+    VENDOR:'/vendor',
+    CUSTOMERS:'/customers',
+    QUOTATIONS:'/quotations',
+    TRANSACTIONS:'/transactions',
+    ACCOUNTS:'/accounts',
+    ACCOUNT_HEAD:'/account_heads'
   };

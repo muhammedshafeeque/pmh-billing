@@ -23,12 +23,22 @@ export const CateGoryValidation = {
 };
 export const StockValidation = {
   body: Joi.object().keys({
-    item: Joi.string().required(),
-    rack: Joi.array().items(Joi.string().required()).required(),
-    purchaseRate: Joi.number().required(),
-    purchasedQuantity: Joi.number().required(),
-    sellablePrice: Joi.number().required(),
-    expiry: Joi.date().required(),
+    items: Joi.array().items(
+      Joi.object().keys({
+        item: Joi.string().required(),
+        purchaseRate: Joi.number().required(),
+        purchasedQuantity: Joi.number().required(),
+        sellablePricePerUnit: Joi.number().required(),
+        purchasedRatePerUnit:Joi.number().required(),
+        expiry: Joi.date(),
+        status: Joi.string(),
+        purchaseDate: Joi.date(), 
+      })
+    ),
+    vendor: Joi.string().required(),
+    payableAmount:Joi.number().required(),
+    billAmount:Joi.number().required(),
+
   }),
 };
 export const itemValidations = {
@@ -38,10 +48,9 @@ export const itemValidations = {
       code: Joi.string().required(),
       racks: Joi.array().items(Joi.string()).required(),
       unit: Joi.string().required(),
-      totalStock:Joi.number().required(),
-      category:Joi.string(),
-      remark:Joi.string()
-
+      totalStock: Joi.number().required(),
+      category: Joi.string(),
+      remark: Joi.string(),
     })
   ),
 };
