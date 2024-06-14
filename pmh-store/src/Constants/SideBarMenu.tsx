@@ -6,14 +6,16 @@ import {
   BsFillInboxesFill,
   BsSignIntersectionSideFill,
 } from "react-icons/bs";
-import { RiAlignItemLeftFill, RiBillFill } from "react-icons/ri";
+import { RiAlignItemLeftFill, RiBillFill, RiBillLine } from "react-icons/ri";
 import { HiIdentification } from "react-icons/hi2";
-import { FaChartLine } from "react-icons/fa6";
+import { FaChartLine, FaMoneyBillTransfer } from "react-icons/fa6";
 import { TbReportAnalytics } from "react-icons/tb";
+
 
 
 export const SideBarItems = [
   { icon: MdDashboard, name: "Dashboard", path: ROUTERS.HOME_ROUTER },
+  { icon: RiBillLine, name: "Invoicing", path: ROUTERS.INVOICE },
   {
     icon: FaBoxes,
     name: "Stocks",
@@ -52,7 +54,7 @@ export const SideBarItems = [
       {
         icon: MdPayments,
         name: "Payments",
-        path: "",
+        path: ROUTERS.PAYMENTS,
       },
       {
         icon: MdAccountBalanceWallet,
@@ -68,6 +70,11 @@ export const SideBarItems = [
         icon: MdOutlineAccountBalance,
         name: "Account Heads",
         path: ROUTERS.ACCOUNT_HEAD,
+      },
+      {
+        icon: FaMoneyBillTransfer,
+        name: "Transactions",
+        path: ROUTERS.TRANSACTIONS,
       },
       
     ],

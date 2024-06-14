@@ -20,8 +20,6 @@ const accountHeadModal = mongoose.Schema(
   }
 );
 accountHeadModal.pre("save", async function (next) {
-  console.log("Credit:", this.credit);
-  console.log("Debit:", this.debit);
   try {
     await this.updateOne({ $set: { accountBalance: this.credit - this.debit } });
     next();

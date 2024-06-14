@@ -1,5 +1,7 @@
 import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { ACCOUNT } from "../Models/AccountModal.js";
+import { PAYMENT } from "../Models/PaymentModal.js";
+import { TRANSACTION } from "../Models/TransactionModal.js";
 import { createAccountHead } from "../Service/AccountsService.js";
 import { queryGen } from "../Utils/utils.js";
 
@@ -50,3 +52,50 @@ export const getAccount = async (req,res,next) => {
     next(error);
   }
 };
+export const getTransactions=async(req,res,next)=>{
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let results = await TRANSACTION.find(keywords)
+      .populate('fromAccount')
+      .populate('toAccount')
+      
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+    let count = await TRANSACTION.find(keywords).count();
+    results = results.map((result) => ({
+      ...result.toObject(),
+      // fromAccount:result.fromAccount.name,
+      // toAccount:result.toAccount.name
+
+    }));
+    res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+}
+export const getPaymentList=async(req,res,next)=>{
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let results = await PAYMENT.find(keywords)
+      .populate('fromAccount')
+      .populate('paymentTo')
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+    let count = await PAYMENT.find(keywords).count();
+    results = results.map((result) => ({
+      ...result.toObject(),
+      // fromAccount:result.fromAccount.name,
+      // toAccount:result.toAccount.name
+
+    }));
+    res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+}

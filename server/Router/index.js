@@ -10,6 +10,6 @@ router.use('/auth',AuthRouter)
 router.use('/stock',verifyUser,StockRouter)
 router.use('/accounts',verifyUser,accountsRouter)
 router.use('/core',verifyUser,CoreRouter)
-router.use('/entity',verifyUser,EntityRouter
-)
+router.use('/entity',verifyUser,EntityRouter)
+
 export default router

@@ -38,7 +38,8 @@ export const StockValidation = {
     vendor: Joi.string().required(),
     payableAmount:Joi.number().required(),
     billAmount:Joi.number().required(),
-
+    payedAmount:Joi.number().required(),
+    account:Joi.string()
   }),
 };
 export const itemValidations = {

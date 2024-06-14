@@ -17,7 +17,9 @@ import VendorList from "./Pages/Entity/Vender";
 import AccountHeadList from "./Pages/Accounts/AccoutHead";
 import AccountsList from "./Pages/Accounts/Accounts";
 import StocksList from "./Pages/Stocks/Stocks";
-
+import TransactionList from "./Pages/Accounts/Transactions";
+import PaymentList from "./Pages/Accounts/PaymentsList";
+import CreateInvoice from "./Pages/Accounts/CreateInvoice";
 
 const App: React.FC = () => {
   const { user } = usePmh();
@@ -37,13 +39,31 @@ const App: React.FC = () => {
                     <Routes>
                       <Route path={ROUTERS.HOME_ROUTER} element={<Home />} />
                       <Route path={ROUTERS.SECTION} element={<SectionList />} />
-                      <Route path={ROUTERS.RACK} element={<RackList/>}/>
-                      <Route path={ROUTERS.GROUPE} element={<GroupeList/>}/>
-                      <Route path={ROUTERS.ITEM} element={<ItemsList/>}/>
-                      <Route path={ROUTERS.VENDOR} element={<VendorList/>}/>
-                      <Route path={ROUTERS.ACCOUNT_HEAD} element={<AccountHeadList/>}/>
-                      <Route path={ROUTERS.ACCOUNTS} element={<AccountsList/>}/>
-                      <Route path={ROUTERS.STOCK} element={<StocksList/>}/>
+                      <Route path={ROUTERS.RACK} element={<RackList />} />
+                      <Route path={ROUTERS.GROUPE} element={<GroupeList />} />
+                      <Route path={ROUTERS.ITEM} element={<ItemsList />} />
+                      <Route path={ROUTERS.VENDOR} element={<VendorList />} />
+                      <Route
+                        path={ROUTERS.ACCOUNT_HEAD}
+                        element={<AccountHeadList />}
+                      />
+                      <Route
+                        path={ROUTERS.ACCOUNTS}
+                        element={<AccountsList />}
+                      />
+                      <Route path={ROUTERS.STOCK} element={<StocksList />} />
+                      <Route
+                        path={ROUTERS.TRANSACTIONS}
+                        element={<TransactionList />}
+                      />
+                      <Route
+                        path={ROUTERS.PAYMENTS}
+                        element={<PaymentList />}
+                      />
+                      <Route
+                        path={ROUTERS.INVOICE}
+                        element={<CreateInvoice/>}
+                      />
                     </Routes>
                   </div>
                 </div>

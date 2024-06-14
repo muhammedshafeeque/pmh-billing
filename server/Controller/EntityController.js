@@ -50,3 +50,17 @@ export const getVendors = async (req, res, next) => {
     next(error);
   }
 };
+export const getCustomers=(req,res,next)=>{
+  try {
+    
+  } catch (error) {
+    next(error)
+  }
+}
+export const vcfFileCustomersBulkUpload=(req,res,next)=>{
+  try {
+    
+  } catch (error) {
+    next(error)
+  }
+}

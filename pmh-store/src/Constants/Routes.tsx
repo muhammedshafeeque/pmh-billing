@@ -12,5 +12,8 @@ export const ROUTERS = {
     QUOTATIONS:'/quotations',
     TRANSACTIONS:'/transactions',
     ACCOUNTS:'/accounts',
-    ACCOUNT_HEAD:'/account_heads'
+    ACCOUNT_HEAD:'/account_heads',
+    PAYMENTS:'/payments',
+    INVOICE:'/invoicing'
+    
   };

@@ -1,4 +1,4 @@
-import React, { useState, } from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button, Col, Row } from "react-bootstrap";
 import axios from "../../Api/Api";
@@ -38,7 +38,7 @@ interface FormData {
   billAmount: number;
   payableAmount: number;
   payedAmount: number;
-  account: string;
+  account: any;
 }
 
 const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
@@ -67,20 +67,22 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
   const [clearChild, setClearChild] = useState(false);
   const watchedItems = watch("items", items);
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data)
+    console.log(data);
     try {
       setLoadingState(true);
       const body = {
-        items: data.items.map((item:any) => ({
+        items: data.items.map((item: any) => ({
           item: item.name._id,
           purchaseRate: Number(item.total),
           purchasedQuantity: Number(item.purchasedQuantity),
           sellablePricePerUnit: Number(item.sellablePricePerUnit),
-          purchasedRatePerUnit:Number(item.purchaseRate)
+          purchasedRatePerUnit: Number(item.purchaseRate),
         })),
         vendor: data.vendor._id,
-        payableAmount: data.payableAmount,
-        billAmount: data.billAmount,
+        payableAmount: Number(data.payableAmount),
+        billAmount: Number(data.billAmount),
+        payedAmount:Number(data.payedAmount),
+        account:data.account._id
       };
       await axios.post("stock/stock", body);
       handleClose();
@@ -125,7 +127,6 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
     setValue("billAmount", totalBillAmount);
   };
 
-
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Row>
@@ -139,52 +140,14 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
             readField={"name"}
             url={`/entity/vendor?nameContains`}
             clear={clearChild}
-     
           />
         </Col>
       </Row>
 
       <h5 className="mt-4">Items</h5>
-      {items.map((item:any, index:number) => (
+      {items.map((item: any, index: number) => (
         <div key={index}>
           <Row>
-            <Col md={3}>
-              <AutoComplete
-                register={register}
-                errors={errors}
-                name={`items[${index}].name`}
-                label="Item Name"
-                setValue={(name, value) => {
-                  setValue(name, value);
-                }}
-                readField={"name"}
-                url={`stock/item?nameContains`}
-                clear={clearChild}
-                onSelect={(e)=>{
-                  setValue(`items[${index}].code`, e);
-                }}
-                value={watch(`items[${index}].name`)}
-              />
-            </Col>
-            <Col md={3}>
-              <AutoComplete
-                register={register}
-                errors={errors}
-                name={`items[${index}].code`}
-                label="Item Code"
-                setValue={(name, value) => {
-                  setValue(name, value);
-                  
-                }}
-                onSelect={(e)=>{
-                  setValue(`items[${index}].name`, e);
-                }}
-                readField={"code"}
-                url={`stock/item?codeContains`}
-                clear={clearChild}
-                value={watch(`items[${index}].code`)}
-              />
-            </Col>
             <Col md={3}>
               <AutoComplete
                 register={register}
@@ -198,21 +161,68 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
               />
             </Col>
             <Col md={3}>
-              <Form.Group controlId={`formItemUnit${index}`}>
-                <Form.Label>Unit</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Unit"
-                  {...register(`items[${index}].unit`, {
-                    // required: "Unit is required",
-                  })}
-                  isInvalid={!!errors.items?.[index]?.unit}
-                  disabled
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.items?.[index]?.unit?.message}
-                </Form.Control.Feedback>
-              </Form.Group>
+              <AutoComplete
+                register={register}
+                errors={errors}
+                name={`items[${index}].name`}
+                label="Item Name"
+                setValue={(name, value) => {
+                  setValue(name, value);
+                }}
+                readField={"name"}
+                url={`stock/item?category=${
+                  watch(`items[${index}].category`)
+                    ? watch(`items[${index}].category`)._id
+                    : ""
+                }&nameContains`}
+                clear={clearChild}
+                onSelect={(e) => {
+                  setValue(`items[${index}].code`, e);
+                }}
+                value={watch(`items[${index}].name`)}
+              />
+            </Col>
+            <Col md={3}>
+              <AutoComplete
+                register={register}
+                errors={errors}
+                name={`items[${index}].code`}
+                label="Item Code"
+                setValue={(name, value) => {
+                  setValue(name, value);
+                }}
+                onSelect={(e) => {
+                  setValue(`items[${index}].name`, e);
+                  
+                }}
+                readField={"code"}
+                url={`stock/item?category=${
+                  watch(`items[${index}].category`)
+                    ? watch(`items[${index}].category`)._id
+                    : ""
+                }&codeContains`}
+                clear={clearChild}
+                value={watch(`items[${index}].code`)}
+              />
+            </Col>
+
+            <Col md={3}>
+              <AutoComplete
+                register={register}
+                errors={errors}
+                name={`items[${index}].unit`}
+                label="Item Unit"
+                setValue={(name, value) => {
+                  setValue(name, value);
+                }}
+                readField={"unitName"}
+                url={`core/units?measurement=${
+                  watch(`items[${index}].name`)?.unit.measurement
+                    
+                }&unitNameContains`}
+                clear={clearChild}
+                disabled={!watch(`items[${index}].name`)}
+              />
             </Col>
           </Row>
           <Row className="mt-3">
@@ -248,6 +258,7 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
                   onBlur={() => {
                     calculate();
                   }}
+                  
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.items?.[index]?.purchaseRate?.message}
@@ -291,22 +302,22 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
               maxHeight: "40px",
             }}
           >
-            {items.length>1&&
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => handleDeleteItem(index)}
-              className="mt-2"
-              style={{marginRight:'10px'}}
-            >
-              Delete
-            </Button>}
-            {
-              (items.length-1===index)&&<Button size="sm" className="mt-2" onClick={handleAddItem}>
-              Add Item
-            </Button>
-            }
-            
+            {items.length > 1 && (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => handleDeleteItem(index)}
+                className="mt-2"
+                style={{ marginRight: "10px" }}
+              >
+                Delete
+              </Button>
+            )}
+            {items.length - 1 === index && (
+              <Button size="sm" className="mt-2" onClick={handleAddItem}>
+                Add Item
+              </Button>
+            )}
           </div>
         </div>
       ))}
@@ -369,7 +380,7 @@ const CreateAndUpdateStock: React.FC<{ handleClose: () => void }> = ({
             label="Account"
             setValue={setValue}
             readField={"name"}
-            url={`account?nameContains`}
+            url={`accounts/account?nameContains`}
             clear={clearChild}
           />
         </Col>

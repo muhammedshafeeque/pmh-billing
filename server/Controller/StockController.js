@@ -43,6 +43,7 @@ import { ACCOUNT } from "../Models/AccountModal.js";
 import { BILL } from "../Models/BillModal.js";
 import { Stock } from "../Models/StockModal.js";
 import { collections } from "../Constants/collections.js";
+import mongoose from "mongoose";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -159,11 +160,22 @@ export const getItemWithId = async (req, res, next) => {
 };
 export const createStock = async (req, res, next) => {
   try {
+    if(req.body.payedAmount>0){
+      if(!req.body.account){
+        throw {status:400,message:"Payment Account is required"}
+      }
+    }
+    let accountKeywords={ name: "Store" }
+    if(req.body.account){
+      accountKeywords={_id:new mongoose.Types.ObjectId(req.body.account)}
+    }
+    
     const [vendor, account, bill] = await Promise.all([
       VENDOR.findById(req.body.vendor),
-      ACCOUNT.findOne({ name: "Store" }).populate("accountHead"),
+      ACCOUNT.findOne(accountKeywords).populate("accountHead"),
       BILL.create(req.body),
     ]);
+   
     await createTransaction({
       fromAccount: vendor.accountHEad._id,
       toAccount: account.accountHead._id,
@@ -179,7 +191,7 @@ export const createStock = async (req, res, next) => {
         description: "Purchase Bill",
       });
     }
-
+    
     await Promise.all(
       req.body.items.map(async (stock) => {
         stock.vendor = vendor._id;
@@ -188,9 +200,9 @@ export const createStock = async (req, res, next) => {
         await postStock(stock);
       })
     );
-    if (req.body.isPayed) {
+    if (req.body.payedAmount>0) {
       await createPayment({
-        fromAccount: account._id,
+        fromAccount: account.accountHead._id,
         vendor,
         amount: req.body.payedAmount,
       });
@@ -268,7 +280,6 @@ export const createCategory = async (req, res, next) => {
 };
 export const categoryBulkUpload = async (req, res, next) => {
   try {
-    console.log("calling");
     const file = await uploadFile(req.files);
     const data = await ExcelDataExtractor(file);
     const results = await Promise.all(

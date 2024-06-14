@@ -13,3 +13,10 @@ export const getUnits = async (req, res, next) => {
     next(error);
   }
 };
+export const generateSequence=async(req,res,next)=>{
+  try {
+    
+  } catch (error) {
+    next(error);
+  }
+}

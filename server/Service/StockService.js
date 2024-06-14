@@ -6,7 +6,7 @@ export const postStock = async (data) => {
   try {
     let  item =await ITEM.findById(data.item)
     let transaction = await createTransaction({
-      fromAccount: data.mainAccount.accountHead,
+      fromAccount: data.mainAccount.accountHead._id,
       toAccount: item.accountHead,
       amount: data.purchaseRate,
       description: "Item Purchased",

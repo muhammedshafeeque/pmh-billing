@@ -24,7 +24,7 @@ export const createTransaction = async (data) => {
         $inc: { credit: data.amount },
       }),
     ]);
-
+    
     // Retrieve and save the updated account documents
     const fromAccount = await ACCOUNT_HEAD.findById(data.fromAccount);
     const toAccount = await ACCOUNT_HEAD.findById(data.toAccount);
@@ -80,10 +80,11 @@ export const addBill = async (data) => {
 };
 
 export const createPayment = async (data) => {
+  
   try {
     let transaction = await createTransaction({
       fromAccount: data.fromAccount,
-      toAccount: data.vendor.accountHEad.id,
+      toAccount: data.vendor.accountHEad._id,
       amount: data.amount,
       description: "Payment",
     });
@@ -92,7 +93,7 @@ export const createPayment = async (data) => {
       paymentTo: data.vendor._id,
       amount: data.amount,
       transaction: transaction._id,
-    });
+    }); 
     return Promise.resolve(payment);
   } catch (error) {
     return Promise.reject(error);
