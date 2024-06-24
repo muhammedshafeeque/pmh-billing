@@ -14,5 +14,6 @@ export const collections = {
   BILL_COLLECTIONS:'bills',
   INVOICE_COLLECTIONS:"invoices",
   PAYMENT_COLLECTIONS:'payments',
-  ACCOUNT_COLLECTION:'accounts'
+  ACCOUNT_COLLECTION:'accounts',
+  PREFIX_NUMBER_COLLECTION:'prefix'
 }; 

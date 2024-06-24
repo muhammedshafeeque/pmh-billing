@@ -1,8 +1,11 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { InvoiceNumber } from "invoice-number";
 import xlsx from "xlsx";
 import ExcelJS from "exceljs";
+import { PREFIX_NUMBER_MODAL } from "../Models/PrefixNumber.js";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
 
 export const encryptString = async (password) => {
   let hash = await bcrypt.hashSync(password, 10);
@@ -15,8 +18,12 @@ export const comparePassword = async (password, hash) => {
 export const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
-export const numberGenerator = async (count) => {
-  return InvoiceNumber.next(`IMM0${count}`);
+export const numberGenerator = async (count, prefix) => {
+  let sequence = await PREFIX_NUMBER_MODAL.create({
+    name: `PMH${prefix}0${count}`,
+    type: prefix,
+  });
+  return sequence;
 };
 export const queryGen = async (query) => {
   delete query.skip;
@@ -50,9 +57,6 @@ export const parseQueryParam = (value) => {
     return value;
   }
 };
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
 
 export const uploadFile = (files) => {
   return new Promise((resolve, reject) => {
@@ -127,16 +131,19 @@ export const generateErrorExcelBlob = async (data) => {
     throw error;
   }
 };
-export const generateExcelBlob=async(data)=>{
+export const generateExcelBlob = async (data) => {
   try {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sample Sheet');
+    const worksheet = workbook.addWorksheet("Sample Sheet");
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error("Data must be a non-empty array.");
     }
-    const columns = Object.keys(data[0]).map(key => ({ header: key, key: key }));
+    const columns = Object.keys(data[0]).map((key) => ({
+      header: key,
+      key: key,
+    }));
     worksheet.columns = columns;
-    data.forEach(item => {
+    data.forEach((item) => {
       worksheet.addRow(item);
     });
     const buffer = await workbook.xlsx.writeBuffer();
@@ -144,4 +151,4 @@ export const generateExcelBlob=async(data)=>{
   } catch (error) {
     throw error;
   }
-}
+};

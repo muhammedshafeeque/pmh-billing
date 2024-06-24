@@ -1,5 +1,6 @@
+import { PREFIX_NUMBER_MODAL } from "../Models/PrefixNumber.js";
 import { UNITS } from "../Models/UnitModal.js";
-import { queryGen } from "../Utils/utils.js";
+import { numberGenerator, queryGen } from "../Utils/utils.js";
 
 export const getUnits = async (req, res, next) => {
   try {
@@ -13,10 +14,12 @@ export const getUnits = async (req, res, next) => {
     next(error);
   }
 };
-export const generateSequence=async(req,res,next)=>{
+export const generateSequence = async (req, res, next) => {
   try {
-    
+    let count = await PREFIX_NUMBER_MODAL.find({ type: req.body.type }).count();
+    let prefix=await numberGenerator(count,req.body.type)
+    res.send(prefix)
   } catch (error) {
     next(error);
   }
-}
+};

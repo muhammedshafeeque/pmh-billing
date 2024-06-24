@@ -8,3 +8,4 @@ export const connectDb = async () => {
     process.exit();
   }
 };
+

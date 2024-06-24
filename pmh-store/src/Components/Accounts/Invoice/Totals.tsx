@@ -1,6 +1,31 @@
+import { useEffect, useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
-
+import axios from "../../../Api/Api";
 const InvoiceTotals: React.FC = () => {
+  const [prefix, setPrefix] = useState("");
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.post('core/generate-sequence', { type: 'INV' });
+        if (isMounted) {
+          setPrefix(res.data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    // Use a flag to avoid duplicate API calls
+    if (isMounted) {
+      fetchData();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   return (
     <>
       <Form>
