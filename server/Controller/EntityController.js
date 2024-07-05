@@ -50,9 +50,14 @@ export const getVendors = async (req, res, next) => {
     next(error);
   }
 };
-export const getCustomers=(req,res,next)=>{
+export const getCustomers=async(req,res,next)=>{
   try {
-    
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let customers=await CUSTOMER.find(keywords).limit(limit).skip(skip)
+    let count=await CUSTOMER.find(keywords).count()
+    res.send({count,results:customers})
   } catch (error) {
     next(error)
   }
@@ -64,3 +69,22 @@ export const vcfFileCustomersBulkUpload=(req,res,next)=>{
     next(error)
   }
 }
+export const createCustomerFromInvoice = async (req, res, next) => {
+  try {
+    let accountHEad = await createAccountHead({
+      name: req.body.name,
+      debit: 0,
+      type: "receivable",
+    });
+    let customer={
+      name:req.body.name,
+      accountHEad:accountHEad._id,
+      mobile:req.body.mobile,
+      address:req.body.address
+    }
+    await CUSTOMER.create(customer);
+    res.send({ message: "new customer Added",response:CUSTOMER });
+  } catch (error) {
+    next(error);
+  }
+};

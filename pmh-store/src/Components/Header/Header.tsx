@@ -11,7 +11,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="admin_header row align-items-center pt-4">
+    <div className="admin_header row align-items-center pt-2">
       <div className="col-md-4">
 
         <h2 onClick={() => {

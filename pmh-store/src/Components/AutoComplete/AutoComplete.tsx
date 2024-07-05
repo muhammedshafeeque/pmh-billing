@@ -10,12 +10,14 @@ interface AutoCompleteProps {
   formSubmitted?: boolean;
   name: string;
   label: string;
-  setValue: (name: string, value: any) => void;
+  setValue: any
   disabled?: boolean;
   url: string;
   readField: string;
   clear: boolean;
   value?:any
+  size?:any
+  editable?:boolean
   onChange?: (value: string) => void; // Optional onChange function
   onSelect?: (option: any) => void;   // Optional onSelect function
 }
@@ -38,7 +40,9 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   clear,
   onChange,
   onSelect,
-  value
+  value,
+  size,
+  editable
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [options, setOptions] = useState<Option[]>([]);
@@ -79,7 +83,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     const { value } = event.target;
     setInputValue(value);
     setSelectedOption(null);
-    setIsValid(false);
+     setIsValid(false);
     setDropdownOpen(true); // Open dropdown when typing
 
     if (onChange) {
@@ -114,6 +118,9 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   }, [formSubmitted, inputValue]);
 
   const handleBlur = () => {
+    if(editable){
+      
+    }
     setTouched(true);
     setDropdownOpen(false); // Close dropdown on blur
   };
@@ -138,6 +145,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
           onChange={handleInputChange}
           onFocus={() => setDropdownOpen(true)}
           disabled={disabled}
+          size={size?size:''}
           isInvalid={
             isRequired &&
             !isValid &&

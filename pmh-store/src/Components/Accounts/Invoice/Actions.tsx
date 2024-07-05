@@ -20,6 +20,7 @@ const Action: React.FC = () => {
                           type="text"
                           placeholder="First name"
                           defaultValue="INV001"
+                          size="sm"
                         />
                       </Form.Group>
                     </Col>
@@ -28,19 +29,21 @@ const Action: React.FC = () => {
               </Row>
             </Col>
           </Row>
-          <Row className="mt-3"> 
+          <Row className="mt-3">
             <Col>
-              <Button className="col-md-12" variant="secondary">
+              <Button className="col-md-12" variant="secondary" size="sm">
                 Cancel
               </Button>
             </Col>
             <Col>
-              <Button className="col-md-12" variant="success">
+              <Button className="col-md-12" variant="success" size="sm">
                 Save Invoice
               </Button>
             </Col>
             <Col>
-              <Button className="col-md-12">Print Invoice</Button>
+              <Button className="col-md-12" size="sm">
+                Print Invoice
+              </Button>
             </Col>
           </Row>
         </Col>

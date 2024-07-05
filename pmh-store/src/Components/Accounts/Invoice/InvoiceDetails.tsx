@@ -9,12 +9,13 @@ const InvoiceDetails: React.FC = () => {
       <Form>
         <div className="inv-cards">
           <h4 className="invoice-heads">Invoice Details</h4>
-          <Row className="mt-4">
+          <Row className="mt-1">
             <Col>
               <Form.Group controlId="validationCustom01">
                 <Form.Label>Invoice Number</Form.Label>
                 <Form.Control
                   required
+                  size="sm"
                   type="text"
                   placeholder="First name"
                   defaultValue="INV001"
@@ -29,13 +30,14 @@ const InvoiceDetails: React.FC = () => {
                 <Form.Control
                   required
                   type="date"
+                  size="sm"
                   placeholder="First name"
                   defaultValue="Mark"
                 />
               </Form.Group>
             </Col>
           </Row>
-          <Row className="mt-4">
+          <Row className="mt-3">
             <Col>
               <Form.Group controlId="validationCustom01">
                 <Form.Label>Outstanding Amount</Form.Label>
@@ -45,11 +47,12 @@ const InvoiceDetails: React.FC = () => {
                   placeholder="First name"
                   defaultValue="INV001"
                   disabled
+                  size="sm"
                 />
               </Form.Group>
             </Col>
             <Col className="mt-4 pt-2">
-              <Button className="col-md-12">View History</Button>
+              <Button size="sm" className="col-md-12">View History</Button>
             </Col>
           </Row>
         </div>

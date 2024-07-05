@@ -17,13 +17,13 @@ const CreateInvoice: React.FC = () => {
             <InvoiceDetails />
           </Col>
         </Row>
-        <Row className="mt-4 ">
+        <Row className="mt-3 ">
           <Col>
             <ItemsForm />
           </Col>
         </Row>
 
-        <Row className="mt-4 ">
+        <Row className="mt-3 ">
           <Col>
             <Action />
           </Col>

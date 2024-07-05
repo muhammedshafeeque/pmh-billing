@@ -22,7 +22,7 @@ export const vendorValidation = Joi.object({
       "string.pattern.base": "Please provide a valid zip code",
     }),
   country: Joi.string().trim().optional(),
-  OpeningBalance:Joi.number().optional(),
+  OpeningBalance: Joi.number().optional(),
 });
 
 export const customerValidation = Joi.object({
@@ -34,7 +34,7 @@ export const customerValidation = Joi.object({
   phone: Joi.string()
     .trim()
     .pattern(/^\d{10}$/)
-    
+
     .messages({
       "string.pattern.base": "Please provide a valid phone number",
     }),
@@ -52,4 +52,9 @@ export const customerValidation = Joi.object({
     country: Joi.string().trim().optional(),
   }).optional(),
   dateOfBirth: Joi.date().optional(),
+});
+export const createCustomerFromInvoice = Joi.object({
+  name: Joi.string().required(),
+  mobile: Joi.string().required(),
+  address: Joi.string().optional(),
 });

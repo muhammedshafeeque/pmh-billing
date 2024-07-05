@@ -30,7 +30,7 @@ const InvoiceTotals: React.FC = () => {
     <>
       <Form>
         <Col className="inv-cards">
-          <Row className="mt-4">
+          <Row className="mt-1">
             <Col>
               <Row>
                 <Col>
@@ -39,6 +39,7 @@ const InvoiceTotals: React.FC = () => {
                 <Col>
                   <Form.Group controlId="validationCustom01">
                     <Form.Control
+                    size="sm"
                       required
                       type="text"
                       placeholder="First name"
@@ -50,7 +51,7 @@ const InvoiceTotals: React.FC = () => {
               </Row>
             </Col>
           </Row>
-          <Row className="mt-4">
+          <Row className="mt-1">
             <Col>
               <Row>
                 <Col>
@@ -60,6 +61,7 @@ const InvoiceTotals: React.FC = () => {
                   <Form.Group controlId="validationCustom01">
                     <Form.Control
                       required
+                      size="sm"
                       type="text"
                       placeholder="First name"
                       defaultValue="INV001"
@@ -69,7 +71,7 @@ const InvoiceTotals: React.FC = () => {
               </Row>
             </Col>
           </Row>
-          <Row className="mt-4">
+          <Row className="mt-1">
             <Col>
               <Row>
                 <Col>
@@ -83,13 +85,14 @@ const InvoiceTotals: React.FC = () => {
                       placeholder="First name"
                       defaultValue="INV001"
                       disabled
+                      size="sm"
                     />
                   </Form.Group>
                 </Col>
               </Row>
             </Col>
           </Row>
-          <Row className="mt-4">
+          <Row className="mt-1">
             <Col>
               <Row>
                 <Col>
@@ -102,6 +105,7 @@ const InvoiceTotals: React.FC = () => {
                       type="text"
                       placeholder="First name"
                       defaultValue="INV001"
+                      size="sm"
                     />
                   </Form.Group>
                 </Col>
