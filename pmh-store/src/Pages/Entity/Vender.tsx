@@ -124,7 +124,7 @@ const VendorList: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {results.map((obj:Vendor) => {
+          {results.map((obj: Vendor) => {
             return (
               <tr key={obj._id}>
                 <td>{obj.name}</td>

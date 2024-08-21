@@ -10,14 +10,14 @@ interface AutoCompleteProps {
   formSubmitted?: boolean;
   name: string;
   label: string;
-  setValue: any
+  setValue: any;
   disabled?: boolean;
   url: string;
   readField: string;
-  clear: boolean;
-  value?:any
-  size?:any
-  editable?:boolean
+  clear?: boolean;
+  value?: any;
+  size?: any;
+  editable?: boolean;
   onChange?: (value: string) => void; // Optional onChange function
   onSelect?: (option: any) => void;   // Optional onSelect function
 }
@@ -42,7 +42,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   onSelect,
   value,
   size,
-  editable
+  editable,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [options, setOptions] = useState<Option[]>([]);
@@ -83,7 +83,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     const { value } = event.target;
     setInputValue(value);
     setSelectedOption(null);
-     setIsValid(false);
+    setIsValid(false);
     setDropdownOpen(true); // Open dropdown when typing
 
     if (onChange) {
@@ -98,7 +98,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     setValue(name, option);
     setOptions([]);
     setIsValid(true);
-    setDropdownOpen(false); // Close dropdown when an option is selected
+    setDropdownOpen(false);
 
     if (onSelect) {
       onSelect(option);
@@ -118,21 +118,21 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   }, [formSubmitted, inputValue]);
 
   const handleBlur = () => {
-    if(editable){
-      
+    if (editable && !selectedOption) {
+      setValue(name, inputValue);
     }
     setTouched(true);
-    setDropdownOpen(false); // Close dropdown on blur
+    setDropdownOpen(false);
   };
-  useEffect(()=>{
-    if(value&&value._id){
-      if(inputValue!==value[readField]){
-      setInputValue(value[readField])
-      setValue(name, value);
+
+  useEffect(() => {
+    if (value && value._id) {
+      if (inputValue !== value[readField]) {
+        setInputValue(value[readField]);
+        setValue(name, value);
       }
     }
-  
-  },[value])
+  }, [value]);
 
   return (
     <div className="auto-complete-wrapper" onBlur={handleBlur}>
@@ -145,7 +145,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
           onChange={handleInputChange}
           onFocus={() => setDropdownOpen(true)}
           disabled={disabled}
-          size={size?size:''}
+          size={size ? size : ""}
           isInvalid={
             isRequired &&
             !isValid &&

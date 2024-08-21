@@ -10,7 +10,7 @@ const CreateAndUpdateAccount: React.FC<PopupChildeProp> = ({ handleClose }) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<any>();
+  } :any= useForm<any>();
   const { setLoadingState } = useLoading();
   const onSubmit: SubmitHandler<any> = async (
     data: any
@@ -22,7 +22,7 @@ const CreateAndUpdateAccount: React.FC<PopupChildeProp> = ({ handleClose }) => {
     } catch (error) {
     } finally {
       setLoadingState(false);
-    }
+    } 
   };
 
   return (

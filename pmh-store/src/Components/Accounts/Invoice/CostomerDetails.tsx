@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Col, Form, Row } from "react-bootstrap";
 import "./accounts.scss";
 import AutoComplete from "../../AutoComplete/AutoComplete";
-
+import axios from "../../../Api/Api";
+import { useLoading } from "../../../Contexts/LoaderContext";
 const CostumerDetails: React.FC = () => {
-  const [clearChild, setClearChild] = useState(false);
-  const { control, handleSubmit, register, errors, setValue }:any = useForm({
+  const { setLoadingState } = useLoading();
+  const { control, handleSubmit, register, errors, setValue,watch }: any = useForm({
     defaultValues: {
       customerName: "",
       mobile: "",
@@ -14,62 +15,69 @@ const CostumerDetails: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
 
+  const onSubmit = (data: any) => {
+    if (data.customerName._id) {
+      
+    } else if (data.customerName && data.mobile) {
+      try {
+        setLoadingState(true);
+        let body = {
+          firstName: data.customerName,
+          phone: data.mobile,
+          address: data.address,
+        };
+        axios.post("entity/create-customer-from-invoice", body);
+      } catch (error) {
+      } finally {
+        setLoadingState(false);
+      }
+    }
+  };
+  const customer=watch('customerName')
+  useEffect(() => {
+    setValue('mobile',customer.phone)
+  }, [customer]);
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form onBlur={handleSubmit(onSubmit)}>
       <Col className="inv-cards">
         <h4 className="invoice-heads">Invoice To</h4>
-        <Row onBlur={() => handleSubmit(onSubmit)()}>
+        <Row>
           <Col>
             <Form.Group controlId="customerName">
-              {/* <Form.Label>Customer Name</Form.Label> */}
               <AutoComplete
                 register={register}
                 errors={errors}
-                name="name"
+                name="customerName"
                 label="Customer Name"
                 setValue={setValue}
-                readField={"name"}
-                url={`/entity/customer?nameContains`}
+                readField={"firstName"}
+                url={`/entity/customer?firstNameContains`}
                 isRequired={true}
-                clear={clearChild}
                 editable={true}
               />
-              {/* <Controller
-                name="customerName"
-                control={control}
-                render={({ field }) => (
-                  <Form.Control
-                    size="sm"
-                    required
-                    type="text"
-                    placeholder="First name"
-                    {...field}
-                    
-                  />
-                )}
-              /> */}
             </Form.Group>
           </Col>
           <Col>
-            <Form.Group controlId="mobile">
-              <Form.Label>Mobile</Form.Label>
-              <Controller
+          <Form.Group controlId="customerName">
+            <Form.Label>Mobile</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter mobile"
+              {...register("mobile", { required: "mobile is required" })}
+            />
+            
+              {/* <AutoComplete
+                register={register}
+                errors={errors}
                 name="mobile"
-                control={control}
-                render={({ field }) => (
-                  <Form.Control
-                    required
-                    type="number"
-                    size="sm"
-                    placeholder="Mobile Number"
-                    {...field}
-                  />
-                )}
-              />
+                label="Mobile"
+                setValue={setValue}
+                readField={"phone"}
+                url={`/entity/customer?phoneContains`}
+                isRequired={true}
+                editable={true}
+              /> */}
             </Form.Group>
           </Col>
         </Row>
@@ -77,6 +85,7 @@ const CostumerDetails: React.FC = () => {
           <Col>
             <Form.Group controlId="address">
               <Form.Label>Address</Form.Label>
+
               <Controller
                 name="address"
                 control={control}

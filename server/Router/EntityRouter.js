@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createCustomer,
+  createNewCustomerFromInvoice,
   createVendor,
   getCustomers,
   getVendors,
@@ -16,5 +17,5 @@ router.post("/vendor", Validate(vendorValidation), createVendor);
 router.get("/vendor", getVendors);
 router.post("/customer", Validate(customerValidation), createCustomer);
 router.get('/customer',getCustomers)
-router.post("/create-customer-from-invoice",Validate(createCustomerFromInvoice))
+router.post("/create-customer-from-invoice",Validate(createCustomerFromInvoice),createNewCustomerFromInvoice)
 export const EntityRouter = router;

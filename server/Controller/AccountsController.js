@@ -1,5 +1,6 @@
 import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { ACCOUNT } from "../Models/AccountModal.js";
+import { CUSTOMER } from "../Models/CustomerModal.js";
 import { PAYMENT } from "../Models/PaymentModal.js";
 import { TRANSACTION } from "../Models/TransactionModal.js";
 import { createAccountHead } from "../Service/AccountsService.js";
@@ -99,3 +100,5 @@ export const getPaymentList=async(req,res,next)=>{
     next(error);
   }
 }
+
+

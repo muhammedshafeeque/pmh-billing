@@ -1,9 +1,37 @@
-import { Row } from "react-bootstrap";
-import { Col } from "react-bootstrap";
-import { Form } from "react-bootstrap";
+import { Row, Col, Form, Button } from "react-bootstrap";
+import axios from '../../../Api/Api';
+import { useEffect, useState } from "react";
+import moment from "moment";
 import "./accounts.scss";
-import { Button } from "react-bootstrap";
+
 const InvoiceDetails: React.FC = () => {
+  const [prefix, setPrefix] = useState<any>({ name: "" });
+  const [date, setDate] = useState<string>("");
+
+  useEffect(() => {
+    // Initialize date in DD/MM/YYYY format
+    const formattedDate = moment().format("DD/MM/YYYY");
+    setDate(formattedDate);
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.post('core/generate-sequence', { type: '/INV/' });
+        setPrefix(res.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+
+  }, []);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputDate = e.target.value;
+    const formattedDate = moment(inputDate, "YYYY-MM-DD").format("DD/MM/YYYY");
+    setDate(formattedDate);
+  };
+
   return (
     <>
       <Form>
@@ -17,8 +45,8 @@ const InvoiceDetails: React.FC = () => {
                   required
                   size="sm"
                   type="text"
-                  placeholder="First name"
-                  defaultValue="INV001"
+                  placeholder="Invoice Number"
+                  value={prefix?.name || ""}
                   disabled
                 />
                 <Form.Control.Feedback>Mobile</Form.Control.Feedback>
@@ -27,12 +55,15 @@ const InvoiceDetails: React.FC = () => {
             <Col>
               <Form.Group controlId="validationCustom01">
                 <Form.Label>DATE</Form.Label>
+                {/* Use a text input for displaying the date in DD/MM/YYYY format */}
                 <Form.Control
                   required
-                  type="date"
+                  type="text"
                   size="sm"
-                  placeholder="First name"
-                  defaultValue="Mark"
+                  placeholder="Invoice Date"
+                  value={date}
+                  onChange={handleDateChange}
+                  pattern="\d{2}/\d{2}/\d{4}" // Regex pattern for DD/MM/YYYY format
                 />
               </Form.Group>
             </Col>
@@ -44,7 +75,7 @@ const InvoiceDetails: React.FC = () => {
                 <Form.Control
                   required
                   type="text"
-                  placeholder="First name"
+                  placeholder="Outstanding Amount"
                   defaultValue="INV001"
                   disabled
                   size="sm"
@@ -52,7 +83,9 @@ const InvoiceDetails: React.FC = () => {
               </Form.Group>
             </Col>
             <Col className="mt-4 pt-2">
-              <Button size="sm" className="col-md-12">View History</Button>
+              <Button size="sm" className="col-md-12">
+                View History
+              </Button>
             </Col>
           </Row>
         </div>
@@ -60,4 +93,5 @@ const InvoiceDetails: React.FC = () => {
     </>
   );
 };
+
 export default InvoiceDetails;

@@ -6,7 +6,7 @@ const customerSchema = mongoose.Schema(
     firstName: {
       type: String,
       required: true,
-      trim: true,
+      
     },
     lastName: {
       type: String,
@@ -15,18 +15,16 @@ const customerSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
       trim: true,
       lowercase: true,
-
       match: [/.+\@.+\..+/, "Please provide a valid email address"],
     },
     phone: {
-      type: String,
+      type: Number,
       unique: true,
       trim: true,
       required: true,
-      match: [/^\d{10}$/, "Please provide a valid phone number"],
+      
     },
     address: {
       street: {
@@ -61,6 +59,11 @@ const customerSchema = mongoose.Schema(
     updatedAt: {
       type: Date,
       default: Date.now,
+    },
+    accountHEad: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.ACCOUNT_HEAD_COLLECTIONS,
+      required:true
     },
   },
   {

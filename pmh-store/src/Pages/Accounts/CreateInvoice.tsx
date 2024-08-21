@@ -4,8 +4,10 @@ import InvoiceDetails from "../../Components/Accounts/Invoice/InvoiceDetails";
 import ItemsForm from "../../Components/Accounts/Invoice/Items";
 import InvoiceTotals from "../../Components/Accounts/Invoice/Totals";
 import Action from "../../Components/Accounts/Invoice/Actions";
+import { useState } from "react";
 
 const CreateInvoice: React.FC = () => {
+  const [customer,setCustomer]=useState()
   return (
     <>
       <div className="col-md-12">

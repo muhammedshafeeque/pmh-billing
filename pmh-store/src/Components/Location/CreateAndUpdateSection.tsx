@@ -4,7 +4,6 @@ import { Form, Button } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
 
-
 const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
   const {
     register,
@@ -12,13 +11,11 @@ const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
     formState: { errors },
   } = useForm<Section>();
   const { setLoadingState } = useLoading();
-  const onSubmit: SubmitHandler<Section> = async (
-    data: Section
-  ) => {
+  const onSubmit: SubmitHandler<Section> = async (data: Section) => {
     try {
       setLoadingState(true);
       await axios.post("stock/section", data);
-      handleClose()
+      handleClose();
     } catch (error) {
     } finally {
       setLoadingState(false);
