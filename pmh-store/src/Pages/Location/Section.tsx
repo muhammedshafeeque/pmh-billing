@@ -96,7 +96,7 @@ const SectionList: React.FC = () => {
                   clear={clearChild}
                 />
               </Col>
-              <Col md={4} className="d-flex align-items-end">
+              <Col md={4}  style={{display:"flex",justifyContent:"flex-end"}} className="d-flex align-items-end">
                 <Button
                   variant="outline-secondary"
                   className="me-2"

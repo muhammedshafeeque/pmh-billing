@@ -77,7 +77,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({ limit, totalC
               active={page === currentPage}
               onClick={() => onPageChange(page as number)}
             >
-              {page}
+              <span style={{color:"black"}}>{page}</span>
             </Pagination.Item>
           )
         ))}
@@ -88,21 +88,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({ limit, totalC
           <FaAngleDoubleRight />
         </Pagination.Last>
       </Pagination>
-      <div className="pagination-info">
-        <span>Page {currentPage} of {totalPages}</span>
-        <Form.Select
-          className="page-select"
-          value={currentPage}
-          onChange={handlePageSelect}
-          aria-label="Select page"
-        >
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <option key={page} value={page}>
-              Page {page}
-            </option>
-          ))}
-        </Form.Select>
-      </div>
+      
     </div>
   );
 };
