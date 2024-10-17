@@ -11,7 +11,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="admin-header">
+    <header className="admin-header ">
       <div className="header-content">
         <div className="logo-container">
           <h2 

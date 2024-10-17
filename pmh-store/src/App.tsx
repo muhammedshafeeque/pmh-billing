@@ -29,7 +29,7 @@ const App: React.FC = () => {
         {user ? (
           <>
             <Header />
-            <div className="col-md-12 p-3">
+            <div className="col-md-12 pt-5 mt-5">
               <div className="admin_area">
                 <div className="col-md-12" style={{ display: "flex" }}>
                   <div className="col-md-2">
