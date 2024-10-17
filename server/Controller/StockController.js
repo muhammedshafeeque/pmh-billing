@@ -73,7 +73,7 @@ export const updateSection = async (req, res) => {
 export const removeSection = async (req, res) => {
   try {
     await deleteSection(req.params.id);
-    res.send("Section Removed Successfully ");
+    res.send("Section Removed Successfully");
   } catch (error) {
     res.status(400).send("Err:" + error);
   }

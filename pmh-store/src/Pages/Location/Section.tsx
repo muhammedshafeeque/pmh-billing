@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Row, Card, Container } from "react-bootstrap";
 import ModalPopup from "../../Components/PopupModal/ModalPopup";
 import CreateAndUpdateSection from "../../Components/Location/CreateAndUpdateSection";
+import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
 import axios from "../../Api/Api";
 import { useForm } from "react-hook-form";
 import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
-import { FaPlus, FaSearch, FaTimes, FaSave, FaEdit } from "react-icons/fa";
+import { FaPlus, FaSearch, FaTimes, FaSave, FaEdit, FaTrash } from "react-icons/fa";
 import "./Section.scss";
 
 const SectionList: React.FC = () => {
@@ -32,6 +33,8 @@ const SectionList: React.FC = () => {
     getValues,
   } = useForm();
   const [skip, setSkip] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
 
   const fetchSections = async (newSkip: number) => {
     try {
@@ -77,6 +80,27 @@ const SectionList: React.FC = () => {
   const handleEdit = (section: Section) => {
     setSelectedSection(section);
     setShowModal(true);
+  };
+
+  const handleDelete = (section: Section) => {
+    setSectionToDelete(section);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (sectionToDelete) {
+      try {
+        setLoadingState(true);
+        await axios.delete(`/stock/section/${sectionToDelete._id}`);
+        setShowDeleteModal(false);
+        setSectionToDelete(null);
+        fetchSections(skip);
+      } catch (error) {
+        console.error("Error deleting section:", error);
+      } finally {
+        setLoadingState(false);
+      }
+    }
   };
 
   return (
@@ -158,8 +182,16 @@ const SectionList: React.FC = () => {
                         variant="outline-primary"
                         size="sm"
                         onClick={() => handleEdit(obj)}
+                        className="me-2"
                       >
                         <FaEdit /> Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(obj)}
+                      >
+                        <FaTrash /> Delete
                       </Button>
                     </td>
                   </tr>
@@ -191,6 +223,14 @@ const SectionList: React.FC = () => {
           sectionToEdit={selectedSection}
         />
       </ModalPopup>
+
+      <ConfirmationModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Section"
+        message={`Are you sure you want to delete the section "${sectionToDelete?.name}"?`}
+      />
     </Container>
   );
 };

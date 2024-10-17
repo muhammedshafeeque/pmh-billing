@@ -28,8 +28,8 @@ export const patchSection = async (data, id) => {
   });
 };
 export const deleteSection = async (id) => {
-  await Section.deleteOne({ _id: id });
-  return "removed Success Fully";
+  await Section.findByIdAndDelete(id);
+  return "Section removed successfully";
 };
 export const getSectionById=(id)=>{
   return Section.findById(id)
