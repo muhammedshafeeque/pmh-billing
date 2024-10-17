@@ -55,7 +55,6 @@ const SectionList: React.FC = () => {
     fetchSections(0)
   },[showModal])
   const handlePageChange = (page:number) => {
-    console.log(page)
     const newSkip = (page - 1) * 10;
     setSkip(newSkip);
     fetchSections(newSkip)
