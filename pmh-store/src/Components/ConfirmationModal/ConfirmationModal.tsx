@@ -8,9 +8,21 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   title: string;
   message: string;
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+  confirmButtonVariant?: string;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ show, onHide, onConfirm, title, message }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  show,
+  onHide,
+  onConfirm,
+  title,
+  message,
+  confirmButtonText = 'Confirm',
+  cancelButtonText = 'Cancel',
+  confirmButtonVariant = 'danger'
+}) => {
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
@@ -24,10 +36,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ show, onHide, onC
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
-          Cancel
+          {cancelButtonText}
         </Button>
-        <Button variant="danger" onClick={onConfirm}>
-          Delete
+        <Button variant={confirmButtonVariant} onClick={onConfirm}>
+          {confirmButtonText}
         </Button>
       </Modal.Footer>
     </Modal>

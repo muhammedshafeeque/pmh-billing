@@ -230,6 +230,9 @@ const SectionList: React.FC = () => {
         onConfirm={confirmDelete}
         title="Delete Section"
         message={`Are you sure you want to delete the section "${sectionToDelete?.name}"?`}
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+        confirmButtonVariant="danger"
       />
     </Container>
   );
