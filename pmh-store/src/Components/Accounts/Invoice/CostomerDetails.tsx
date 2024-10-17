@@ -5,7 +5,7 @@ import "./accounts.scss";
 import AutoComplete from "../../AutoComplete/AutoComplete";
 import axios from "../../../Api/Api";
 import { useLoading } from "../../../Contexts/LoaderContext";
-const CostumerDetails: React.FC = () => {
+const CostumerDetails: React.FC <any>= ({setCustomer}) => {
   const { setLoadingState } = useLoading();
   const { control, handleSubmit, register, errors, setValue,watch }: any = useForm({
     defaultValues: {
@@ -16,9 +16,9 @@ const CostumerDetails: React.FC = () => {
   });
 
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async(data: any) => {
     if (data.customerName._id) {
-      
+      setCustomer(data)
     } else if (data.customerName && data.mobile) {
       try {
         setLoadingState(true);
@@ -27,7 +27,8 @@ const CostumerDetails: React.FC = () => {
           phone: data.mobile,
           address: data.address,
         };
-        axios.post("entity/create-customer-from-invoice", body);
+       let customer=await axios.post("entity/create-customer-from-invoice", body);
+       setCustomer(customer.data)
       } catch (error) {
       } finally {
         setLoadingState(false);

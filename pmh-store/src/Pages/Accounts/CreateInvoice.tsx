@@ -7,16 +7,16 @@ import Action from "../../Components/Accounts/Invoice/Actions";
 import { useState } from "react";
 
 const CreateInvoice: React.FC = () => {
-  const [customer,setCustomer]=useState()
+  const [customer,setCustomer]=useState<any>()
   return (
     <>
       <div className="col-md-12">
         <Row>
           <Col>
-            <CostumerDetails />
+            <CostumerDetails setCustomer={setCustomer} />
           </Col>
           <Col>
-            <InvoiceDetails />
+            <InvoiceDetails customer={customer} />
           </Col>
         </Row>
         <Row className="mt-3 ">

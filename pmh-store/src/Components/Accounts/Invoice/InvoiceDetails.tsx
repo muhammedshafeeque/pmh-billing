@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import "./accounts.scss";
 
-const InvoiceDetails: React.FC = () => {
+const InvoiceDetails: React.FC<any> = ({customer}) => {
   const [prefix, setPrefix] = useState<any>({ name: "" });
   const [date, setDate] = useState<string>("");
+  const [outAmount,setOutAmount]=useState<number>(0)
 
   useEffect(() => {
-    // Initialize date in DD/MM/YYYY format
     const formattedDate = moment().format("DD/MM/YYYY");
     setDate(formattedDate);
 
@@ -31,6 +31,13 @@ const InvoiceDetails: React.FC = () => {
     const formattedDate = moment(inputDate, "YYYY-MM-DD").format("DD/MM/YYYY");
     setDate(formattedDate);
   };
+  useEffect(()=>{
+    if(customer&&customer.Outstanding){
+      setOutAmount(customer.Outstanding)
+    }else{
+      setOutAmount(0)
+    }
+  },[customer])
 
   return (
     <>
@@ -76,8 +83,8 @@ const InvoiceDetails: React.FC = () => {
                   required
                   type="text"
                   placeholder="Outstanding Amount"
-                  defaultValue="INV001"
                   disabled
+                  value={outAmount}
                   size="sm"
                 />
               </Form.Group>
