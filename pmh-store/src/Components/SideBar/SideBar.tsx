@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./SideBar.scss";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 interface Item {
   name: string;
@@ -21,83 +22,63 @@ const SideBar: React.FC<SideBarProps> = ({ items }) => {
 
   useEffect(() => {
     if (items && items.length) {
-      const updatedItems = items.map((item) => {
-        const isOpen =
-          item.path === location.pathname ||
-          (item.children &&
-            item.children.some((child) => child.path === location.pathname));
-        return {
-          ...item,
-          isOpen: isOpen,
-        };
-      });
+      const updatedItems = items.map((item) => ({
+        ...item,
+        isOpen: item.path === location.pathname ||
+          (item.children && item.children.some((child) => child.path === location.pathname))
+      }));
       setListItems(updatedItems);
     }
   }, [items, location.pathname]);
 
-  const handleItemClick = (e: React.MouseEvent<HTMLButtonElement>, item: Item) => {
-    e.preventDefault();
+  const handleItemClick = (item: Item) => {
     if (item.children && item.children.length > 0) {
       setListItems((prevItems) =>
         prevItems.map((prevItem) => ({
           ...prevItem,
-          isOpen: prevItem === item ? !prevItem.isOpen : false,
+          isOpen: prevItem === item ? !prevItem.isOpen : prevItem.isOpen,
         }))
       );
     } else {
-      setListItems((prevItems) =>
-        prevItems.map((prevItem) => ({
-          ...prevItem,
-          isOpen: false,
-        }))
-      );
-      item.path&&
-      navigate(item.path)
+      item.path && navigate(item.path);
     }
   };
 
   return (
-    <div className="col-md-12 mt-5 side_bar">
+    <div className="sidebar">
       {listItems.map((item, index) => (
-        <React.Fragment key={index}>
+        <div key={index} className="sidebar-item">
           <button
-            onClick={(e) => handleItemClick(e, item)}
-            className="side_bar_button col-md-11 mt-3"
-            style={{
-              backgroundColor: item.isOpen ? "black" : (item.path===location.pathname ? "black" : "blue"),
-              marginBottom: item.isOpen ? "0" : "10px",
-            }}
+            onClick={() => handleItemClick(item)}
+            className={`sidebar-button ${item.path === location.pathname ? 'active' : ''}`}
           >
-            <span>
-              <item.icon size={30} style={{ marginRight: "10px" }} />
+            <span className="sidebar-icon">
+              <item.icon size={20} />
             </span>
-            {item.name}
+            <span className="sidebar-text">{item.name}</span>
+            {item.children && item.children.length > 0 && (
+              <span className="sidebar-arrow">
+                {item.isOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+              </span>
+            )}
           </button>
-          {item.children && item.children.length > 0 && item.isOpen && (
-            <div className={`child-items ${item.isOpen ? "open" : ""}`}>
+          {item.children && item.children.length > 0 && (
+            <div className={`sidebar-children ${item.isOpen ? 'open' : ''}`}>
               {item.children.map((child, childIndex) => (
                 <button
                   key={childIndex}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    child.path&&
-                    navigate(child.path);
-                  }}
-                  className="side_bar_child_button col-md-11 mt-1"
-                  style={{
-                    backgroundColor:
-                      child.path === location.pathname ? "black" : "blue",
-                  }}
+                  onClick={() => child.path && navigate(child.path)}
+                  className={`sidebar-child-button ${child.path === location.pathname ? 'active' : ''}`}
                 >
-                  <span>
-                    <child.icon size={25} style={{ marginRight: "10px" }} />
+                  <span className="sidebar-icon">
+                    <child.icon size={16} />
                   </span>
-                  {child.name}
+                  <span className="sidebar-text">{child.name}</span>
                 </button>
               ))}
             </div>
           )}
-        </React.Fragment>
+        </div>
       ))}
     </div>
   );
