@@ -28,14 +28,14 @@ const SectionList: React.FC = () => {
     getValues,
   } = useForm();
   const [skip, setSkip] = useState(0);
-  const fetchSections=async()=>{
+  const fetchSections=async(newSkip:number)=>{
     try {
       setLoadingState(true)
       let formData = await getValues();
       let params = {
         name: formData.name ? formData.name.name : "",
         code: formData.code ? formData.code.code : "",
-        skip: skip,
+        skip: newSkip,
       };
       let query = await queryString.stringify(params);
       let { data } = await axios.get(`/stock/section?${query}`);
@@ -49,20 +49,21 @@ const SectionList: React.FC = () => {
   }
   const onSubmit=()=>{
     setSkip(0)
-    fetchSections()
+    fetchSections(0)
   }
   useEffect(()=>{
-    fetchSections()
+    fetchSections(0)
   },[showModal])
   const handlePageChange = (page:number) => {
+    console.log(page)
     const newSkip = (page - 1) * 10;
     setSkip(newSkip);
-    fetchSections()
+    fetchSections(newSkip)
   };
   const handleClear = () => {
     reset();
     setClearChild(!clearChild);
-    fetchSections()
+    fetchSections(0)
   };
   return (
     <Container fluid className="section-list">
