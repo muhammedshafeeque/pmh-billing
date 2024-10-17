@@ -3,6 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
+import { FaSave, FaTimes } from "react-icons/fa";
 
 const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
   const {
@@ -60,9 +61,14 @@ const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
         />
       </Form.Group>
 
-      <Button variant="primary" type="submit" className="mt-3">
-        Submit
-      </Button>
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> Save Section
+        </Button>
+      </div>
     </Form>
   );
 };

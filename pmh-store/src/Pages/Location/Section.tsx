@@ -8,7 +8,7 @@ import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
-import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
+import { FaPlus, FaSearch, FaTimes, FaSave } from "react-icons/fa";
 import "./Section.scss";
 
 const SectionList: React.FC = () => {
@@ -159,8 +159,10 @@ const SectionList: React.FC = () => {
         size="lg"
         show={showModal}
         handleClose={handleCloseModal}
+        dialogClassName="section-modal"
       >
         <CreateAndUpdateSection handleClose={handleCloseModal} />
+        
       </ModalPopup>
     </Container>
   );
