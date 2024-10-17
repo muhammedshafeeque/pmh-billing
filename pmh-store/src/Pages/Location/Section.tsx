@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Col, Form, Row, Card, Container } from "react-bootstrap";
 import ModalPopup from "../../Components/PopupModal/ModalPopup";
 import CreateAndUpdateSection from "../../Components/Location/CreateAndUpdateSection";
 import axios from "../../Api/Api";
@@ -8,6 +8,9 @@ import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
+import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
+import "./Section.scss";
+
 const SectionList: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [results,setResults]=useState<Section[]>([])
@@ -62,92 +65,104 @@ const SectionList: React.FC = () => {
     fetchSections()
   };
   return (
-    <div>
-      <h4 className="screen_header">Section List</h4>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Row>
-          <Col md={3}>
-            <AutoComplete
-              register={register}
-              errors={errors}
-              name="name"
-              label="Name"
-              setValue={setValue}
-              readField={"name"}
-              url={`/stock/section?nameContains`}
-              clear={clearChild}             />
-          </Col>
-          <Col md={3}>
-            <AutoComplete
-              register={register}
-              errors={errors}
-              name="code"
-              label="Code"
-              setValue={setValue}
-              readField={"code"}
-              url={`/stock/section?codeContains`}
-              clear={clearChild}
-            />
-          </Col>
-          <Col className="d-flex justify-content-end mt-4 pt-1">
-        <Button
-          variant="secondary"
-          style={{ marginRight: "10px", maxHeight: "40px" }}
-          className="mr-2"
-          onClick={handleClear}
-        >
-          Clear
-        </Button>
-        <Button variant="success" type="submit">
-          Search
-        </Button>
-      </Col>
-          
-        </Row>
-      </Form>
-      <div style={{ display: "flex", justifyContent: "flex-end" }} className="mt-4">
-        <Button variant="primary" onClick={handleShowModal}>
-          New
-        </Button>
-      </div>
+    <Container fluid className="section-list">
+      <h2 className="page-title mb-4">Section Management</h2>
+      <Card className="mb-4 search-card">
+        <Card.Body>
+          <h5 className="card-title mb-4">Search Sections</h5>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Row>
+              <Col md={4}>
+                <AutoComplete
+                  register={register}
+                  errors={errors}
+                  name="name"
+                  label="Name"
+                  setValue={setValue}
+                  readField={"name"}
+                  url={`/stock/section?nameContains`}
+                  clear={clearChild}
+                />
+              </Col>
+              <Col md={4}>
+                <AutoComplete
+                  register={register}
+                  errors={errors}
+                  name="code"
+                  label="Code"
+                  setValue={setValue}
+                  readField={"code"}
+                  url={`/stock/section?codeContains`}
+                  clear={clearChild}
+                />
+              </Col>
+              <Col md={4} className="d-flex align-items-end">
+                <Button
+                  variant="outline-secondary"
+                  className="me-2"
+                  onClick={handleClear}
+                >
+                  <FaTimes /> Clear
+                </Button>
+                <Button variant="primary" type="submit">
+                  <FaSearch /> Search
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Card.Body>
+      </Card>
 
-      <table className="table table-striped">
-        <thead className="thead-dark">
-          <tr>
-            <th>Name</th>
-            <th>Code</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {results.map((obj:Section) => {
-            return (
-              <tr key={obj.code}>
-                <td>{obj.name}</td>
-                <td>{obj.code}</td>
-                <td>{obj.description}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="col-md-12 d-flex justify-content-end mt-4 pt-1">
-          <PaginationComponent
-            limit={10}
-            totalCount={count}
-            skip={skip}
-            onPageChange={handlePageChange}
-          />
-        </div>
+      <Card className="results-card">
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h5 className="card-title mb-0">Search Results</h5>
+            <Button variant="success" onClick={handleShowModal}>
+              <FaPlus /> New Section
+            </Button>
+          </div>
+
+          <div className="table-responsive">
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Code</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((obj: Section) => (
+                  <tr key={obj.code}>
+                    <td>{obj.name}</td>
+                    <td>{obj.code}</td>
+                    <td>{obj.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="d-flex justify-content-end mt-4">
+            <PaginationComponent
+              limit={10}
+              totalCount={count}
+              skip={skip}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </Card.Body>
+      </Card>
+
       <ModalPopup
         head="Create New Section"
         size="lg"
         show={showModal}
         handleClose={handleCloseModal}
       >
-        <CreateAndUpdateSection  handleClose={handleCloseModal}  />
+        <CreateAndUpdateSection handleClose={handleCloseModal} />
       </ModalPopup>
-    </div>
+    </Container>
   );
 };
 
