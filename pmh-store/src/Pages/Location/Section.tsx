@@ -8,14 +8,18 @@ import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
-import { FaPlus, FaSearch, FaTimes, FaSave } from "react-icons/fa";
+import { FaPlus, FaSearch, FaTimes, FaSave, FaEdit } from "react-icons/fa";
 import "./Section.scss";
 
 const SectionList: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
-  const [results,setResults]=useState<Section[]>([])
+  const [results, setResults] = useState<Section[]>([]);
   const [count, setCount] = useState(0);
-  const handleCloseModal = () => setShowModal(false);
+  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedSection(null);
+  };
   const handleShowModal = () => setShowModal(true);
   const [clearChild, setClearChild] = useState(false);
   const { setLoadingState } = useLoading();
@@ -28,9 +32,10 @@ const SectionList: React.FC = () => {
     getValues,
   } = useForm();
   const [skip, setSkip] = useState(0);
-  const fetchSections=async(newSkip:number)=>{
+
+  const fetchSections = async (newSkip: number) => {
     try {
-      setLoadingState(true)
+      setLoadingState(true);
       let formData = await getValues();
       let params = {
         name: formData.name ? formData.name.name : "",
@@ -39,31 +44,41 @@ const SectionList: React.FC = () => {
       };
       let query = await queryString.stringify(params);
       let { data } = await axios.get(`/stock/section?${query}`);
-      setResults(data.results)
-      setCount(data.count)
+      setResults(data.results);
+      setCount(data.count);
     } catch (error) {
-      
-    }finally{
-      setLoadingState(false)
+      // Handle error
+    } finally {
+      setLoadingState(false);
     }
-  }
-  const onSubmit=()=>{
-    setSkip(0)
-    fetchSections(0)
-  }
-  useEffect(()=>{
-    fetchSections(0)
-  },[showModal])
-  const handlePageChange = (page:number) => {
+  };
+
+  const onSubmit = () => {
+    setSkip(0);
+    fetchSections(0);
+  };
+
+  useEffect(() => {
+    fetchSections(0);
+  }, [showModal]);
+
+  const handlePageChange = (page: number) => {
     const newSkip = (page - 1) * 10;
     setSkip(newSkip);
-    fetchSections(newSkip)
+    fetchSections(newSkip);
   };
+
   const handleClear = () => {
     reset();
     setClearChild(!clearChild);
-    fetchSections(0)
+    fetchSections(0);
   };
+
+  const handleEdit = (section: Section) => {
+    setSelectedSection(section);
+    setShowModal(true);
+  };
+
   return (
     <Container fluid className="section-list">
       <h2 className="page-title mb-4">Section Management</h2>
@@ -129,14 +144,24 @@ const SectionList: React.FC = () => {
                   <th>Name</th>
                   <th>Code</th>
                   <th>Description</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((obj: Section) => (
-                  <tr key={obj.code}>
+                  <tr key={obj._id}>
                     <td>{obj.name}</td>
                     <td>{obj.code}</td>
                     <td>{obj.description}</td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleEdit(obj)}
+                      >
+                        <FaEdit /> Edit
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -155,14 +180,16 @@ const SectionList: React.FC = () => {
       </Card>
 
       <ModalPopup
-        head="Create New Section"
+        head={selectedSection ? "Edit Section" : "Create New Section"}
         size="lg"
         show={showModal}
         handleClose={handleCloseModal}
         dialogClassName="section-modal"
       >
-        <CreateAndUpdateSection handleClose={handleCloseModal} />
-        
+        <CreateAndUpdateSection
+          handleClose={handleCloseModal}
+          sectionToEdit={selectedSection}
+        />
       </ModalPopup>
     </Container>
   );

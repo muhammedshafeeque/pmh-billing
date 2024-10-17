@@ -1,23 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
 import { FaSave, FaTimes } from "react-icons/fa";
 
-const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
+interface CreateAndUpdateSectionProps extends PopupChildeProp {
+  sectionToEdit?: Section | null;
+}
+
+const CreateAndUpdateSection: React.FC<CreateAndUpdateSectionProps> = ({ handleClose, sectionToEdit }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<Section>();
   const { setLoadingState } = useLoading();
+
+  useEffect(() => {
+    if (sectionToEdit) {
+      reset(sectionToEdit);
+    }
+  }, [sectionToEdit, reset]);
+
   const onSubmit: SubmitHandler<Section> = async (data: Section) => {
     try {
       setLoadingState(true);
-      await axios.post("stock/section", data);
+      if (sectionToEdit) {
+        await axios.patch(`stock/section/${sectionToEdit._id}`, data);
+      } else {
+        await axios.post("stock/section", data);
+      }
       handleClose();
     } catch (error) {
+      console.error("Error submitting section:", error);
     } finally {
       setLoadingState(false);
     }
@@ -66,7 +83,7 @@ const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
           <FaTimes /> Cancel
         </Button>
         <Button variant="primary" type="submit">
-          <FaSave /> Save Section
+          <FaSave /> {sectionToEdit ? 'Update' : 'Save'} Section
         </Button>
       </div>
     </Form>
