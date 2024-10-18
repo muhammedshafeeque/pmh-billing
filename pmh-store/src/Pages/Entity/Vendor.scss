@@ -1,0 +1,66 @@
+.vendor-list {
+  .page-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .search-card, .results-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  .table-responsive {
+    margin-top: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+
+    th {
+      background-color: #f8f9fa;
+      border: none;
+      padding: 12px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    td {
+      background-color: white;
+      border: none;
+      padding: 12px;
+      vertical-align: middle;
+    }
+
+    tr {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .vendor-modal {
+    .modal-content {
+      border-radius: 8px;
+    }
+  }
+}
+
