@@ -1,18 +1,27 @@
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { VENDOR } from "../Models/VendorModal.js";
-import { createAccountHead } from "../Service/AccountsService.js";
+import { createAccountHead, deleteAccountHead } from "../Service/AccountsService.js";
 import { queryGen } from "../Utils/utils.js";
 
 export const createVendor = async (req, res, next) => {
+  let createdAccountHead = null;
   try {
-    req.body.accountHEad = await createAccountHead({
+    createdAccountHead = await createAccountHead({
       name: req.body.name,
       credit: Number(req.body.accountBallance),
       type: "payable",
     });
-    await VENDOR.create(req.body);
-    res.send({ message: "Vendor Created Successfully" });
+    req.body.accountHEad = createdAccountHead._id;
+    const createdVendor = await VENDOR.create(req.body);
+    res.status(201).send({ message: "Vendor Created Successfully", vendor: createdVendor });
   } catch (error) {
+    if (createdAccountHead) {
+      try {
+        await deleteAccountHead(createdAccountHead._id);
+      } catch (deleteError) {
+        console.error("Error deleting account head:", deleteError);
+      }
+    }
     next(error);
   }
 };
