@@ -23,6 +23,28 @@ interface CreateAndUpdateVendorProps extends PopupChildeProp {
   vendorToEdit?: Vendor | null;
 }
 
+// Define allowed fields based on vendorValidation schema
+const allowedFields = [
+  "name",
+  "contactEmail",
+  "contactPhone",
+  "street",
+  "city",
+  "state",
+  "zipCode",
+  "country",
+  "accountBallance",
+];
+
+const filterVendorData = (data: Vendor): Partial<Vendor> => {
+  return Object.keys(data).reduce((acc, key) => {
+    if (allowedFields.includes(key)) {
+      acc[key as keyof Vendor] = data[key as keyof Vendor] as Vendor[keyof Vendor];
+    }
+    return acc;
+  }, {} as Partial<Vendor>);
+};
+
 const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClose, vendorToEdit }) => {
   const {
     register,
@@ -41,10 +63,11 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
   const onSubmit: SubmitHandler<Vendor> = async (data: Vendor) => {
     try {
       setLoadingState(true);
+      const filteredData = filterVendorData(data);
       if (vendorToEdit) {
-        await axios.patch(`entity/vendor/${vendorToEdit._id}`, data);
+        await axios.patch(`entity/vendor/${vendorToEdit._id}`, filteredData);
       } else {
-        await axios.post("entity/vendor", data);
+        await axios.post("entity/vendor", filteredData);
       }
       handleClose();
     } catch (error) {
