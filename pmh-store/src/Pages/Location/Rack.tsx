@@ -104,7 +104,7 @@ const RackList: React.FC = () => {
   };
 
   return (
-    <Container fluid className="rack-list">
+    <Container fluid className="section-list">
       <h2 className="page-title mb-4">Rack Management</h2>
       <Card className="mb-4 search-card">
         <Card.Body>
