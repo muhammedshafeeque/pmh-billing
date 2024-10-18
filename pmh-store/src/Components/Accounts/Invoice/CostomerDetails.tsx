@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Col, Form, Row } from "react-bootstrap";
-import "./accounts.scss";
+import { Form, Row, Col, InputGroup } from "react-bootstrap";
+import { FaUser, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import AutoComplete from "../../AutoComplete/AutoComplete";
 import axios from "../../../Api/Api";
 import { useLoading } from "../../../Contexts/LoaderContext";
-const CostumerDetails: React.FC <any>= ({setCustomer}) => {
+
+const CostumerDetails: React.FC<any> = ({ setCustomer }) => {
   const { setLoadingState } = useLoading();
-  const { control, handleSubmit, register, errors, setValue,watch }: any = useForm({
+  const { control, handleSubmit, register, errors, setValue, watch }: any = useForm({
     defaultValues: {
       customerName: "",
       mobile: "",
@@ -15,8 +16,7 @@ const CostumerDetails: React.FC <any>= ({setCustomer}) => {
     },
   });
 
-
-  const onSubmit = async(data: any) => {
+  const onSubmit = async (data: any) => {
     if (data.customerName._id) {
       setCustomer(data)
     } else if (data.customerName && data.mobile) {
@@ -35,74 +35,61 @@ const CostumerDetails: React.FC <any>= ({setCustomer}) => {
       }
     }
   };
-  const customer=watch('customerName')
-  useEffect(() => {
-    setValue('mobile',customer.phone)
-  }, [customer]);
+
   return (
     <Form onBlur={handleSubmit(onSubmit)}>
-      <Col className="inv-cards">
-        <h4 className="invoice-heads">Invoice To</h4>
-        <Row>
-          <Col>
-            <Form.Group controlId="customerName">
+      <h6 className="mb-2 text-primary">Customer Details</h6>
+      <Row className="g-1">
+        <Col md={6}>
+          <Form.Group controlId="customerName" className="mb-1">
+            <Form.Label className="small">Customer Name</Form.Label>
+            <InputGroup size="sm">
+              <InputGroup.Text><FaUser /></InputGroup.Text>
               <AutoComplete
                 register={register}
                 errors={errors}
                 name="customerName"
-                label="Customer Name"
                 setValue={setValue}
                 readField={"firstName"}
                 url={`/entity/customer?firstNameContains`}
                 isRequired={true}
                 editable={true}
               />
-            </Form.Group>
-          </Col>
-          <Col>
-          <Form.Group controlId="customerName">
-            <Form.Label>Mobile</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter mobile"
-              {...register("mobile", { required: "mobile is required" })}
-            />
-            
-              {/* <AutoComplete
-                register={register}
-                errors={errors}
-                name="mobile"
-                label="Mobile"
-                setValue={setValue}
-                readField={"phone"}
-                url={`/entity/customer?phoneContains`}
-                isRequired={true}
-                editable={true}
-              /> */}
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Form.Group controlId="address">
-              <Form.Label>Address</Form.Label>
-
-              <Controller
-                name="address"
-                control={control}
-                render={({ field }) => (
-                  <Form.Control
-                    size="sm"
-                    as="textarea"
-                    placeholder="Leave a comment here"
-                    {...field}
-                  />
-                )}
+            </InputGroup>
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group controlId="mobile" className="mb-1">
+            <Form.Label className="small">Mobile</Form.Label>
+            <InputGroup size="sm">
+              <InputGroup.Text><FaPhone /></InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="Enter mobile"
+                {...register("mobile", { required: "Mobile is required" })}
               />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Col>
+            </InputGroup>
+          </Form.Group>
+        </Col>
+      </Row>
+      <Form.Group controlId="address" className="mb-1">
+        <Form.Label className="small">Address</Form.Label>
+        <InputGroup size="sm">
+          <InputGroup.Text><FaMapMarkerAlt /></InputGroup.Text>
+          <Controller
+            name="address"
+            control={control}
+            render={({ field }) => (
+              <Form.Control
+                as="textarea"
+                rows={1}
+                placeholder="Enter address"
+                {...field}
+              />
+            )}
+          />
+        </InputGroup>
+      </Form.Group>
     </Form>
   );
 };
