@@ -70,12 +70,26 @@ export const updateSection = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
-export const removeSection = async (req, res) => {
+export const removeSection = async (req, res, next) => {
   try {
+    // Check if there are any racks associated with this section
+    const relatedRacks = await getRacks({ section: req.params.id });
+
+    if (relatedRacks.results.length > 0) {
+      // If there are related racks, don't allow deletion
+      return res.status(400).json({
+        message: "Cannot delete section. There are racks associated with this section.",
+        relatedRacksCount: relatedRacks.length
+      });
+    }else{
+      // If no related racks, proceed with deletion
     await deleteSection(req.params.id);
     res.send("Section Removed Successfully");
+    }
+
+    
   } catch (error) {
-    res.status(400).send("Err:" + error);
+    next(error);
   }
 };
 export const createRack = async (req, res) => {
