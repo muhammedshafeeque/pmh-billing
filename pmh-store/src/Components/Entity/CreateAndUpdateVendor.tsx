@@ -80,7 +80,7 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
               {...register("contactPhone", { 
                 required: "Phone number is required",
                 valueAsNumber: true,
-                validate: (value) => value > 0 || "Please enter a valid phone number"
+                
               })}
               isInvalid={!!errors.contactPhone}
             />
@@ -169,7 +169,6 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
               placeholder="Enter zip code"
               {...register("zipCode", { 
                 valueAsNumber: true,
-                validate: (value) => value > 0 || "Please enter a valid zip code"
               })}
               isInvalid={!!errors.zipCode}
             />
