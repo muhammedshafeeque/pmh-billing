@@ -25,6 +25,7 @@ export const createVendor = async (req, res, next) => {
     next(error);
   }
 };
+
 export const createCustomer = async (req, res, next) => {
   try {
     req.body.accountHEad = await createAccountHead({
@@ -59,6 +60,7 @@ export const getVendors = async (req, res, next) => {
     next(error);
   }
 };
+
 export const getCustomers = async (req, res, next) => {
   try {
     let skip = req.query.skip ? parseInt(req.query.skip) : 0;
@@ -74,12 +76,14 @@ export const getCustomers = async (req, res, next) => {
     next(error);
   }
 };
+
 export const vcfFileCustomersBulkUpload = (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
 };
+
 export const createNewCustomerFromInvoice = async (req, res, next) => {
   try {
     let  custExist=await CUSTOMER.findOne({phone:req.body.phone})
@@ -103,6 +107,39 @@ export const createNewCustomerFromInvoice = async (req, res, next) => {
       res.send({ message: "new customer Added", response: CUSTOMER });
     }
     
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateVendor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedVendor = await VENDOR.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedVendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json(updatedVendor);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteVendor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedVendor = await VENDOR.findByIdAndDelete(id);
+
+    if (!deletedVendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json({ message: "Vendor deleted successfully" });
   } catch (error) {
     next(error);
   }

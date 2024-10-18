@@ -4,25 +4,13 @@ export const vendorValidation = Joi.object({
   contactEmail: Joi.string().email().trim().lowercase().required().messages({
     "string.email": "Please provide a valid email address",
   }),
-  contactPhone: Joi.string()
-    .trim()
-    .pattern(/^\d{10}$/)
-    .required()
-    .messages({
-      "string.pattern.base": "Please provide a valid phone number",
-    }),
+  contactPhone: Joi.number().required(),
   street: Joi.string().trim().optional(),
   city: Joi.string().trim().optional(),
   state: Joi.string().trim().optional(),
-  zipCode: Joi.string()
-    .trim()
-    .pattern(/^\d{5}$/)
-    .optional()
-    .messages({
-      "string.pattern.base": "Please provide a valid zip code",
-    }),
+  zipCode: Joi.number().optional(),
   country: Joi.string().trim().optional(),
-  OpeningBalance: Joi.number().optional(),
+  accountBallance: Joi.number().optional(),
 });
 
 export const customerValidation = Joi.object({
