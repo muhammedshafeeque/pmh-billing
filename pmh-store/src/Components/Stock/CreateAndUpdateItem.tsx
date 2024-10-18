@@ -1,59 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button, Col, Row } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../AutoComplete/AutoComplete";
 import MultiSelectAutoComplete from "../MultiSelect/MultiSelect";
+import { FaSave, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
 
 interface Item {
+  _id?: string;
   name: string;
   code: string;
   unit: string;
   quantity: number;
   category: string;
-  rack: string;
+  rack: string[];
   remarks?: string;
 }
 
-const CreateAndUpdateItem: React.FC<PopupChildeProp> = ({ handleClose }) => {
+interface CreateAndUpdateItemProps extends PopupChildeProp {
+  itemToEdit?: Item | null;
+}
+
+const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, itemToEdit }) => {
   const [items, setItems] = useState<Item[]>([
-    { name: "", code: "", unit: "", quantity: 0, category: "", rack: "" },
+    { name: "", code: "", unit: "", quantity: 0, category: "", rack: [] },
   ]);
   const [clearChild, setClearChild] = useState(false);
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
-  } = useForm<Item>();
+  } = useForm<{ items: Item[] }>();
   const { setLoadingState } = useLoading();
 
-  const onSubmit: SubmitHandler<Item> = async (data: any) => {
+  useEffect(() => {
+    if (itemToEdit) {
+      reset({ items: [itemToEdit] });
+      setItems([itemToEdit]);
+    }
+  }, [itemToEdit, reset]);
+
+  const onSubmit: SubmitHandler<{ items: Item[] }> = async (data) => {
     try {
       setLoadingState(true);
-      let body: any[] = [];
-      data.items.forEach((item: any) => {
-        let obj = {
-          name: item.name,
-          code: item.code,
-          unit: item.unit._id,
-          racks: [],
-          totalStock: item.quantity,
-          category: item.category._id,
-          remark: item.remark,
-        };
+      let body: any[] = data.items.map(item => ({
+        name: item.name,
+        code: item.code,
+        unit: item.unit._id,
+        racks: item.rack.map((ra: any) => ra._id),
+        totalStock: item.quantity,
+        category: item.category._id,
+        remark: item.remarks,
+      }));
 
-        item.rack.forEach((ra: any) => {
-          obj.racks.push(ra._id);
-        });
-
-        body.push(obj);
-      });
-      await axios.post("stock/item", body);
+      if (itemToEdit) {
+        await axios.patch(`stock/item/${itemToEdit._id}`, body[0]);
+      } else {
+        await axios.post("stock/item", body);
+      }
       handleClose();
     } catch (error) {
-      console.log(error);
+      console.error("Error submitting item:", error);
     } finally {
       setLoadingState(false);
     }
@@ -62,9 +72,10 @@ const CreateAndUpdateItem: React.FC<PopupChildeProp> = ({ handleClose }) => {
   const handleAddItem = () => {
     setItems([
       ...items,
-      { name: "", code: "", unit: "", quantity: 0, category: "", rack: "" },
+      { name: "", code: "", unit: "", quantity: 0, category: "", rack: [] },
     ]);
   };
+
   const handleDeleteItem = (indexToDelete: number) => {
     setItems(items.filter((_, index) => index !== indexToDelete));
   };
@@ -175,34 +186,43 @@ const CreateAndUpdateItem: React.FC<PopupChildeProp> = ({ handleClose }) => {
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
-            <Col
-              className="mt-3 "
-              style={{ display: "flex", justifyContent: "flex-end" }}
-            >
-              <Button
-                onClick={handleAddItem}
-                className="ml-2 mt-3 mr-2"
-                size="sm"
-                style={{ marginRight: "10px", maxHeight: "40px" }}
-              >
-                Add
-              </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => handleDeleteItem(index)}
-                className="ml-2 mt-3"
-                style={{ maxHeight: "40px" }}
-              >
-                Delete
-              </Button>
-            </Col>
           </Row>
+          {!itemToEdit && (
+            <Row className="mt-3">
+              <Col className="d-flex justify-content-end">
+                {index === items.length - 1 && (
+                  <Button
+                    onClick={handleAddItem}
+                    variant="outline-primary"
+                    size="sm"
+                    className="me-2"
+                  >
+                    <FaPlus /> Add Item
+                  </Button>
+                )}
+                {items.length > 1 && (
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => handleDeleteItem(index)}
+                  >
+                    <FaTrash /> Remove
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          )}
+          {index < items.length - 1 && <hr className="mt-4 mb-4" />}
         </div>
       ))}
-      <Button variant="primary" type="submit" className="mt-3" size="sm">
-        Submit
-      </Button>
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> {itemToEdit ? 'Update' : 'Save'} Item
+        </Button>
+      </div>
     </Form>
   );
 };
