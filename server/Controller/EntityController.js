@@ -7,7 +7,7 @@ export const createVendor = async (req, res, next) => {
   try {
     req.body.accountHEad = await createAccountHead({
       name: req.body.name,
-      credit: Number(req.body.OpeningBalance),
+      credit: Number(req.body.accountBallance),
       type: "payable",
     });
     await VENDOR.create(req.body);

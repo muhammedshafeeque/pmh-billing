@@ -75,9 +75,13 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
           <Form.Group controlId="formVendorPhone">
             <Form.Label>Phone</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               placeholder="Enter phone number"
-              {...register("contactPhone", { required: "Phone number is required" })}
+              {...register("contactPhone", { 
+                required: "Phone number is required",
+                valueAsNumber: true,
+                validate: (value) => value > 0 || "Please enter a valid phone number"
+              })}
               isInvalid={!!errors.contactPhone}
             />
             <Form.Control.Feedback type="invalid">
@@ -161,10 +165,17 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
           <Form.Group controlId="formVendorZipCode">
             <Form.Label>Zip Code</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               placeholder="Enter zip code"
-              {...register("zipCode")}
+              {...register("zipCode", { 
+                valueAsNumber: true,
+                validate: (value) => value > 0 || "Please enter a valid zip code"
+              })}
+              isInvalid={!!errors.zipCode}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.zipCode?.message}
+            </Form.Control.Feedback>
           </Form.Group>
         </Col>
         <Col md={6}>
