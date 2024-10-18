@@ -179,20 +179,11 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
         </Col>
       </Row>
 
-      <div className="mt-4 d-flex justify-content-end">
-        <Button 
-          variant="outline-secondary" 
-          onClick={handleClose} 
-          className="me-2" 
-          size="sm"
-        >
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
           <FaTimes /> Cancel
         </Button>
-        <Button 
-          variant="outline-primary" 
-          type="submit" 
-          size="sm"
-        >
+        <Button variant="primary" type="submit">
           <FaSave /> {vendorToEdit ? 'Update' : 'Save'} Vendor
         </Button>
       </div>
