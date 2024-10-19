@@ -18,6 +18,11 @@ const stockModel = mongoose.Schema(
     EndDate: { type: Date },
     wastage: { type: Number },
     profit: { type: Number },
+    purchasedUnit: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: collections.UNIT_COLLECTION,
+      required: true,
+    },
     ProfitPercentage: { type: Number },
     ExpiryDate: { type: String },
     vendor: {

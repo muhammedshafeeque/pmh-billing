@@ -88,6 +88,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
           purchasedQuantity: Number(item.purchasedQuantity),
           sellablePricePerUnit: Number(item.sellablePricePerUnit),
           purchasedRatePerUnit: Number(item.purchaseRate),
+          purchasedUnit: item.unit._id
         })),
         vendor: data.vendor._id,
         payableAmount: Number(data.payableAmount),

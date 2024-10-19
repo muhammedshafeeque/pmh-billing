@@ -51,6 +51,7 @@ export const getItem = (query) => {
         ...result.toObject(),
 
         category: result.category.name,
+        unit: result.unit.unitName,
       }));
       resolve({ results, count });
     } catch (error) {

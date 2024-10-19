@@ -15,7 +15,7 @@ interface Stock {
   name: string;
   code: string;
   category: { name: string };
-  unit: { unitName: string };
+  unit: string;
   purchasedRatePerUnit: number;
   purchasedQuantity: number;
   sellablePricePerUnit: number;
@@ -188,7 +188,7 @@ const StocksList: React.FC = () => {
                     <td>{obj.name}</td>
                     <td>{obj.code}</td>
                     <td>{obj.category.name}</td>
-                    <td>{obj.unit.unitName}</td>
+                    <td>{obj.unit}</td>
                     <td>{obj.purchasedRatePerUnit}</td>
                     <td>{obj.purchasedQuantity}</td>
                     <td>{obj.sellablePricePerUnit}</td>

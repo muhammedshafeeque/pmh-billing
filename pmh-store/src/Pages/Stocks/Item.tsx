@@ -16,7 +16,7 @@ interface Item {
   code: string;
   category: string;
   racks: { _id: string; name: string }[];
-  unit: { unitName: string };
+  unit: string;
   totalStock: number;
 }
 
@@ -189,7 +189,7 @@ const ItemsList: React.FC = () => {
                         <span key={rack._id}>{rack.name}, </span>
                       ))}
                     </td>
-                    <td>{obj.unit.unitName}</td>
+                    <td>{obj.unit}</td>
                     <td>{obj.totalStock}</td>
                   </tr>
                 ))}

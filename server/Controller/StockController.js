@@ -35,7 +35,6 @@ import {
 } from "../Utils/utils.js";
 import {
   createPayment,
-  createTransaction,
   transferDiscount,
 } from "../Service/AccountsService.js";
 import { VENDOR } from "../Models/VendorModal.js";
@@ -189,13 +188,7 @@ export const createStock = async (req, res, next) => {
       ACCOUNT.findOne(accountKeywords).populate("accountHead"),
       BILL.create(req.body),
     ]);
-   
-    // await createTransaction({
-    //   fromAccount: vendor.accountHEad._id,
-    //   toAccount: account.accountHead._id,
-    //   amount: req.body.payableAmount,
-    //   description: "Purchase Bill",
-    // });
+  
     let Discount = req.body.billAmount - req.body.payableAmount;
     if (Discount > 0) {
       await transferDiscount({
@@ -237,15 +230,11 @@ export const getStocks = async (req, res, next) => {
         path: "item",
         populate: [
           {
-            path: "unit",
-            model: collections.UNIT_COLLECTION,
-          },
-          {
             path: "category",
             model: collections.CATEGORY_COLLECTIONS,
           },
         ],
-      })
+      }).populate("purchasedUnit")
       .populate("vendor")
       .sort({ createdAt: -1 })
       .limit(limit)
@@ -256,7 +245,7 @@ export const getStocks = async (req, res, next) => {
       name: result.item.name,
       item: result.item._id,
       vendor: result.vendor.name,
-      unit: result.item.unit,
+      unit: result.purchasedUnit.unitName,
       code: result.item.code,
       category: result.item.category,
     }));

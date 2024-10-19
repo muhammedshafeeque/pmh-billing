@@ -1,15 +1,19 @@
 import mongoose from "mongoose";
 import { collections } from "../Constants/collections.js";
-const itemModal = mongoose.Schema(
+
+const itemSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
     code: { type: String, require: true, unique: true },
     unit: {
       type: mongoose.Schema.Types.ObjectId,
       ref: collections.UNIT_COLLECTION,
-      required: true,
+      required: true
     },
-    totalStock: { type: Number, default: 0 },
+    totalStock: {
+      type: Number,
+      default: 0
+    },
     accountHead: {
       type: mongoose.Schema.Types.ObjectId,
       ref: collections.ACCOUNT_HEAD_COLLECTIONS,
@@ -29,4 +33,5 @@ const itemModal = mongoose.Schema(
     timestamps: true,
   }
 );
-export const ITEM = mongoose.model(collections.ITEM_COLLECTION, itemModal);
+
+export const ITEM = mongoose.model(collections.ITEM_COLLECTION, itemSchema);
