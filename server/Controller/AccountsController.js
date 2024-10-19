@@ -11,7 +11,7 @@ export const getAccountHeads = async (req, res, next) => {
     let skip = req.query.skip ? parseInt(req.query.skip) : 0;
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
-    let results = await ACCOUNT_HEAD.find(keywords).limit(limit).skip(skip);
+    let results = await ACCOUNT_HEAD.find(keywords).sort({ createdAt: -1 }).limit(limit).skip(skip);
     let count = await ACCOUNT_HEAD.find(keywords).count();
     res.send({ results, count });
   } catch (error) {
@@ -40,6 +40,7 @@ export const getAccount = async (req,res,next) => {
     let keywords = await queryGen(req.query);
     let results = await ACCOUNT.find(keywords)
       .populate("accountHead")
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
     let count = await ACCOUNT.find(keywords).count();
@@ -86,7 +87,7 @@ export const getPaymentList=async(req,res,next)=>{
       .populate('fromAccount')
       .populate('paymentTo')
       .limit(limit)
-      .skip(skip)
+      .skip(skip) 
       .sort({ createdAt: -1 })
     let count = await PAYMENT.find(keywords).count();
     results = results.map((result) => ({

@@ -190,12 +190,12 @@ export const createStock = async (req, res, next) => {
       BILL.create(req.body),
     ]);
    
-    await createTransaction({
-      fromAccount: vendor.accountHEad._id,
-      toAccount: account.accountHead._id,
-      amount: req.body.payableAmount,
-      description: "Purchase Bill",
-    });
+    // await createTransaction({
+    //   fromAccount: vendor.accountHEad._id,
+    //   toAccount: account.accountHead._id,
+    //   amount: req.body.payableAmount,
+    //   description: "Purchase Bill",
+    // });
     let Discount = req.body.billAmount - req.body.payableAmount;
     if (Discount > 0) {
       await transferDiscount({
@@ -209,7 +209,7 @@ export const createStock = async (req, res, next) => {
     await Promise.all(
       req.body.items.map(async (stock) => {
         stock.vendor = vendor._id;
-        stock.mainAccount = account;
+        stock.mainAccount = vendor.accountHEad;
         stock.bill = bill._id;
         await postStock(stock);
       })
@@ -232,6 +232,7 @@ export const getStocks = async (req, res, next) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
     let results = await Stock.find(keywords)
+        .sort({ createdAt: -1 })
       .populate({
         path: "item",
         populate: [
@@ -246,6 +247,7 @@ export const getStocks = async (req, res, next) => {
         ],
       })
       .populate("vendor")
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
     let count = await Stock.find(keywords).count();
@@ -274,8 +276,9 @@ export const addItemToRack = async (req, res, next) => {
 export const updateStock = async (req, res, next) => {
   try {
     await patchStock(req.params.id, req.body);
+    res.send("Updated Successfully");
   } catch (error) {
-    res.send(error);
+    next(error);
   }
 };
 export const createCategory = async (req, res, next) => {
@@ -357,7 +360,7 @@ export const getCategories = async (req, res, next) => {
     let skip = req.query.skip ? parseInt(req.query.skip) : 0;
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
-    let results = await Category.find(keywords).limit(limit).skip(skip);
+    let results = await Category.find(keywords).sort({ createdAt: -1 }).limit(limit).skip(skip);
     let count = await Category.find(keywords).count();
     res.send({ results, count });
   } catch (error) {

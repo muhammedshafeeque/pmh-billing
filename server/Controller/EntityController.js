@@ -46,6 +46,7 @@ export const getVendors = async (req, res, next) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
     let results = await VENDOR.find(keywords)
+      .sort({ createdAt: -1 })
       .populate("accountHEad")
       .limit(limit)
       .skip(skip);
@@ -68,6 +69,7 @@ export const getCustomers = async (req, res, next) => {
     let keywords = await queryGen(req.query);
     let customers = await CUSTOMER.find(keywords)
       .populate("accountHEad")
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
     let count = await CUSTOMER.find(keywords).count();

@@ -43,6 +43,7 @@ export const getItem = (query) => {
         .populate("unit")
         .populate("racks")
         .populate("category")
+        .sort({ createdAt: -1 })
         .limit(limit)
         .skip(skip);
       let count = await ITEM.find(keywords).count();
