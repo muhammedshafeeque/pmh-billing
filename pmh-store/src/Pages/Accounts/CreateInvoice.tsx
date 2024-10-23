@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Alert, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Alert } from "react-bootstrap";
 import CustomerDetails from "../../Components/Accounts/Invoice/CustomerDetails";
 import InvoiceDetails from "../../Components/Accounts/Invoice/InvoiceDetails";
 import ItemsForm from "../../Components/Accounts/Invoice/Items";
 import InvoiceTotals from "../../Components/Accounts/Invoice/Totals";
 import Action from "../../Components/Accounts/Invoice/Actions";
+import InvoiceItemAutoComplete from "../../Components/Accounts/Invoice/InvoiceItemAutoComplete";
 
 const CreateInvoice: React.FC = () => {
   const [customer, setCustomer] = useState<any>({});
@@ -15,21 +16,32 @@ const CreateInvoice: React.FC = () => {
     outstanding: 0,
     payableAmount: 0,
   });
-  const [quickAddItem, setQuickAddItem] = useState("");
 
   useEffect(() => {
     // Auto-focus on the quick add item input when the component mounts
-    const quickAddInput = document.getElementById("quickAddItem");
+    const quickAddInput = document.getElementById("itemSearch");
     if (quickAddInput) {
       quickAddInput.focus();
     }
   }, []);
 
-  const handleQuickAdd = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && quickAddItem.trim() !== "") {
-      // Add logic to quickly add an item by barcode or name
-      // This should integrate with your existing ItemsForm component
-      setQuickAddItem("");
+  const handleQuickAdd = (selectedItem: any) => {
+    if (selectedItem) {
+      console.log(selectedItem)
+      const newItem = {
+        ...selectedItem,
+        quantity: 1, // Default quantity
+        // Add any other necessary fields
+      };
+      setInvoiceItems([...invoiceItems, newItem]);
+      
+      // Update totals
+      // This is a simplified calculation. Adjust according to your needs.
+      setTotals(prevTotals => ({
+        ...prevTotals,
+        billAmount: prevTotals.billAmount + selectedItem.price,
+        payableAmount: prevTotals.payableAmount + selectedItem.price,
+      }));
     }
   };
 
@@ -43,19 +55,12 @@ const CreateInvoice: React.FC = () => {
         <Col md={8}>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <Form.Control
-                id="quickAddItem"
-                type="text"
-                placeholder="Scan barcode or enter item name"
-                value={quickAddItem}
-                onChange={(e) => setQuickAddItem(e.target.value)}
-                onKeyPress={handleQuickAdd}
-              />
+              <InvoiceItemAutoComplete onItemSelect={handleQuickAdd} />
             </Card.Body>
           </Card>
-          <Card className="shadow-sm">
+          <Card className="shadow-sm ">
             <Card.Body className="p-2">
-              <ItemsForm setInvoiceItems={setInvoiceItems} setTotals={setTotals} />
+              <ItemsForm invoiceItems={invoiceItems} setInvoiceItems={setInvoiceItems} setTotals={setTotals} />
             </Card.Body>
           </Card>
         </Col>
