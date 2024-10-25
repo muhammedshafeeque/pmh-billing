@@ -15,7 +15,7 @@ const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onIte
   const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;
     if (searchTerm.length > 2) {
-      let response:any = await axios.get(`/stock/item?nameContains=${searchTerm}`)
+      let response:any = await axios.get(`/stock/invoice-item?query=${searchTerm}`)
       setSearchResults(response.data.results);
     } else {
       setSearchResults([]);
@@ -55,7 +55,7 @@ const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onIte
               action
               onClick={() => handleItemSelect(item)}
             >
-              {item.name} - {item.code} :- Stocks Available : {item.totalStock} {item.unit}, Racks: {item.racks.map((rack: any) => rack.code).join(', ')}
+              {item.name} - {item.code} :- Stocks Available : {item.stock} {item.unitCode}, Racks: {item.racks.map((rack: any) => rack.rackCode).join(', ')}
             </ListGroup.Item>
           ))}
         </ListGroup>

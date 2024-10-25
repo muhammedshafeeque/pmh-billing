@@ -27,6 +27,7 @@ import {
 } from "../Helper/StockHelpers.js";
 import { Category } from "../Models/CategoryModal.js";
 import {
+  convertToBaseUnit,
   ExcelDataExtractor,
   generateErrorExcelBlob,
   generateExcelBlob,
@@ -43,6 +44,7 @@ import { BILL } from "../Models/BillModal.js";
 import { Stock } from "../Models/StockModal.js";
 import { collections } from "../Constants/collections.js";
 import mongoose from "mongoose";
+import { ITEM } from "../Models/itemModal.js";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -357,3 +359,71 @@ export const getCategories = async (req, res, next) => {
   }
 };
 
+export const getItemsForInvoice = async (req, res, next) => {
+  try {
+    let keywords = await queryGen({
+      nameContains: req.query.query,
+      codeContains: req.query.query
+    });
+    
+    let items = await ITEM.find(keywords)
+      .limit(10)
+      .populate('unit')
+      .populate('racks')
+      .populate({
+        path:'racks',
+        populate: {
+          path: "section",
+          model: collections.SECTION_COLLECTION,
+        },
+      });
+
+    const itemsWithStocks = await Promise.all(items.map(async (item) => {
+      try {
+        const stocks = await Stock.find({ 
+          item: new mongoose.Types.ObjectId(item._id), 
+          quantity: { $gt: 0 } 
+        }).populate('purchasedUnit');
+        return { item, stocks }; 
+      } catch (error) {
+        console.error(`Error fetching stocks for item ${item._id}:`, error);
+        return { item, stocks: [] };
+      }
+    }));
+
+    let itemList = [];
+    
+    itemsWithStocks.forEach((itemWithStock) => {
+      if (itemWithStock.stocks.length) {
+        itemWithStock.stocks.forEach((inv) => {
+          if (inv.quantity > 0) {
+            let inventory = {
+              name: itemWithStock.item.name,
+              code: itemWithStock.item.code,
+              itemId:itemWithStock.item._id,
+              stockId:inv._id,
+              racks: itemWithStock.item.racks ? itemWithStock.item.racks.map((obj) => ({
+                ...obj.toObject(),
+                rackName: obj.name,
+                rackCode: obj.code,
+                section:obj.section.name,
+                sectionCode:obj.section.code
+              })) : [],
+              stock: convertToBaseUnit(inv.quantity,inv.purchasedUnit),
+              unit: itemWithStock.item.unit ? itemWithStock.item.unit.unitName : null,
+              unitCode:itemWithStock.item.unit ? itemWithStock.item.unit.unitCode : null,
+              unitId:itemWithStock.item.unit ? itemWithStock.item.unit._id: null,
+              measurement:itemWithStock.item.unit ? itemWithStock.item.unit.measurement: null,
+              price:inv.sellablePricePerUnit
+            };
+            itemList.push(inventory);
+          }
+        });
+      }
+    });
+
+    res.send({results:itemList});
+  } catch (error) {
+    next(error);
+  }
+};

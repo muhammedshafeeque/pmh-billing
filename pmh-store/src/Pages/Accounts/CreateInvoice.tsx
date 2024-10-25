@@ -1,21 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import { useFieldArray, useForm } from "react-hook-form";
 import CustomerDetails from "../../Components/Accounts/Invoice/CustomerDetails";
 import InvoiceDetails from "../../Components/Accounts/Invoice/InvoiceDetails";
-import ItemsForm from "../../Components/Accounts/Invoice/Items";
 import InvoiceTotals from "../../Components/Accounts/Invoice/Totals";
 import Action from "../../Components/Accounts/Invoice/Actions";
 import InvoiceItemAutoComplete from "../../Components/Accounts/Invoice/InvoiceItemAutoComplete";
+import Items from "../../Components/Accounts/Invoice/Items";
+
+interface InvoiceItem {
+  _id: string;
+  name: string;
+  code: string;
+  price: number;
+  quantity: number;
+  unit: string;
+}
+
+interface InvoiceForm {
+  items: InvoiceItem[];
+}
 
 const CreateInvoice: React.FC = () => {
   const [customer, setCustomer] = useState<any>({});
-  const [invoiceItems, setInvoiceItems] = useState<any[]>([]);
   const [totals, setTotals] = useState({
     billAmount: 0,
     discount: 0,
     outstanding: 0,
     payableAmount: 0,
   });
+  const [total, setTotal] = useState(0);
+
+  const { control, register, watch, setValue } = useForm<InvoiceForm>({
+    defaultValues: {
+      items: [],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "items",
+  });
+
+  const watchItems = watch("items");
 
   useEffect(() => {
     // Auto-focus on the quick add item input when the component mounts
@@ -25,25 +52,30 @@ const CreateInvoice: React.FC = () => {
     }
   }, []);
 
-  const handleQuickAdd = (selectedItem: any) => {
+  const handleQuickAdd = (selectedItem: InvoiceItem) => {
     if (selectedItem) {
-      console.log(selectedItem)
-      const newItem = {
+      append({
         ...selectedItem,
-        quantity: 1, // Default quantity
-        // Add any other necessary fields
-      };
-      setInvoiceItems([...invoiceItems, newItem]);
-      
-      // Update totals
-      // This is a simplified calculation. Adjust according to your needs.
-      setTotals(prevTotals => ({
-        ...prevTotals,
-        billAmount: prevTotals.billAmount + selectedItem.price,
-        payableAmount: prevTotals.payableAmount + selectedItem.price,
-      }));
+        quantity: 1,
+      });
     }
   };
+
+  const handleTotalChange = (newTotal: number) => {
+
+    setTotal(newTotal);
+  };
+  useEffect(()=>{
+    const newTotals = watchItems.reduce(
+      (acc, item) => {
+        acc.billAmount = total;
+        acc.payableAmount = total;
+        return acc;
+      },
+      { billAmount: 0, discount: 0, outstanding: 0, payableAmount: 0 }
+    );
+   setTotals(newTotals)
+  },[total])
 
   return (
     <Container fluid className="py-2">
@@ -58,9 +90,15 @@ const CreateInvoice: React.FC = () => {
               <InvoiceItemAutoComplete onItemSelect={handleQuickAdd} />
             </Card.Body>
           </Card>
-          <Card className="shadow-sm ">
+          <Card className="shadow-sm">
             <Card.Body className="p-2">
-              <ItemsForm invoiceItems={invoiceItems} setInvoiceItems={setInvoiceItems} setTotals={setTotals} />
+              <Items
+                fields={fields}
+                register={register}
+                control={control}
+                remove={remove}
+                onTotalChange={handleTotalChange}
+              />
             </Card.Body>
           </Card>
         </Col>
@@ -82,7 +120,7 @@ const CreateInvoice: React.FC = () => {
           </Card>
           <Card className="shadow-sm">
             <Card.Body className="p-2">
-              <Action totals={totals} invoiceItems={invoiceItems} customer={customer} />
+              <Action totals={totals} invoiceItems={watchItems} customer={customer} />
             </Card.Body>
           </Card>
         </Col>

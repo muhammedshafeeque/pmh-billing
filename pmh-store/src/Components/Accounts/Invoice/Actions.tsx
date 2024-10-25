@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 
 const Action: React.FC<{ totals: any; invoiceItems: any[]; customer: any }> = ({ totals, invoiceItems, customer }) => {
   const handlePayment = () => {
-    // Implement payment logic
+    console.log(invoiceItems)
   };
 
   const handleCancel = () => {

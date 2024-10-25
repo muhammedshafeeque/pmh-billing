@@ -52,6 +52,8 @@ export const getItem = (query) => {
 
         category: result.category.name,
         unit: result.unit.unitName,
+        unitCode: result.unit.unitCode,
+        measurement:result.unit.measurement
       }));
       resolve({ results, count });
     } catch (error) {

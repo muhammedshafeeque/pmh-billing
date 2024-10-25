@@ -230,7 +230,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 }}
                 readField={"unitName"}
                 url={`core/units?measurement=${
-                  watch(`items[${index}].name`)?.unit.measurement
+                  watch(`items[${index}].name`)?.measurement
                 }&unitNameContains`}
                 clear={clearChild}
                 disabled={!watch(`items[${index}].name`)}
