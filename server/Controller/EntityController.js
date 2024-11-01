@@ -88,6 +88,7 @@ export const vcfFileCustomersBulkUpload = (req, res, next) => {
 
 export const createNewCustomerFromInvoice = async (req, res, next) => {
   try {
+    req.body.firstName=req.body.name
     let  custExist=await CUSTOMER.findOne({phone:req.body.phone})
     if(custExist){
       next({status:400,message:'Customer Already Exist in same number'})

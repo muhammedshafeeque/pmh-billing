@@ -20,7 +20,7 @@ const customerSchema = mongoose.Schema(
       match: [/.+\@.+\..+/, "Please provide a valid email address"],
     },
     phone: {
-      type: Number,
+      type: String,
       unique: true,
       trim: true,
       required: true,
