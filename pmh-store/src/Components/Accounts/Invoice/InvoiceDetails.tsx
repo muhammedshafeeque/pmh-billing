@@ -5,7 +5,7 @@ import axios from '../../../Api/Api';
 import moment from "moment";
 import "./accounts.scss";
 
-const InvoiceDetails: React.FC<any> = ({ customer }) => {
+const InvoiceDetails: React.FC<any> = ({ customer ,setInvoiceDetails}) => {
   const [prefix, setPrefix] = useState<any>({ name: "" });
   const [date, setDate] = useState<string>("");
   const [outAmount, setOutAmount] = useState<number>(0);
@@ -18,6 +18,7 @@ const InvoiceDetails: React.FC<any> = ({ customer }) => {
       try {
         const res = await axios.post('core/generate-sequence', { type: '/INV/' });
         setPrefix(res.data);
+        setInvoiceDetails({prefix:res.data,date})
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -33,8 +34,8 @@ const InvoiceDetails: React.FC<any> = ({ customer }) => {
     setDate(formattedDate);
   };
   useEffect(()=>{
-    if(customer&&customer.Outstanding){
-      setOutAmount(customer.Outstanding)
+    if(customer&&customer.accountBallance){
+      setOutAmount(customer.accountBallance)
     }else{
       setOutAmount(0)
     }

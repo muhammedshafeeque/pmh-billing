@@ -20,6 +20,7 @@ import StocksList from "./Pages/Stocks/Stocks";
 import TransactionList from "./Pages/Accounts/Transactions";
 import PaymentList from "./Pages/Accounts/PaymentsList";
 import CreateInvoice from "./Pages/Accounts/CreateInvoice";
+import Customers from "./Pages/Entity/Customers";
 
 const App: React.FC = () => {
   const { user } = usePmh();
@@ -43,6 +44,8 @@ const App: React.FC = () => {
                       <Route path={ROUTERS.GROUPE} element={<GroupeList />} />
                       <Route path={ROUTERS.ITEM} element={<ItemsList />} />
                       <Route path={ROUTERS.VENDOR} element={<VendorList />} />
+                      <Route path={ROUTERS.CUSTOMERS} element={<Customers />} />
+
                       <Route
                         path={ROUTERS.ACCOUNT_HEAD}
                         element={<AccountHeadList />}

@@ -73,6 +73,11 @@ export const getCustomers = async (req, res, next) => {
       .limit(limit)
       .skip(skip);
     let count = await CUSTOMER.find(keywords).count();
+    customers = customers.map((result) => ({
+      ...result.toObject(),
+      accountBallance: result.accountHEad.accountBalance,
+      accountHEad: result.accountHEad.name,
+    }));
     res.send({ count, results: customers });
   } catch (error) {
     next(error);

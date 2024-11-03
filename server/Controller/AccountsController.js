@@ -1,10 +1,13 @@
 import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { ACCOUNT } from "../Models/AccountModal.js";
 import { CUSTOMER } from "../Models/CustomerModal.js";
+import { INVOICE } from "../Models/InvoiceModal.js";
+import { ITEM } from "../Models/itemModal.js";
 import { PAYMENT } from "../Models/PaymentModal.js";
+import { Stock } from "../Models/StockModal.js";
 import { TRANSACTION } from "../Models/TransactionModal.js";
-import { createAccountHead } from "../Service/AccountsService.js";
-import { queryGen } from "../Utils/utils.js";
+import { createAccountHead, createTransaction } from "../Service/AccountsService.js";
+import {  convertToBaseUnit, queryGen } from "../Utils/utils.js";
 
 export const getAccountHeads = async (req, res, next) => {
   try {
@@ -101,5 +104,50 @@ export const getPaymentList=async(req,res,next)=>{
     next(error);
   }
 }
+export const generateInvoice=async(req,res,next)=>{
+  let data=req.body
+  try {
+    let customer=await CUSTOMER.findById(data.customer).populate('accountHEad')
+    let itemIds=[]
+    data.items.forEach(element => {
+        itemIds.push(element.item)
+    });
+    let  stocks=await Stock.find({ item: { $in: itemIds } }).populate('unit')
+    let stocksMap = new Map(stocks.map(stock => [stock._id.toString(), stock]));
+    let items=await ITEM.find({_id:{ $in: itemIds }}).populate('unit')
+    let itemsMap = new Map(items.map(item => [item._id.toString(), item]));
+    let invoice={
+      customer:customer._id,
+      number:data.number,
+      items:[],
+      payable:0,
+      discount:data.discount
+    }
+    for(let i=0;i<data.items.length;i++){
+      let item=data.items[i]
+      let stock=stocksMap.get(item.item)
+      let Item=itemsMap.get(item.item)
+      let quantity = convertToBaseUnit(item.quantity,item.unit)
+      let invoiceItem={stock:stock._id,item:Item._id,quantity,total:quantity*stock.sellablePricePerUnit}
+      invoice.payable=invoice.payable+invoiceItem.total
+      await Stock.findByIdAndUpdate(stock._id,{
+        $dec:{quantity}
+      })
+      let transaction = await createTransaction({
+        fromAccount: invoiceItem.accountHead,
+        toAccount: customer.accountHead,
+        amount: invoiceItem.total,
+        description: "Item Sales",
+      });
+      invoiceItem.transaction=transaction._id
+      invoice.items.push(invoiceItem)
+        
+    }
+    let INV=await INVOICE.create(invoice)    
+    res.send(INV)
+  } catch (error) {
+    next(error)
+  }
+} 
 
 

@@ -20,7 +20,7 @@ export const postStock = async (data) => {
     });
 
     data.transaction = transaction._id;
-    data.quantity=data.purchasedQuantity
+    data.quantity=convertToBaseUnit(data.purchasedQuantity, purchasedUnit);
     await Stock.create(data);
 
     let convertedQuantity = convertToBaseUnit(data.purchasedQuantity, purchasedUnit);

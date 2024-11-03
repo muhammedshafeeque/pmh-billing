@@ -30,7 +30,7 @@ const CreateInvoice: React.FC = () => {
     payableAmount: 0,
   });
   const [total, setTotal] = useState(0);
-
+  const [invoiceDetails,setInvoiceDetails]=useState()
   const { control, register, watch, setValue } = useForm<InvoiceForm>({
     defaultValues: {
       items: [],
@@ -79,7 +79,7 @@ const CreateInvoice: React.FC = () => {
 
   return (
     <Container fluid className="py-2">
-      <h4 className="mb-2 text-primary">Supermarket Billing</h4>
+      <h4 className="mb-2 text-primary">Billing</h4>
       <Alert variant="info" className="mb-2 py-1 small">
         Scan items or enter details below. Press F2 for payment, F3 for customer lookup.
       </Alert>
@@ -110,12 +110,12 @@ const CreateInvoice: React.FC = () => {
           </Card>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <InvoiceDetails customer={customer} />
+              <InvoiceDetails customer={customer} setInvoiceDetails={setInvoiceDetails} />
             </Card.Body>
           </Card>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <InvoiceTotals totals={totals} setTotals={setTotals} />
+              <InvoiceTotals totals={totals} setTotals={setTotals} customer={customer} />
             </Card.Body>
           </Card>
           <Card className="shadow-sm">
