@@ -19,10 +19,10 @@ const InvoiceTotals: React.FC<{ totals: any; setTotals: (totals: any) => void ;c
             <td>Tax:</td>
             <td>${(totals.payableAmount - totals.billAmount + totals.discount).toFixed(2)}</td>
           </tr>
-          <tr>
+          {/* <tr>
             <td>Outstanding</td>
             <td>${customer?customer.accountBallance:0}</td>
-          </tr>
+          </tr> */}
           <tr>
             <th>Total Due:</th>
             <th>${totals.payableAmount.toFixed(2)}</th>

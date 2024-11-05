@@ -31,7 +31,7 @@ const CreateInvoice: React.FC = () => {
   });
   const [total, setTotal] = useState(0);
   const [invoiceDetails,setInvoiceDetails]=useState()
-  const { control, register, watch, setValue } = useForm<InvoiceForm>({
+  const { control, register, watch, setValue,getValues } = useForm<InvoiceForm>({
     defaultValues: {
       items: [],
     },
@@ -120,7 +120,7 @@ const CreateInvoice: React.FC = () => {
           </Card>
           <Card className="shadow-sm">
             <Card.Body className="p-2">
-              <Action totals={totals} invoiceItems={watchItems} customer={customer} />
+              <Action totals={totals} invoiceItems={getValues()} customer={customer} invoiceDetails={invoiceDetails} />
             </Card.Body>
           </Card>
         </Col>

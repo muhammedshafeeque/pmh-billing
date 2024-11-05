@@ -111,8 +111,8 @@ export const createNewCustomerFromInvoice = async (req, res, next) => {
         phone: req.body.phone,
         lastName: "s",
       };
-      await CUSTOMER.create(customer);
-      res.send({ message: "new customer Added", response: CUSTOMER });
+      let CUS= await CUSTOMER.create(customer);
+      res.send({ message: "new customer Added", response: CUS });
     }
     
   } catch (error) {

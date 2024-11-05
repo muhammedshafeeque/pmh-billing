@@ -39,11 +39,11 @@ const Customers:React.FC=()=>{
         skip: newSkip,
       };
       let query = queryString.stringify(params);
-      let { data } = await axios.get(`entity/vendor?${query}`);
+      let { data } = await axios.get(`entity/customer?${query}`);
       setResults(data.results);
       setCount(data.count);
     } catch (error) {
-      console.error("Error fetching vendors:", error);
+      console.error("Error fetching customers:", error);
     } finally {
       setLoadingState(false);
     }
@@ -84,7 +84,7 @@ const Customers:React.FC=()=>{
     if (vendorToDelete) {
       try {
         setLoadingState(true);
-        await axios.delete(`entity/vendor/${vendorToDelete._id}`);
+        await axios.delete(`entity/customer/${vendorToDelete._id}`);
         setShowDeleteModal(false);
         setVendorToDelete(null);
         fetchVendors(skip);
@@ -117,7 +117,7 @@ const Customers:React.FC=()=>{
                   label="Name"
                   setValue={setValue}
                   readField={"name"}
-                  url={`/entity/vendor?nameContains`}
+                  url={`/entity/customer?nameContains`}
                   clear={clearChild}
                 />
               </Col>
@@ -129,7 +129,7 @@ const Customers:React.FC=()=>{
                   label="Phone"
                   setValue={setValue}
                   readField={"contactPhone"}
-                  url={`entity/vendor?contactPhoneContains`}
+                  url={`entity/customer?contactPhoneContains`}
                   clear={clearChild}
                 />
               </Col>
@@ -154,9 +154,9 @@ const Customers:React.FC=()=>{
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h5 className="card-title mb-0">Search Results</h5>
-            <Button variant="success" onClick={() => setShowModal(true)}>
+            {/* <Button variant="success" onClick={() => setShowModal(true)}>
               <FaPlus /> New Vendor
-            </Button>
+            </Button> */}
           </div>
 
           <div className="table-responsive">
@@ -168,22 +168,22 @@ const Customers:React.FC=()=>{
                   <th>Email</th>
                   <th>Account Head</th>
                   <th>Balance</th>
-                  <th>Actions</th>
+                  {/* <th>Actions</th> */}
                 </tr>
               </thead>
               <tbody>
-                {results.map((vendor: Vendor) => (
-                  <tr key={vendor._id}>
-                    <td>{vendor.name}</td>
-                    <td>{vendor.contactPhone}</td>
-                    <td>{vendor.contactEmail}</td>
-                    <td>{vendor.accountHEad}</td>
-                    <td>{vendor.accountBallance}</td>
-                    <td>
+                {results.map((customer: any) => (
+                  <tr key={customer._id}>
+                    <td>{customer.firstName}</td>
+                    <td>{customer.phone}</td>
+                    <td>{customer.email}</td>
+                    <td>{customer.accountHEad}</td>
+                    <td>{customer.accountBallance}</td>
+                    {/* <td>
                       <Button
                         variant="outline-primary"
                         size="sm"
-                        onClick={() => handleEdit(vendor)}
+                        onClick={() => handleEdit(customer)}
                         className="me-2"
                       >
                         <FaEdit /> Edit
@@ -195,7 +195,7 @@ const Customers:React.FC=()=>{
                       >
                         <FaTrash /> Delete
                       </Button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

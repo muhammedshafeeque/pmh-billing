@@ -21,12 +21,15 @@ const CustomerDetails: React.FC<{ setCustomer: (customer: any) => void }> = ({
     // On successful lookup, call setCustomer with the customer data
   };
 
+  const [clearName,setClearName]=useState(false)
+  const [clearPhone,setClearPhone]=useState(false)
+
   const handleCreateCustomer = async() => {
     const values = getValues(); // Get all form values
    let customer= await axios.post('/entity/create-customer-from-invoice',values)
-   setCustomer(customer)
-   setValue('name',customer),
-   setValue('phone',customer)
+   setCustomer(customer.data.response)
+   setValue('name',customer.data.response),
+   setValue('phone',customer.data.response)
   };
   useEffect(()=>{
     if(watch('name')._id){
@@ -44,20 +47,24 @@ const CustomerDetails: React.FC<{ setCustomer: (customer: any) => void }> = ({
           register={register}
           errors={errors}
           name="name"
-          setValue={(name, value) => {
-            setValue(name, value);
-          }}
+          setValue={setValue}
           readField={"firstName"}
           url={`/entity/customer?firstNameContains`}
           isRequired={false}
           editable={true}
           label="Name"
-          
+          clear={clearName}
           onSelect={(e) => {
             setValue(`phone`, e);
             setCustomer(e)
           }}
           value={watch(`name`)}
+          onChange={()=>{
+            let phone =getValues('phone')
+            if(typeof phone ==='object'){
+              setClearPhone(!clearPhone)
+            }
+          }}
         />
       </Form.Group>
       <Form.Group className="mb-2">
@@ -65,19 +72,24 @@ const CustomerDetails: React.FC<{ setCustomer: (customer: any) => void }> = ({
           register={register}
           errors={errors}
           name="phone"
-          setValue={(name, value) => {
-            setValue(name, value);
-          }}
+          setValue={setValue}
           readField={"phone"}
           url={`/entity/customer?phoneContains`}
           isRequired={false}
           editable={true}
           label="Phone Number"
+          clear={clearPhone}
           onSelect={(e: any) => {
             setValue("name", e);
             setCustomer(e)
           }}
           value={watch(`phone`)}
+          onChange={()=>{
+            let name =getValues('name')
+            if(typeof name ==='object'){
+              setClearName(!clearName)
+            }
+          }}
         />
       </Form.Group>
       

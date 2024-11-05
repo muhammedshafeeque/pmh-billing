@@ -9,8 +9,9 @@ export const invoiceValidation={
     customer:Joi.string().required(),
     items:Joi.array().items(Joi.object().keys({
       item:Joi.string().required(),
-      quantity:Joi.string().required(),
-      sellingUnit:Joi.string().required(),
+      quantity:Joi.number().required(),
+      unit:Joi.string().required(),
+      stock:Joi.string().required()
     })),
     invoiceNumber:Joi.string().required(),
     date:Joi.date().required(),
