@@ -1,33 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
+import { FaSave, FaTimes } from "react-icons/fa";
 import AutoComplete from "../AutoComplete/AutoComplete";
 
-const CreateAndUpdateRack: React.FC<PopupChildeProp> = ({ handleClose }) => {
-  const [clearChild, setClearChild] = useState(false);
+interface CreateAndUpdateRackProps extends PopupChildeProp {
+  rackToEdit?: Rack | null;
+}
+
+const CreateAndUpdateRack: React.FC<CreateAndUpdateRackProps> = ({ handleClose, rackToEdit }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
     setValue,
-  } = useForm<RackCreateBody>();
+  } = useForm<Rack>();
   const { setLoadingState } = useLoading();
-  const onSubmit: SubmitHandler<RackCreateBody> = async (
-    data: RackCreateBody
-  ) => {
+
+  useEffect(() => {
+    if (rackToEdit) {
+      reset(rackToEdit);
+    }
+  }, [rackToEdit, reset]);
+
+  const onSubmit: SubmitHandler<Rack> = async (data:any) => {
     try {
+      console.log(data.section);
       setLoadingState(true);
-      let body = {
-        name: data.name,
+      let body: any = {
         code: data.code,
         description: data.description,
+        name: data.name,
         section: data.section._id,
-      };
-      await axios.post("stock/rack", body);
+      }
+      if (rackToEdit) {
+        await axios.patch(`stock/rack/${rackToEdit._id}`, body);
+      } else {
+        await axios.post("stock/rack", body); // Use body instead of data
+      }
       handleClose();
     } catch (error) {
+      console.error("Error submitting rack:", error);
     } finally {
       setLoadingState(false);
     }
@@ -39,7 +55,7 @@ const CreateAndUpdateRack: React.FC<PopupChildeProp> = ({ handleClose }) => {
         <Form.Label>Name</Form.Label>
         <Form.Control
           type="text"
-          placeholder="Enter Rack name"
+          placeholder="Enter rack name"
           {...register("name", { required: "Name is required" })}
           isInvalid={!!errors.name}
         />
@@ -52,7 +68,7 @@ const CreateAndUpdateRack: React.FC<PopupChildeProp> = ({ handleClose }) => {
         <Form.Label>Code</Form.Label>
         <Form.Control
           type="text"
-          placeholder="Enter Rack code"
+          placeholder="Enter rack code"
           {...register("code", { required: "Code is required" })}
           isInvalid={!!errors.code}
         />
@@ -60,7 +76,8 @@ const CreateAndUpdateRack: React.FC<PopupChildeProp> = ({ handleClose }) => {
           {errors.code?.message}
         </Form.Control.Feedback>
       </Form.Group>
-      <Form.Group controlId="formRackDescription" className="mt-3">
+
+      <Form.Group controlId="formRackSection" className="mt-3">
         <AutoComplete
           register={register}
           errors={errors}
@@ -70,7 +87,6 @@ const CreateAndUpdateRack: React.FC<PopupChildeProp> = ({ handleClose }) => {
           readField={"name"}
           url={`/stock/section?nameContains`}
           isRequired={true}
-          clear={clearChild}
         />
       </Form.Group>
 
@@ -79,14 +95,19 @@ const CreateAndUpdateRack: React.FC<PopupChildeProp> = ({ handleClose }) => {
         <Form.Control
           as="textarea"
           rows={3}
-          placeholder="Enter Rack description"
+          placeholder="Enter rack description"
           {...register("description")}
         />
       </Form.Group>
 
-      <Button variant="primary" type="submit" className="mt-3">
-        Submit
-      </Button>
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> {rackToEdit ? 'Update' : 'Save'} Rack
+        </Button>
+      </div>
     </Form>
   );
 };

@@ -1,152 +1,76 @@
-import React from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { Button, Col, Table, Form } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Table, Form, Button } from "react-bootstrap";
+import { UseFieldArrayReturn, UseFormRegister, Control, useWatch } from 'react-hook-form';
 
-const ItemsForm: React.FC = () => {
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      items: [
-        {
-          name: "",
-          code: "",
-          category: "",
-          unit: "",
-          pricePerUnit: "",
-          measurementType: "",
-          total: "",
-        },
-      ],
-    },
-  });
-  const { fields, append, remove } = useFieldArray({
+interface InvoiceItem {
+  _id: string;
+  name: string;
+  code: string;
+  price: number;
+  quantity: number;
+  unit: string;
+  unitCode: string;
+}
+
+interface InvoiceForm {
+  items: InvoiceItem[];
+}
+
+interface ItemsProps {
+  fields: UseFieldArrayReturn<InvoiceForm, 'items', 'id'>['fields'];
+  register: UseFormRegister<InvoiceForm>;
+  control: Control<InvoiceForm>;
+  remove: (index: number) => void;
+  onTotalChange: (total: number) => void;
+}
+
+const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTotalChange }) => {
+  const items = useWatch({
     control,
     name: "items",
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
+  useEffect(() => {
+    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    onTotalChange(total);
+  }, [items, onTotalChange]);
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      <Col className="inv-cards">
-        <h5>Items</h5>
-        <Table className="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Code</th>
-              <th>Category</th>
-              <th>Unit</th>
-              <th>Price per Unit</th>
-              <th>Measurement Type</th>
-              <th>Total</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {fields.map((item, index) => (
-              <tr key={item.id}>
-                <td>
-                  <Controller
-                    name={`items[${index}].name`}
-                    control={control}
-                    
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Controller
-                    name={`items[${index}].code`}
-                    control={control}
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Controller
-                    name={`items[${index}].category`}
-                    control={control}
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Controller
-                    name={`items[${index}].unit`}
-                    control={control}
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Controller
-                    name={`items[${index}].pricePerUnit`}
-                    control={control}
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Controller
-                    name={`items[${index}].measurementType`}
-                    control={control}
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Controller
-                    name={`items[${index}].total`}
-                    control={control}
-                    render={({ field }) => (
-                      <Form.Control type="text" size='sm' {...field} />
-                    )}
-                  />
-                </td>
-                <td>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => remove(index)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="primary"
-            onClick={() =>
-              append({
-                name: "",
-                code: "",
-                category: "",
-                unit: "",
-                pricePerUnit: "",
-                measurementType: "",
-                total: "",
-              })
-            }
-            size="sm"
-          >
-            Add Item
-          </Button>
-          
-        </div>
-      </Col>
-    </Form>
+    <Table striped bordered hover size="sm">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Code</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {fields.map((item, index) => (
+          <tr key={item.id}>
+            <td>{item.name}</td>
+            <td>{item.code}</td>
+            <td>{item.price.toFixed(2)}</td>
+            <td>
+              <Form.Control
+                type="number"
+                min="1"
+                {...register(`items.${index}.quantity` as const, { valueAsNumber: true })}
+              />
+            </td>
+            <td>{item.unitCode}</td>
+            <td>{(items[index]?.price * items[index]?.quantity).toFixed(2)}</td>
+            <td>
+              <Button variant="danger" size="sm" onClick={() => remove(index)}>Remove</Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 
-export default ItemsForm;
+export default Items;

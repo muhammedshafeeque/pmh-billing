@@ -1,22 +1,77 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
+import { FaSave, FaTimes } from "react-icons/fa";
 
-const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
+interface Vendor {
+  _id: string;
+  name: string;
+  contactPhone: string;
+  contactEmail: string;
+  accountHEad: string;
+  accountBallance: number;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+interface CreateAndUpdateVendorProps extends PopupChildeProp {
+  vendorToEdit?: Vendor | null;
+}
+
+// Define allowed fields based on vendorValidation schema
+const allowedFields = [
+  "name",
+  "contactEmail",
+  "contactPhone",
+  "street",
+  "city",
+  "state",
+  "zipCode",
+  "country",
+  "accountBallance",
+];
+
+const filterVendorData = (data: Vendor): Partial<Vendor> => {
+  return Object.keys(data).reduce((acc, key) => {
+    if (allowedFields.includes(key)) {
+      acc[key as keyof Vendor] = data[key as keyof Vendor] as Vendor[keyof Vendor];
+    }
+    return acc;
+  }, {} as Partial<Vendor>);
+};
+
+const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClose, vendorToEdit }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<any>();
+    reset,
+  } = useForm<Vendor>();
   const { setLoadingState } = useLoading();
-  const onSubmit: SubmitHandler<any> = async (data: any) => {
+
+  useEffect(() => {
+    if (vendorToEdit) {
+      reset(vendorToEdit);
+    }
+  }, [vendorToEdit, reset]);
+
+  const onSubmit: SubmitHandler<Vendor> = async (data: Vendor) => {
     try {
       setLoadingState(true);
-      await axios.post("entity/vendor", data);
+      const filteredData = filterVendorData(data);
+      if (vendorToEdit) {
+        await axios.patch(`entity/vendor/${vendorToEdit._id}`, filteredData);
+      } else {
+        await axios.post("entity/vendor", filteredData);
+      }
       handleClose();
     } catch (error) {
+      console.error("Error submitting vendor:", error);
     } finally {
       setLoadingState(false);
     }
@@ -26,11 +81,11 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Row>
         <Col md={6}>
-          <Form.Group controlId="formCategoryName">
+          <Form.Group controlId="formVendorName">
             <Form.Label>Name</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter Category name"
+              placeholder="Enter vendor name"
               {...register("name", { required: "Name is required" })}
               isInvalid={!!errors.name}
             />
@@ -40,27 +95,15 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
           </Form.Group>
         </Col>
         <Col md={6}>
-          <Form.Group controlId="formCategoryEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              {...register("contactEmail")}
-              isInvalid={!!errors.contactEmail}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group controlId="formCategoryPhone">
+          <Form.Group controlId="formVendorPhone">
             <Form.Label>Phone</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               placeholder="Enter phone number"
-              {...register("contactPhone", {
+              {...register("contactPhone", { 
                 required: "Phone number is required",
+                valueAsNumber: true,
+                
               })}
               isInvalid={!!errors.contactPhone}
             />
@@ -69,61 +112,87 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
             </Form.Control.Feedback>
           </Form.Group>
         </Col>
+      </Row>
+
+      <Row className="mt-3">
         <Col md={6}>
-          <Form.Group controlId="formCategoryStreet">
-            <Form.Label>Street</Form.Label>
+          <Form.Group controlId="formVendorEmail">
+            <Form.Label>Email</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Enter street"
-              {...register("street")}
-              isInvalid={!!errors.street}
+              type="email"
+              placeholder="Enter email"
+              {...register("contactEmail", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
+              isInvalid={!!errors.contactEmail}
             />
             <Form.Control.Feedback type="invalid">
-              {errors.street?.message}
+              {errors.contactEmail?.message}
             </Form.Control.Feedback>
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group controlId="formVendorOpeningBalance">
+            <Form.Label>Opening Balance</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Enter opening balance"
+              {...register("accountBallance", { valueAsNumber: true })}
+            />
           </Form.Group>
         </Col>
       </Row>
 
-      <Row>
+      <Row className="mt-3">
+        <Col md={12}>
+          <Form.Group controlId="formVendorStreet">
+            <Form.Label>Street</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter street address"
+              {...register("street")}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+
+      <Row className="mt-3">
         <Col md={6}>
-          <Form.Group controlId="formCategoryCity">
+          <Form.Group controlId="formVendorCity">
             <Form.Label>City</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter city"
               {...register("city")}
-              isInvalid={!!errors.city}
             />
-            <Form.Control.Feedback type="invalid">
-              {errors.city?.message}
-            </Form.Control.Feedback>
           </Form.Group>
         </Col>
         <Col md={6}>
-          <Form.Group controlId="formCategoryState">
+          <Form.Group controlId="formVendorState">
             <Form.Label>State</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter state"
               {...register("state")}
-              isInvalid={!!errors.state}
             />
-            <Form.Control.Feedback type="invalid">
-              {errors.state?.message}
-            </Form.Control.Feedback>
           </Form.Group>
         </Col>
       </Row>
 
-      <Row>
+      <Row className="mt-3">
         <Col md={6}>
-          <Form.Group controlId="formCategoryZipCode">
+          <Form.Group controlId="formVendorZipCode">
             <Form.Label>Zip Code</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               placeholder="Enter zip code"
-              {...register("zipCode")}
+              {...register("zipCode", { 
+                valueAsNumber: true,
+              })}
               isInvalid={!!errors.zipCode}
             />
             <Form.Control.Feedback type="invalid">
@@ -132,36 +201,25 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
           </Form.Group>
         </Col>
         <Col md={6}>
-          <Form.Group controlId="formCategoryCountry">
+          <Form.Group controlId="formVendorCountry">
             <Form.Label>Country</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter country"
               {...register("country")}
-              isInvalid={!!errors.country}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.country?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <Form.Group controlId="formOpeningBalance">
-            <Form.Label>Opening Balance</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter Opening Balance"
-              {...register("OpeningBalance")}
             />
           </Form.Group>
         </Col>
       </Row>
 
-      <Button variant="primary" type="submit" className="mt-3">
-        Submit
-      </Button>
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> {vendorToEdit ? 'Update' : 'Save'} Vendor
+        </Button>
+      </div>
     </Form>
   );
 };

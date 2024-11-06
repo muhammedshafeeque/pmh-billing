@@ -30,6 +30,7 @@ export const StockValidation = {
         purchasedQuantity: Joi.number().required(),
         sellablePricePerUnit: Joi.number().required(),
         purchasedRatePerUnit:Joi.number().required(),
+        purchasedUnit:Joi.string().required(),
         expiry: Joi.date(),
         status: Joi.string(),
         purchaseDate: Joi.date(), 

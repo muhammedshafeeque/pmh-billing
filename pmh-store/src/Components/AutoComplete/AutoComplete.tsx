@@ -9,7 +9,7 @@ interface AutoCompleteProps {
   isRequired?: boolean;
   formSubmitted?: boolean;
   name: string;
-  label: string;
+  label?: string;
   setValue: any;
   disabled?: boolean;
   url: string;
@@ -137,7 +137,8 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   return (
     <div className="auto-complete-wrapper" onBlur={handleBlur}>
       <Form.Group controlId={`autoComplete-${name}`}>
-        <Form.Label>{label}</Form.Label>
+        {label&&<Form.Label>{label}</Form.Label>}
+        
         <Form.Control
           type="text"
           placeholder={`Enter ${label}`}

@@ -1,22 +1,23 @@
-import { Row, Col, Form, Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
+import { FaCalendarAlt, FaFileInvoice, FaHistory } from "react-icons/fa";
 import axios from '../../../Api/Api';
-import { useEffect, useState } from "react";
 import moment from "moment";
 import "./accounts.scss";
 
-const InvoiceDetails: React.FC = () => {
+const InvoiceDetails: React.FC<any> = ({ customer ,setInvoiceDetails}) => {
   const [prefix, setPrefix] = useState<any>({ name: "" });
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<string>( moment().format("DD/MM/YYYY"));
+  const [outAmount, setOutAmount] = useState<number>(0);
 
   useEffect(() => {
-    // Initialize date in DD/MM/YYYY format
     const formattedDate = moment().format("DD/MM/YYYY");
     setDate(formattedDate);
-
     const fetchData = async () => {
       try {
         const res = await axios.post('core/generate-sequence', { type: '/INV/' });
         setPrefix(res.data);
+        setInvoiceDetails({prefix:res.data,formattedDate})
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -30,65 +31,68 @@ const InvoiceDetails: React.FC = () => {
     const inputDate = e.target.value;
     const formattedDate = moment(inputDate, "YYYY-MM-DD").format("DD/MM/YYYY");
     setDate(formattedDate);
+    setInvoiceDetails({prefix,formattedDate})
   };
+  useEffect(()=>{
+    if(customer&&customer.accountBallance){
+      setOutAmount(customer.accountBallance)
+    }else{
+      setOutAmount(0)
+    }
+  },[customer])
 
   return (
     <>
+      <h6 className="mb-2 text-primary">Invoice Details</h6>
       <Form>
-        <div className="inv-cards">
-          <h4 className="invoice-heads">Invoice Details</h4>
-          <Row className="mt-1">
-            <Col>
-              <Form.Group controlId="validationCustom01">
-                <Form.Label>Invoice Number</Form.Label>
+        <Row className="g-1">
+          <Col md={6}>
+            <Form.Group controlId="invoiceNumber" className="mb-1">
+              <Form.Label className="small">Invoice Number</Form.Label>
+              <InputGroup size="sm">
+                <InputGroup.Text><FaFileInvoice /></InputGroup.Text>
                 <Form.Control
-                  required
-                  size="sm"
                   type="text"
-                  placeholder="Invoice Number"
                   value={prefix?.name || ""}
                   disabled
                 />
-                <Form.Control.Feedback>Mobile</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group controlId="validationCustom01">
-                <Form.Label>DATE</Form.Label>
-                {/* Use a text input for displaying the date in DD/MM/YYYY format */}
+              </InputGroup>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="invoiceDate" className="mb-1">
+              <Form.Label className="small">Date</Form.Label>
+              <InputGroup size="sm">
+                <InputGroup.Text><FaCalendarAlt /></InputGroup.Text>
                 <Form.Control
-                  required
                   type="text"
-                  size="sm"
-                  placeholder="Invoice Date"
                   value={date}
                   onChange={handleDateChange}
-                  pattern="\d{2}/\d{2}/\d{4}" // Regex pattern for DD/MM/YYYY format
+                  pattern="\d{2}/\d{2}/\d{4}"
                 />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row className="mt-3">
-            <Col>
-              <Form.Group controlId="validationCustom01">
-                <Form.Label>Outstanding Amount</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Outstanding Amount"
-                  defaultValue="INV001"
-                  disabled
-                  size="sm"
-                />
-              </Form.Group>
-            </Col>
-            <Col className="mt-4 pt-2">
-              <Button size="sm" className="col-md-12">
-                View History
-              </Button>
-            </Col>
-          </Row>
-        </div>
+              </InputGroup>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row className="g-1">
+          <Col md={6}>
+            <Form.Group controlId="outstandingAmount" className="mb-1">
+              <Form.Label className="small">Outstanding Amount</Form.Label>
+              <Form.Control
+                size="sm"
+                type="text"
+                value={outAmount}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6} className="d-flex align-items-end">
+            <Button variant="outline-primary" size="sm" className="w-100 py-1">
+              <FaHistory className="me-1" />
+              View History
+            </Button>
+          </Col>
+        </Row>
       </Form>
     </>
   );

@@ -1,21 +1,31 @@
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { VENDOR } from "../Models/VendorModal.js";
-import { createAccountHead } from "../Service/AccountsService.js";
+import { createAccountHead, deleteAccountHead } from "../Service/AccountsService.js";
 import { queryGen } from "../Utils/utils.js";
 
 export const createVendor = async (req, res, next) => {
+  let createdAccountHead = null;
   try {
-    req.body.accountHEad = await createAccountHead({
+    createdAccountHead = await createAccountHead({
       name: req.body.name,
-      credit: Number(req.body.OpeningBalance),
+      credit: Number(req.body.accountBallance),
       type: "payable",
     });
-    await VENDOR.create(req.body);
-    res.send({ message: "Vendor Created Successfully" });
+    req.body.accountHEad = createdAccountHead._id;
+    const createdVendor = await VENDOR.create(req.body);
+    res.status(201).send({ message: "Vendor Created Successfully", vendor: createdVendor });
   } catch (error) {
+    if (createdAccountHead) {
+      try {
+        await deleteAccountHead(createdAccountHead._id);
+      } catch (deleteError) {
+        console.error("Error deleting account head:", deleteError);
+      }
+    }
     next(error);
   }
 };
+
 export const createCustomer = async (req, res, next) => {
   try {
     req.body.accountHEad = await createAccountHead({
@@ -36,6 +46,7 @@ export const getVendors = async (req, res, next) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
     let results = await VENDOR.find(keywords)
+      .sort({ createdAt: -1 })
       .populate("accountHEad")
       .limit(limit)
       .skip(skip);
@@ -50,6 +61,7 @@ export const getVendors = async (req, res, next) => {
     next(error);
   }
 };
+
 export const getCustomers = async (req, res, next) => {
   try {
     let skip = req.query.skip ? parseInt(req.query.skip) : 0;
@@ -57,22 +69,31 @@ export const getCustomers = async (req, res, next) => {
     let keywords = await queryGen(req.query);
     let customers = await CUSTOMER.find(keywords)
       .populate("accountHEad")
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
     let count = await CUSTOMER.find(keywords).count();
+    customers = customers.map((result) => ({
+      ...result.toObject(),
+      accountBallance: result.accountHEad.accountBalance,
+      accountHEad: result.accountHEad.name,
+    }));
     res.send({ count, results: customers });
   } catch (error) {
     next(error);
   }
 };
+
 export const vcfFileCustomersBulkUpload = (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
 };
+
 export const createNewCustomerFromInvoice = async (req, res, next) => {
   try {
+    req.body.firstName=req.body.name
     let  custExist=await CUSTOMER.findOne({phone:req.body.phone})
     if(custExist){
       next({status:400,message:'Customer Already Exist in same number'})
@@ -90,10 +111,43 @@ export const createNewCustomerFromInvoice = async (req, res, next) => {
         phone: req.body.phone,
         lastName: "s",
       };
-      await CUSTOMER.create(customer);
-      res.send({ message: "new customer Added", response: CUSTOMER });
+      let CUS= await CUSTOMER.create(customer);
+      res.send({ message: "new customer Added", response: CUS });
     }
     
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateVendor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedVendor = await VENDOR.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedVendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json(updatedVendor);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteVendor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedVendor = await VENDOR.findByIdAndDelete(id);
+
+    if (!deletedVendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json({ message: "Vendor deleted successfully" });
   } catch (error) {
     next(error);
   }

@@ -2,11 +2,13 @@ import mongoose from "mongoose";
 import { collections } from "../Constants/collections.js";
 const units = mongoose.Schema(
   {
-    Quantity: { type: String },
-    SIUnit: { type: String },
-    Symbol: { type: String },
-    name: { type: String },
-    Conversion: { type: Number },
+    unitCode: String,
+  unitName: String,
+  description: String,
+  measurement: String,
+  iso: mongoose.Schema.Types.Mixed,
+  conversionToParent: Number,
+  parentUnit: String
   },
   {
     timestamps: true,

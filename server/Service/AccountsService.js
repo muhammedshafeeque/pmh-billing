@@ -99,3 +99,12 @@ export const createPayment = async (data) => {
     return Promise.reject(error);
   }
 };
+
+export const deleteAccountHead = async (accountHeadId) => {
+  try {
+    await ACCOUNT_HEAD.findByIdAndDelete(accountHeadId);
+  } catch (error) {
+    console.error("Error deleting account head:", error);
+    throw error;
+  }
+};

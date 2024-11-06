@@ -1,44 +1,105 @@
-.Header {
-  display: flex;
-  justify-content: space-between;
-  background-color: white;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+.admin-header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 2rem;
   position: fixed;
   top: 0;
-  min-height: 2rem;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .logo-container {
+    flex: 0 0 200px;
+  }
+
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #3498db;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin: 0;
+
+    &:hover {
+      color: #2980b9;
+    }
+  }
+
+  .search-container {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 2rem;
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+  }
+
+  .search-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #3498db;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .icon-button {
+    background: none;
+    border: none;
+    color: #7f8c8d;
+    font-size: 1.2rem;
+    margin-left: 1.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+
+    &:hover {
+      color: #3498db;
+      transform: scale(1.1);
+    }
+  }
 }
-.Header_right_bottom {
-  display: flex;
-  justify-content: flex-end;
-}
-.header_login_area {
-  margin-right: 10%;
-  display: flex;
-  color: blue;
-  cursor: pointer;
-}
-.common_header {
-  display: flex;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  background: white;
-}
-.common_header_sign_up_area {
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 7%;
-}
-.Header_Reizen_logo {
-  cursor: pointer;
-}
-.header-right_inner_with-avatar {
-  display: flex;
-  width: 15%;
-}
+
+// You can remove or update these styles as needed
+.Header_right_bottom,
+.header_login_area,
+.common_header,
+.common_header_sign_up_area,
+.Header_Reizen_logo,
+.header-right_inner_with-avatar,
 .Avatar {
-  cursor: pointer;
-}
-.admin_header {
-  width: 100%;
+  // Add specific styles here if still needed
 }

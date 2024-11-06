@@ -27,6 +27,7 @@ import {
 } from "../Helper/StockHelpers.js";
 import { Category } from "../Models/CategoryModal.js";
 import {
+  convertToBaseUnit,
   ExcelDataExtractor,
   generateErrorExcelBlob,
   generateExcelBlob,
@@ -35,7 +36,6 @@ import {
 } from "../Utils/utils.js";
 import {
   createPayment,
-  createTransaction,
   transferDiscount,
 } from "../Service/AccountsService.js";
 import { VENDOR } from "../Models/VendorModal.js";
@@ -44,6 +44,7 @@ import { BILL } from "../Models/BillModal.js";
 import { Stock } from "../Models/StockModal.js";
 import { collections } from "../Constants/collections.js";
 import mongoose from "mongoose";
+import { ITEM } from "../Models/itemModal.js";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -70,12 +71,26 @@ export const updateSection = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
-export const removeSection = async (req, res) => {
+export const removeSection = async (req, res, next) => {
   try {
+    // Check if there are any racks associated with this section
+    const relatedRacks = await getRacks({ section: req.params.id });
+
+    if (relatedRacks.results.length > 0) {
+      // If there are related racks, don't allow deletion
+      return res.status(400).json({
+        message: "Cannot delete section. There are racks associated with this section.",
+        relatedRacksCount: relatedRacks.length
+      });
+    }else{
+      // If no related racks, proceed with deletion
     await deleteSection(req.params.id);
-    res.send("Section Removed Successfully ");
+    res.send("Section Removed Successfully");
+    }
+
+    
   } catch (error) {
-    res.status(400).send("Err:" + error);
+    next(error);
   }
 };
 export const createRack = async (req, res) => {
@@ -175,13 +190,7 @@ export const createStock = async (req, res, next) => {
       ACCOUNT.findOne(accountKeywords).populate("accountHead"),
       BILL.create(req.body),
     ]);
-   
-    await createTransaction({
-      fromAccount: vendor.accountHEad._id,
-      toAccount: account.accountHead._id,
-      amount: req.body.payableAmount,
-      description: "Purchase Bill",
-    });
+  
     let Discount = req.body.billAmount - req.body.payableAmount;
     if (Discount > 0) {
       await transferDiscount({
@@ -195,7 +204,7 @@ export const createStock = async (req, res, next) => {
     await Promise.all(
       req.body.items.map(async (stock) => {
         stock.vendor = vendor._id;
-        stock.mainAccount = account;
+        stock.mainAccount = vendor.accountHEad;
         stock.bill = bill._id;
         await postStock(stock);
       })
@@ -218,20 +227,18 @@ export const getStocks = async (req, res, next) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
     let results = await Stock.find(keywords)
+        .sort({ createdAt: -1 })
       .populate({
         path: "item",
         populate: [
-          {
-            path: "unit",
-            model: collections.UNIT_COLLECTION,
-          },
           {
             path: "category",
             model: collections.CATEGORY_COLLECTIONS,
           },
         ],
-      })
+      }).populate("purchasedUnit")
       .populate("vendor")
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
     let count = await Stock.find(keywords).count();
@@ -240,7 +247,7 @@ export const getStocks = async (req, res, next) => {
       name: result.item.name,
       item: result.item._id,
       vendor: result.vendor.name,
-      unit: result.item.unit,
+      unit: result.purchasedUnit.unitName,
       code: result.item.code,
       category: result.item.category,
     }));
@@ -260,8 +267,9 @@ export const addItemToRack = async (req, res, next) => {
 export const updateStock = async (req, res, next) => {
   try {
     await patchStock(req.params.id, req.body);
+    res.send("Updated Successfully");
   } catch (error) {
-    res.send(error);
+    next(error);
   }
 };
 export const createCategory = async (req, res, next) => {
@@ -343,9 +351,78 @@ export const getCategories = async (req, res, next) => {
     let skip = req.query.skip ? parseInt(req.query.skip) : 0;
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
-    let results = await Category.find(keywords).limit(limit).skip(skip);
+    let results = await Category.find(keywords).sort({ createdAt: -1 }).limit(limit).skip(skip);
     let count = await Category.find(keywords).count();
     res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getItemsForInvoice = async (req, res, next) => {
+  try {
+    let keywords = await queryGen({
+      nameContains: req.query.query,
+      codeContains: req.query.query
+    });
+    
+    let items = await ITEM.find(keywords)
+      .limit(10)
+      .populate('unit')
+      .populate('racks')
+      .populate({
+        path:'racks',
+        populate: {
+          path: "section",
+          model: collections.SECTION_COLLECTION,
+        },
+      });
+
+    const itemsWithStocks = await Promise.all(items.map(async (item) => {
+      try {
+        const stocks = await Stock.find({ 
+          item: new mongoose.Types.ObjectId(item._id), 
+          quantity: { $gt: 0 } 
+        }).populate('purchasedUnit');
+        return { item, stocks }; 
+      } catch (error) {
+        console.error(`Error fetching stocks for item ${item._id}:`, error);
+        return { item, stocks: [] };
+      }
+    }));
+
+    let itemList = [];
+    
+    itemsWithStocks.forEach((itemWithStock) => {
+      if (itemWithStock.stocks.length) {
+        itemWithStock.stocks.forEach((inv) => {
+          if (inv.quantity > 0) {
+            let inventory = {
+              name: itemWithStock.item.name,
+              code: itemWithStock.item.code,
+              itemId:itemWithStock.item._id,
+              stockId:inv._id,
+              racks: itemWithStock.item.racks ? itemWithStock.item.racks.map((obj) => ({
+                ...obj.toObject(),
+                rackName: obj.name,
+                rackCode: obj.code,
+                section:obj.section.name,
+                sectionCode:obj.section.code
+              })) : [],
+              stock: convertToBaseUnit(inv.quantity,inv.purchasedUnit),
+              unit: itemWithStock.item.unit ? itemWithStock.item.unit.unitName : null,
+              unitCode:itemWithStock.item.unit ? itemWithStock.item.unit.unitCode : null,
+              unitId:itemWithStock.item.unit ? itemWithStock.item.unit._id: null,
+              measurement:itemWithStock.item.unit ? itemWithStock.item.unit.measurement: null,
+              price:inv.sellablePricePerUnit
+            };
+            itemList.push(inventory);
+          }
+        });
+      }
+    });
+
+    res.send({results:itemList});
   } catch (error) {
     next(error);
   }
