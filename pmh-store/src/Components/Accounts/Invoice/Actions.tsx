@@ -16,7 +16,7 @@ const Action: React.FC<{
   const handlePayment = () => {
     setShowModal(true);
   };
-  const { setLoadingState } = useLoading();
+  const { setLoadingState } = useLoading<any>(null);
   const [showModal, setShowModal] = useState(false);
   const handleCancel = () => {
     // Implement cancel logic
@@ -24,6 +24,7 @@ const Action: React.FC<{
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  const [inv, setInv] = useState();
   const generateInvoice = async () => {
     try {
       setLoadingState(true);
@@ -42,7 +43,8 @@ const Action: React.FC<{
         discount: totals.discount,
       };
       let inv = await axios.post("/accounts/generate-invoice", body);
-      generateInvoicePdf(inv.data.response)
+      setInv(inv.data.response);
+      // generateInvoicePdf(inv.data.response)
     } catch (error) {
       console.log(error);
     } finally {
@@ -55,22 +57,33 @@ const Action: React.FC<{
       <Button variant="danger" className="me-2" onClick={handleCancel}>
         Cancel
       </Button>
-      <Button
-        variant="warning"
-        className="me-2"
-        onClick={generateInvoice}
-        disabled={!customer._id || !invoiceItems.items.length}
-      >
-        Generate Bill
-      </Button>
-      <Button
-        variant="success"
-        className="me-2"
-        onClick={handlePayment}
-        disabled={!customer._id || !invoiceItems.items.length}
-      >
-        Process Payment (F2)
-      </Button>
+      {!inv && (
+        <Button
+          variant="warning"
+          className="me-2"
+          onClick={generateInvoice}
+          disabled={!customer._id || !invoiceItems.items.length}
+        >
+          Generate Bill
+        </Button>
+      )}
+      {inv && (
+        <Button
+          variant="info"
+          className="me-2"
+          onClick={() => {
+            generateInvoicePdf(inv);
+          }}
+          disabled={!customer._id || !invoiceItems.items.length}
+        >
+          Print
+        </Button>
+      )}
+      {inv && (
+        <Button variant="success" className="me-2" onClick={handlePayment}>
+          Process Payment (F2)
+        </Button>
+      )}
 
       <ModalPopup
         head={"Proceed Payment"}
@@ -79,7 +92,7 @@ const Action: React.FC<{
         handleClose={handleCloseModal}
         dialogClassName="vendor-modal"
       >
-        <ProcessPayment />
+        <ProcessPayment customer={customer} />
       </ModalPopup>
     </div>
   );

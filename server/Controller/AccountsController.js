@@ -173,7 +173,7 @@ export const generateInvoice = async (req, res, next) => {
    let  response={
       items:itemList,
       invoiceNumber:INV.number,
-      customerName : customer.name,
+      customerName : customer.firstName,
       customerMobile :customer.phone,
       invoiceAmount:INV.invoiceAmount,
       payableAmount:INV.payableAmount,

@@ -29,7 +29,10 @@ app.use(fileUpload());
 
 connectDb();
 // =========End Configs ======
-app.use("/api", Router);
+app.use("/api",((req,res,next)=>{
+  // console.log(req.body)
+  next()
+}), Router);
 app.use((err, req, res, next) => {
   console.log(err)
   const errStatus = err.status || 500;
