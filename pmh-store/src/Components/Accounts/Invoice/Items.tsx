@@ -1,37 +1,37 @@
 import React, { useEffect } from "react";
 import { Table, Form, Button } from "react-bootstrap";
-import { UseFieldArrayReturn, UseFormRegister, Control, useWatch } from 'react-hook-form';
+import {  useWatch } from 'react-hook-form';
 
-interface InvoiceItem {
-  _id: string;
-  name: string;
-  code: string;
-  price: number;
-  quantity: number;
-  unit: string;
-  unitCode: string;
-}
+// interface InvoiceItem {
+//   _id: string;
+//   name: string;
+//   code: string;
+//   price: number;
+//   quantity: number;
+//   unit: string;
+//   unitCode: string;
+// }
 
-interface InvoiceForm {
-  items: InvoiceItem[];
-}
+// interface InvoiceForm {
+//   items: InvoiceItem[];
+// }
 
-interface ItemsProps {
-  fields: UseFieldArrayReturn<InvoiceForm, 'items', 'id'>['fields'];
-  register: UseFormRegister<InvoiceForm>;
-  control: Control<InvoiceForm>;
-  remove: (index: number) => void;
-  onTotalChange: (total: number) => void;
-}
+// interface ItemsProps {
+//   fields: UseFieldArrayReturn<InvoiceForm, 'items', 'id'>['fields'];
+//   register: UseFormRegister<InvoiceForm>;
+//   control: Control<InvoiceForm>;
+//   remove: (index: number) => void;
+//   onTotalChange: (total: number) => void;
+// }
 
-const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTotalChange }) => {
+const Items: React.FC<any> = ({ fields, register, control, remove, onTotalChange }) => {
   const items = useWatch({
     control,
     name: "items",
   });
 
   useEffect(() => {
-    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = items.reduce((sum:any, item:any) => sum + (item.price * item.quantity), 0);
     onTotalChange(total);
   }, [items, onTotalChange]);
 
@@ -49,7 +49,7 @@ const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTota
         </tr>
       </thead>
       <tbody>
-        {fields.map((item, index) => (
+        {fields.map((item:any, index:any) => (
           <tr key={item.id}>
             <td>{item.name}</td>
             <td>{item.code}</td>

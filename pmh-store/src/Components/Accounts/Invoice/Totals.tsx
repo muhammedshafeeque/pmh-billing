@@ -1,7 +1,9 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 
-const InvoiceTotals: React.FC<{ totals: any; setTotals: (totals: any) => void ;customer:any}> = ({ totals, setTotals,customer }) => {
+const InvoiceTotals: React.FC<{ totals: any; setTotals: (totals: any) => void ;customer:any}> = ({ totals,
+  //  setTotals,customer
+   }) => {
   return (
     <div>
       <h5>Totals</h5>

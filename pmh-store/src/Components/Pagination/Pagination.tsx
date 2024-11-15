@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pagination, Form } from 'react-bootstrap';
+import { Pagination} from 'react-bootstrap';
 import { FaAngleLeft, FaAngleRight, FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
 import './Pagination.scss';
 
@@ -55,9 +55,9 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({ limit, totalC
     return pageNumbers;
   };
 
-  const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onPageChange(Number(event.target.value));
-  };
+  // const handlePageSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   onPageChange(Number(event.target.value));
+  // };
 
   return (
     <div className="pagination-wrapper">

@@ -16,7 +16,7 @@ const Action: React.FC<{
   const handlePayment = () => {
     setShowModal(true);
   };
-  const { setLoadingState } = useLoading<any>(null);
+  const { setLoadingState } = useLoading() as { setLoadingState: (isLoading: boolean) => void };
   const [showModal, setShowModal] = useState(false);
   const handleCancel = () => {
     // Implement cancel logic

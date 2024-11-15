@@ -7,7 +7,7 @@ import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
 import moment from "moment";
-import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
+import {  FaSearch, FaTimes } from "react-icons/fa";
 
 const TransactionList: React.FC = () => {
   const [results, setResults] = useState<any[]>([]);

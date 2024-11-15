@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useLoading } from "../../Contexts/LoaderContext";
 import axios  from "../../Api/Api";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
-import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
+import { FaSearch, FaTimes } from "react-icons/fa";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import ModalPopup from "../../Components/PopupModal/ModalPopup";
 import CreateAndUpdateVendor from "../../Components/Entity/CreateAndUpdateVendor";
@@ -14,7 +14,7 @@ const Customers:React.FC=()=>{
     const [showModal, setShowModal] = useState(false);
   const [results, setResults] = useState<Vendor[]>([]);
   const [count, setCount] = useState(0);
-  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
+  const [selectedVendor, setSelectedVendor] = useState<any | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
@@ -70,15 +70,15 @@ const Customers:React.FC=()=>{
     fetchVendors(0);
   };
 
-  const handleEdit = (vendor: Vendor) => {
-    setSelectedVendor(vendor);
-    setShowModal(true);
-  };
+  // const handleEdit = (vendor: Vendor) => {
+  //   setSelectedVendor(vendor);
+  //   setShowModal(true);
+  // };
 
-  const handleDelete = (vendor: Vendor) => {
-    setVendorToDelete(vendor);
-    setShowDeleteModal(true);
-  };
+  // const handleDelete = (vendor: Vendor) => {
+  //   setVendorToDelete(vendor);
+  //   setShowDeleteModal(true);
+  // };
 
   const confirmDelete = async () => {
     if (vendorToDelete) {

@@ -9,7 +9,7 @@ import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
-import { FaPlus, FaSearch, FaTimes, FaSave, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaSearch, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
 import "./Section.scss";
 
 const SectionList: React.FC = () => {

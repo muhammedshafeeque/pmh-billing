@@ -31,7 +31,7 @@ const CreateInvoice: React.FC = () => {
   });
   const [total, setTotal] = useState(0);
   const [invoiceDetails,setInvoiceDetails]=useState()
-  const { control, register, watch, setValue,getValues } = useForm<InvoiceForm>({
+  const { control, register, watch, getValues } = useForm<InvoiceForm>({
     defaultValues: {
       items: [],
     },
@@ -67,7 +67,7 @@ const CreateInvoice: React.FC = () => {
   };
   useEffect(()=>{
     const newTotals = watchItems.reduce(
-      (acc, item) => {
+      (acc) => {
         acc.billAmount = total;
         acc.payableAmount = total;
         return acc;

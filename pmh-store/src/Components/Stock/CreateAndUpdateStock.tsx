@@ -40,6 +40,7 @@ interface FormData {
   payableAmount: number;
   payedAmount: number;
   account: any;
+  _id:string
 }
 
 interface CreateAndUpdateStockProps extends PopupChildeProp {
@@ -47,7 +48,7 @@ interface CreateAndUpdateStockProps extends PopupChildeProp {
 }
 
 const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose, stockToEdit }) => {
-  const [items, setItems] = useState<FormItem[]>([
+  const [items, setItems] = useState<any[]>([
     {
       item: "",
       purchaseRate: 0,
@@ -66,9 +67,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
     watch,
     reset,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<any>();
   const { setLoadingState } = useLoading();
-  const [clearChild, setClearChild] = useState(false);
   const watchedItems = watch("items", items);
 
   useEffect(() => {
@@ -154,13 +154,13 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
             setValue={setValue}
             readField={"name"}
             url={`/entity/vendor?nameContains`}
-            clear={clearChild}
+            
           />
         </Col>
       </Row>
 
       <h5 className="mt-4">Items</h5>
-      {items.map((item: any, index: number) => (
+      {items.map((_item: any, index: number) => (
         <div key={index}>
           <Row>
             <Col md={3}>
@@ -172,7 +172,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 setValue={setValue}
                 readField={"name"}
                 url={`stock/category?nameContains`}
-                clear={clearChild}
+                
               />
             </Col>
             <Col md={3}>
@@ -181,7 +181,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 errors={errors}
                 name={`items[${index}].name`}
                 label="Item Name"
-                setValue={(name, value) => {
+                setValue={(name: any, value: any) => {
                   setValue(name, value);
                 }}
                 readField={"name"}
@@ -190,7 +190,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                     ? watch(`items[${index}].category`)._id
                     : ""
                 }&nameContains`}
-                clear={clearChild}
+                
                 onSelect={(e) => {
                   setValue(`items[${index}].code`, e);
                 }}
@@ -203,7 +203,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 errors={errors}
                 name={`items[${index}].code`}
                 label="Item Code"
-                setValue={(name, value) => {
+                setValue={(name: any, value: any) => {
                   setValue(name, value);
                 }}
                 onSelect={(e) => {
@@ -215,7 +215,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                     ? watch(`items[${index}].category`)._id
                     : ""
                 }&codeContains`}
-                clear={clearChild}
+                
                 value={watch(`items[${index}].code`)}
               />
             </Col>
@@ -225,14 +225,14 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 errors={errors}
                 name={`items[${index}].unit`}
                 label="Item Unit"
-                setValue={(name, value) => {
+                setValue={(name: any, value: any) => {
                   setValue(name, value);
                 }}
                 readField={"unitName"}
                 url={`core/units?measurement=${
                   watch(`items[${index}].name`)?.measurement
                 }&unitNameContains`}
-                clear={clearChild}
+                
                 disabled={!watch(`items[${index}].name`)}
               />
             </Col>
@@ -247,14 +247,10 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                   {...register(`items[${index}].purchasedQuantity`, {
                     required: "Quantity is required",
                   })}
-                  isInvalid={!!errors.items?.[index]?.purchasedQuantity}
                   onBlur={() => {
                     calculate();
                   }}
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.items?.[index]?.purchasedQuantity?.message}
-                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={3}>
@@ -266,14 +262,11 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                   {...register(`items[${index}].purchaseRate`, {
                     required: "Rate Per Unit is required",
                   })}
-                  isInvalid={!!errors.items?.[index]?.purchaseRate}
                   onBlur={() => {
                     calculate();
                   }}
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.items?.[index]?.purchaseRate?.message}
-                </Form.Control.Feedback>
+
               </Form.Group>
             </Col>
             <Col md={3}>
@@ -283,11 +276,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                   type="number"
                   placeholder="Sellable Price Per Unit"
                   {...register(`items[${index}].sellablePricePerUnit`)}
-                  isInvalid={!!errors.items?.[index]?.sellablePricePerUnit}
+
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.items?.[index]?.sellablePricePerUnit?.message}
-                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={3}>
@@ -297,12 +287,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                   type="number"
                   placeholder="Total"
                   {...register(`items[${index}].total`)}
-                  isInvalid={!!errors.items?.[index]?.total}
                   disabled
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.items?.[index]?.total?.message}
-                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -348,9 +334,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
               isInvalid={!!errors.billAmount}
               disabled
             />
-            <Form.Control.Feedback type="invalid">
-              {errors.billAmount?.message}
-            </Form.Control.Feedback>
+           
           </Form.Group>
         </Col>
         <Col md={3}>
@@ -364,9 +348,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
               })}
               isInvalid={!!errors.payableAmount}
             />
-            <Form.Control.Feedback type="invalid">
-              {errors.payableAmount?.message}
-            </Form.Control.Feedback>
+       
           </Form.Group>
         </Col>
         <Col md={3}>
@@ -380,9 +362,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
               })}
               isInvalid={!!errors.payedAmount}
             />
-            <Form.Control.Feedback type="invalid">
-              {errors.payedAmount?.message}
-            </Form.Control.Feedback>
+            
           </Form.Group>
         </Col>
         <Col md={3}>
@@ -394,7 +374,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
             setValue={setValue}
             readField={"name"}
             url={`accounts/account?nameContains`}
-            clear={clearChild}
+            
           />
         </Col>
       </Row>

@@ -36,7 +36,7 @@ export const generateInvoicePdf = (data:any) => {
     doc.text("Items", 10, 80);
 
     // Header Background and Column Titles
-    doc.setFillColor(230);
+    doc.setFillColor(String(230));
     doc.rect(10, 85, pageWidth - 20, 10, 'F');
     doc.setFontSize(10);
     doc.setTextColor(0);
@@ -48,7 +48,7 @@ export const generateInvoicePdf = (data:any) => {
 
     // Table Rows
     let yPosition = 102;
-    data.items.forEach((item) => {
+    data.items.forEach((item:any) => {
         doc.setDrawColor(220);
         doc.rect(10, yPosition - 8, pageWidth - 20, 10);
         doc.text(item.itemName, 12, yPosition);
@@ -60,7 +60,7 @@ export const generateInvoicePdf = (data:any) => {
     });
 
     // Summary Section
-    doc.setFillColor(245);
+    doc.setFillColor(String(245));
     doc.rect(10, yPosition, pageWidth - 20, 30, 'F');
 
     yPosition += 10;

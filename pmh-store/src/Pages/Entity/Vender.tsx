@@ -25,7 +25,7 @@ const VendorList: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [results, setResults] = useState<Vendor[]>([]);
   const [count, setCount] = useState(0);
-  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
+  const [selectedVendor, setSelectedVendor] = useState<any | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
