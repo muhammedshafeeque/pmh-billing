@@ -13,7 +13,7 @@ const app = express();
 dotenv.config();
 const allowedOrigins = [
   "http://localhost:5173",
-  'https://eclectic-naiad-a88864.netlify.app/'
+  'https://eclectic-naiad-a88864.netlify.app'
 ];
 
 const corsOptions = {
