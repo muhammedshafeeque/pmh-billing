@@ -51,7 +51,7 @@ const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onIte
         >
           {searchResults.map((item) => (
             <ListGroup.Item
-              key={item._id}
+              key={item.stockId}
               action
               onClick={() => handleItemSelect(item)}
             >

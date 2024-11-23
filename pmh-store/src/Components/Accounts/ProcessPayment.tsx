@@ -1,35 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { Form, Button, Card, Alert, Row, Col } from 'react-bootstrap';
 import { BsFillPersonFill } from 'react-icons/bs';
 import axios from '../../Api/Api';
 
-function ProcessPayment({ customer }:any) {
-  const [amount, setAmount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+function ProcessPayment({ customer,setShowModal }: any) {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      amount: 0,
+      paymentMethod: 'Cash', // Default value for payment method
+    },
+  });
 
-  const handlePayment = async (e:any) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
+  const amount = watch('amount');
+  const paymentMethod = watch('paymentMethod');
 
+  useEffect(() => {
+    setValue('amount', customer.accountHEad.accountBalance);
+  }, [customer, setValue]);
+
+  const onSubmit = async (data: { amount: number; paymentMethod: string }) => {
     try {
-      const response = await axios.post('/payment', {
-        customerId: customer.id,
-        amount: amount,
+      const response = await axios.post('/accounts/collection', {
+        customerId: customer._id,
+        amount: data.amount,
+        method: data.paymentMethod,
       });
-      setSuccess(`Payment successful: Transaction ID ${response.data.transactionId}`);
+      setShowModal(false)
     } catch (error) {
-      setError('Payment failed. Please try again.');
-    } finally {
-      setLoading(false);
+      
     }
   };
-  useEffect(()=>{
-    setAmount(customer.accountBallance)
-  },[customer])
 
   return (
     <Card className="p-4 shadow-sm">
@@ -47,36 +54,54 @@ function ProcessPayment({ customer }:any) {
             <strong>Date:</strong> {new Date().toLocaleDateString()}
           </Col>
         </Row>
-        
+
         <Row className="mb-3">
           <Col>
-            <strong>Outstanding Amount:</strong> {customer.accountBallance}
+            <strong>Outstanding Amount:</strong> {customer.accountHEad.accountBalance}
           </Col>
           <Col>
-            {/* <strong>Payable Amount:</strong> ${amount > 0 ? amount : 'Enter amount'} */}
+            <strong>Payable Amount:</strong> ${amount > 0 ? amount : 'Enter amount'}
           </Col>
         </Row>
 
-        <Form onSubmit={handlePayment}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          {/* Payment Amount */}
           <Form.Group className="mb-3" controlId="formAmount">
             <Form.Label>Payment Amount</Form.Label>
             <Form.Control
               type="number"
               placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
-              min="0"
-              required
+              {...register('amount', {
+                required: 'Amount is required',
+                min: { value: 1, message: 'Amount must be at least 1' },
+              })}
             />
+            {errors.amount && (
+              <div className="text-danger mt-1">{errors.amount.message}</div>
+            )}
           </Form.Group>
 
-          <Button type="submit" variant="primary" disabled={loading} className="w-100">
-            {loading ? 'Processing...' : 'Pay Now'}
+          {/* Payment Method */}
+          <Form.Group className="mb-3" controlId="formPaymentMethod">
+            <Form.Label>Payment Method</Form.Label>
+            <Form.Select
+              {...register('paymentMethod', {
+                required: 'Payment method is required',
+              })}
+            >
+              <option value="">Select Payment Method</option>
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+            </Form.Select>
+            {errors.paymentMethod && (
+              <div className="text-danger mt-1">{errors.paymentMethod.message}</div>
+            )}
+          </Form.Group>
+
+          <Button type="submit" variant="primary" disabled={isSubmitting} className="w-100">
+            {isSubmitting ? 'Processing...' : 'Pay Now'}
           </Button>
         </Form>
-
-        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-        {success && <Alert variant="success" className="mt-3">{success}</Alert>}
       </Card.Body>
     </Card>
   );

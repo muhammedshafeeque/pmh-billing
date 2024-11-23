@@ -152,3 +152,11 @@ export const deleteVendor = async (req, res, next) => {
     next(error);
   }
 };
+export const retrieveCustomer=async(req,res,next)=>{
+  try {
+    let customer=await CUSTOMER.findById(req.params.id).populate('accountHEad')
+    res.send(customer)
+  } catch (error) {
+    next(error)
+  }
+}

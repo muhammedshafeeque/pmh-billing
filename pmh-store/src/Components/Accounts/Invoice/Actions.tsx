@@ -12,12 +12,17 @@ const Action: React.FC<{
   invoiceItems: any;
   customer: any;
   invoiceDetails: any;
-}> = ({ totals, invoiceItems, customer, invoiceDetails }) => {
-  const handlePayment = () => {
+}> = ({ totals, invoiceItems, customer, invoiceDetails }:any) => {
+  const handlePayment =async () => {
+    setLoadingState(true)
+    let cu:any=await axios.get(`entity/customer/${customer._id}`)
+    setCustomerFull(cu.data)
     setShowModal(true);
+    setLoadingState(false)
   };
   const { setLoadingState } = useLoading() as { setLoadingState: (isLoading: boolean) => void };
   const [showModal, setShowModal] = useState(false);
+  const [customerFull,setCustomerFull]=useState(null)
   const handleCancel = () => {
     // Implement cancel logic
   };
@@ -79,12 +84,12 @@ const Action: React.FC<{
           Print
         </Button>
       )}
-      {inv && (
+      {inv &&(
         <Button variant="success" className="me-2" onClick={handlePayment}>
           Process Payment (F2)
         </Button>
       )}
-
+      
       <ModalPopup
         head={"Proceed Payment"}
         size="lg"
@@ -92,8 +97,9 @@ const Action: React.FC<{
         handleClose={handleCloseModal}
         dialogClassName="vendor-modal"
       >
-        <ProcessPayment customer={customer} />
-      </ModalPopup>
+        <ProcessPayment customer={customerFull} setShowModal={setShowModal} />
+        
+      </ModalPopup >
     </div>
   );
 };

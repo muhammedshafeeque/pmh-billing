@@ -1,16 +1,18 @@
 import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { ACCOUNT } from "../Models/AccountModal.js";
+import { COLLECTION } from "../Models/collectionModal.js";
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { INVOICE } from "../Models/InvoiceModal.js";
 import { ITEM } from "../Models/itemModal.js";
 import { PAYMENT } from "../Models/PaymentModal.js";
+import { PREFIX_NUMBER_MODAL } from "../Models/PrefixNumber.js";
 import { Stock } from "../Models/StockModal.js";
 import { TRANSACTION } from "../Models/TransactionModal.js";
 import {
   createAccountHead,
   createTransaction,
 } from "../Service/AccountsService.js";
-import { convertToBaseUnit, queryGen } from "../Utils/utils.js";
+import { convertToBaseUnit, numberGenerator, queryGen } from "../Utils/utils.js";
 
 export const getAccountHeads = async (req, res, next) => {
   try {
@@ -184,4 +186,30 @@ export const generateInvoice = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+
+
 };
+export const processCollection=async(req,res,next)=>{
+  try {
+    let accounts=await ACCOUNT.find()
+    let account=accounts[0]
+    let customer=await CUSTOMER.findById(req.body.customerId)
+    let transaction=await createTransaction({        fromAccount: customer.accountHEad,
+      toAccount: account.accountHead,
+      amount: req.body.amount,
+      description: `Collection From ${customer.firstName}`,})
+      let count = await PREFIX_NUMBER_MODAL.find({ type: '/PAYMENT/' }).count();
+    let number=await numberGenerator(count+1,'/PAYMENT/')
+    let Payment=   await COLLECTION.create({
+      collectedFrom: customer._id,
+      toAccount: account.accountHead,
+      amount: req.body.amount,
+      transaction: transaction._id,
+      number:number.name
+      
+    }); 
+    res.send({message:`Collection Recorded successfully , ID= ${number.name}`,Payment})
+  } catch (error) {
+    next(error)
+  }
+}
