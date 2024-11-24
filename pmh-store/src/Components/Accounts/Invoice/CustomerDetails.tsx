@@ -9,8 +9,19 @@ interface CustomerDetailsProps {
   setCustomer: (customer: any) => void;
 }
 
+interface Customer {
+  _id: string;
+  firstName: string;
+  phone: string;
+  accountBallance?: number;
+}
+
 const CustomerDetails = forwardRef<any, CustomerDetailsProps>(({ setCustomer }, ref) => {
-  const { register, formState: { errors }, setValue, getValues, watch, reset } = useForm({
+  const { register, formState: { errors }, setValue, getValues, watch, reset } = useForm<{
+    name: string | Customer;
+    phone: string | Customer;
+    address: string;
+  }>({
     defaultValues: {
       name: "",
       phone: "",
@@ -58,14 +69,14 @@ const CustomerDetails = forwardRef<any, CustomerDetailsProps>(({ setCustomer }, 
    setValue('name',customer.data.response),
    setValue('phone',customer.data.response)
   };
-  useEffect(()=>{
-    if(watch('name')._id){
-      setIsNew(false)
-    }else{
-      
-      setIsNew(true)
+  useEffect(() => {
+    const nameValue = watch('name');
+    if (typeof nameValue === 'object' && 'firstName' in nameValue) {
+      setIsNew(false);
+    } else {
+      setIsNew(true);
     }
-  },[watch('name')])
+  }, [watch('name')]);
 
   useKeyboardShortcuts([
     {

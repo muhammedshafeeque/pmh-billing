@@ -1,6 +1,5 @@
 import React from 'react';
 import { Modal, Table } from 'react-bootstrap';
-import { KEYBOARD_SHORTCUTS } from '../utils/KeyboardHandler';
 
 interface ShortcutHelpProps {
   show: boolean;

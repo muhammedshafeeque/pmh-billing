@@ -9,6 +9,7 @@ import InvoiceItemAutoComplete from "../../Components/Accounts/Invoice/InvoiceIt
 import Items from "../../Components/Accounts/Invoice/Items";
 import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../utils/KeyboardHandler';
 import KeyboardShortcutHelp from '../../Components/KeyboardShortcutHelp';
+import { generateInvoicePdf } from "../../Services/PdfService/invoice";
 
 interface InvoiceItem {
   _id: string;
@@ -34,10 +35,12 @@ const CreateInvoice: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [invoiceDetails,setInvoiceDetails]=useState()
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
+  const [inv, setInv] = useState<any>(null);
 
   // Add refs before the useForm hook
   const customerDetailsRef = useRef<any>(null);
   const invoiceDetailsRef = useRef<any>(null);
+  const actionRef = useRef<any>(null);
 
   const { control, register, watch, getValues, reset } = useForm<InvoiceForm>({
     defaultValues: {
@@ -110,6 +113,12 @@ const CreateInvoice: React.FC = () => {
     // Generate new invoice number
     if (invoiceDetailsRef.current) {
       invoiceDetailsRef.current.generateNewInvoiceNumber();
+    }
+  };
+
+  const handlePayment = async () => {
+    if (inv && actionRef.current) {
+      actionRef.current.handlePayment();
     }
   };
 
@@ -201,12 +210,14 @@ const CreateInvoice: React.FC = () => {
           <Card className="shadow-sm">
             <Card.Body className="p-2">
               <Action 
+                ref={actionRef}
                 totals={totals} 
                 invoiceItems={getValues()} 
                 customer={customer} 
                 invoiceDetails={invoiceDetails}
                 onCancel={handleInvoiceCancel}
                 onPaymentComplete={handleInvoiceCancel}
+                setInv={setInv}
               />
             </Card.Body>
           </Card>

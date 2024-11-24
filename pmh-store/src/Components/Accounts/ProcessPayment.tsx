@@ -5,11 +5,6 @@ import { BsFillPersonFill } from 'react-icons/bs';
 import axios from '../../Api/Api';
 import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../utils/KeyboardHandler';
 
-interface ChildComponentProps {
-    onReset: () => void;
-    // ... other props
-}
-
 function ProcessPayment({ 
   customer, 
   setShowModal, 

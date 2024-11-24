@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import { Button, Modal } from "react-bootstrap";
 import ModalPopup from "../../PopupModal/ModalPopup";
 import ProcessPayment from "../ProcessPayment";
@@ -8,14 +8,15 @@ import moment from "moment";
 import { generateInvoicePdf } from "../../../Services/PdfService/invoice";
 import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../../utils/KeyboardHandler';
 
-const Action: React.FC<{
+const Action = forwardRef<any, {
   totals: any;
   invoiceItems: any;
   customer: any;
   invoiceDetails: any;
   onCancel: () => void;
   onPaymentComplete: () => void;
-}> = ({ totals, invoiceItems, customer, invoiceDetails, onCancel, onPaymentComplete }) => {
+  setInv: (inv: any) => void;
+}>(({ totals, invoiceItems, customer, invoiceDetails, onCancel, onPaymentComplete, setInv: setParentInv }, ref) => {
   const handlePayment = async () => {
     setLoadingState(true)
     let cu: any = await axios.get(`entity/customer/${customer._id}`)
@@ -64,8 +65,9 @@ const Action: React.FC<{
         invoiceNumber: invoiceDetails.prefix.name,
         discount: totals.discount,
       };
-      let inv = await axios.post("/accounts/generate-invoice", body);
-      setInv(inv.data.response);
+      let response = await axios.post("/accounts/generate-invoice", body);
+      setInv(response.data.response);
+      setParentInv(response.data.response);
     } catch (error) {
       console.log(error);
     } finally {
@@ -101,6 +103,10 @@ const Action: React.FC<{
       }
     }
   ]);
+
+  useImperativeHandle(ref, () => ({
+    handlePayment
+  }));
 
   return (
     <div>
@@ -169,6 +175,6 @@ const Action: React.FC<{
       </ModalPopup>
     </div>
   );
-};
+});
 
 export default Action;
