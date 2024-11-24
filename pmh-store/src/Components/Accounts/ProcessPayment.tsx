@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { BsFillPersonFill } from 'react-icons/bs';
 import axios from '../../Api/Api';
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../utils/KeyboardHandler';
 
 interface ChildComponentProps {
     onReset: () => void;
@@ -70,6 +71,21 @@ function ProcessPayment({
       reset();
     };
   }, [reset]);
+
+  useKeyboardShortcuts([
+    {
+      key: KEYBOARD_SHORTCUTS.SAVE,
+      handler: () => {
+        if (!isSubmitting) {
+          handleSubmit(onSubmit)();
+        }
+      }
+    },
+    {
+      key: KEYBOARD_SHORTCUTS.CANCEL,
+      handler: handleCancel
+    }
+  ]);
 
   return (
     <Card className="p-4 shadow-sm">

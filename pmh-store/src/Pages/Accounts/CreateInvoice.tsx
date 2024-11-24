@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Alert, Button } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import CustomerDetails from "../../Components/Accounts/Invoice/CustomerDetails";
 import InvoiceDetails from "../../Components/Accounts/Invoice/InvoiceDetails";
@@ -7,6 +7,8 @@ import InvoiceTotals from "../../Components/Accounts/Invoice/Totals";
 import Action from "../../Components/Accounts/Invoice/Actions";
 import InvoiceItemAutoComplete from "../../Components/Accounts/Invoice/InvoiceItemAutoComplete";
 import Items from "../../Components/Accounts/Invoice/Items";
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../utils/KeyboardHandler';
+import KeyboardShortcutHelp from '../../Components/KeyboardShortcutHelp';
 
 interface InvoiceItem {
   _id: string;
@@ -31,6 +33,7 @@ const CreateInvoice: React.FC = () => {
   });
   const [total, setTotal] = useState(0);
   const [invoiceDetails,setInvoiceDetails]=useState()
+  const [showShortcutHelp, setShowShortcutHelp] = useState(false);
 
   // Add refs before the useForm hook
   const customerDetailsRef = useRef<any>(null);
@@ -110,6 +113,43 @@ const CreateInvoice: React.FC = () => {
     }
   };
 
+  // Keyboard handlers
+  useKeyboardShortcuts([
+    {
+      key: KEYBOARD_SHORTCUTS.PAYMENT,
+      handler: () => {
+        if (inv) {
+          handlePayment();
+        }
+      }
+    },
+    {
+      key: KEYBOARD_SHORTCUTS.CUSTOMER_LOOKUP,
+      handler: () => {
+        if (customerDetailsRef.current) {
+          customerDetailsRef.current.handleLookup();
+        }
+      }
+    },
+    {
+      key: KEYBOARD_SHORTCUTS.CANCEL,
+      handler: handleInvoiceCancel
+    },
+    {
+      key: KEYBOARD_SHORTCUTS.PRINT,
+      handler: () => {
+        if (inv) {
+          generateInvoicePdf(inv);
+        }
+      }
+    },
+    {
+      key: 'h',
+      ctrl: true,
+      handler: () => setShowShortcutHelp(true)
+    }
+  ]);
+
   return (
     <Container fluid className="py-2">
       <h4 className="mb-2 text-primary">Billing</h4>
@@ -172,6 +212,20 @@ const CreateInvoice: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+      <Button
+        variant="outline-secondary"
+        size="sm"
+        className="position-fixed bottom-0 end-0 m-3"
+        onClick={() => setShowShortcutHelp(true)}
+      >
+        Keyboard Shortcuts (Ctrl+H)
+      </Button>
+
+      <KeyboardShortcutHelp 
+        show={showShortcutHelp} 
+        onHide={() => setShowShortcutHelp(false)} 
+      />
     </Container>
   );
 };

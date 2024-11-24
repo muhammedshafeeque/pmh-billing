@@ -6,6 +6,7 @@ import axios from "../../../Api/Api";
 import { useLoading } from "../../../Contexts/LoaderContext";
 import moment from "moment";
 import { generateInvoicePdf } from "../../../Services/PdfService/invoice";
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../../utils/KeyboardHandler';
 
 const Action: React.FC<{
   totals: any;
@@ -81,6 +82,25 @@ const Action: React.FC<{
     // Call parent reset function
     onPaymentComplete();
   };
+
+  useKeyboardShortcuts([
+    {
+      key: KEYBOARD_SHORTCUTS.PAYMENT,
+      handler: () => {
+        if (inv) {
+          handlePayment();
+        }
+      }
+    },
+    {
+      key: KEYBOARD_SHORTCUTS.CANCEL,
+      handler: () => {
+        if (!showModal) {
+          handleCancel();
+        }
+      }
+    }
+  ]);
 
   return (
     <div>
