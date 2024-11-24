@@ -4,17 +4,31 @@ import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { BsFillPersonFill } from 'react-icons/bs';
 import axios from '../../Api/Api';
 
-function ProcessPayment({ customer,setShowModal }: any) {
+interface ChildComponentProps {
+    onReset: () => void;
+    // ... other props
+}
+
+function ProcessPayment({ 
+  customer, 
+  setShowModal, 
+  onPaymentComplete 
+}: { 
+  customer: any; 
+  setShowModal: (show: boolean) => void;
+  onPaymentComplete: () => void;
+}) {
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       amount: 0,
-      paymentMethod: 'Cash', // Default value for payment method
+      paymentMethod: 'Cash',
     },
   });
 
@@ -22,7 +36,9 @@ function ProcessPayment({ customer,setShowModal }: any) {
   
 
   useEffect(() => {
-    setValue('amount', customer.accountHEad.accountBalance);
+    if (customer?.accountHEad?.accountBalance) {
+      setValue('amount', customer.accountHEad.accountBalance);
+    }
   }, [customer, setValue]);
 
   const onSubmit = async (data: { amount: number; paymentMethod: string }) => {
@@ -32,11 +48,28 @@ function ProcessPayment({ customer,setShowModal }: any) {
         amount: data.amount,
         method: data.paymentMethod,
       });
-      setShowModal(false)
-    } catch (error) {
       
+      reset();
+      onPaymentComplete();
+      
+    } catch (error) {
+      console.error('Payment error:', error);
     }
   };
+
+  const handleCancel = () => {
+    reset({
+      amount: 0,
+      paymentMethod: 'Cash'
+    });
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
 
   return (
     <Card className="p-4 shadow-sm">
@@ -48,7 +81,7 @@ function ProcessPayment({ customer,setShowModal }: any) {
 
         <Row className="mb-3">
           <Col>
-            <strong>Customer Name:</strong> {customer.firstName}
+            <strong>Customer Name:</strong> {customer?.firstName || 'N/A'}
           </Col>
           <Col>
             <strong>Date:</strong> {new Date().toLocaleDateString()}
@@ -57,7 +90,7 @@ function ProcessPayment({ customer,setShowModal }: any) {
 
         <Row className="mb-3">
           <Col>
-            <strong>Outstanding Amount:</strong> {customer.accountHEad.accountBalance}
+            <strong>Outstanding Amount:</strong> {customer?.accountHEad?.accountBalance || 0}
           </Col>
           <Col>
             <strong>Payable Amount:</strong> ${amount > 0 ? amount : 'Enter amount'}
@@ -65,7 +98,6 @@ function ProcessPayment({ customer,setShowModal }: any) {
         </Row>
 
         <Form onSubmit={handleSubmit(onSubmit)}>
-          {/* Payment Amount */}
           <Form.Group className="mb-3" controlId="formAmount">
             <Form.Label>Payment Amount</Form.Label>
             <Form.Control
@@ -81,7 +113,6 @@ function ProcessPayment({ customer,setShowModal }: any) {
             )}
           </Form.Group>
 
-          {/* Payment Method */}
           <Form.Group className="mb-3" controlId="formPaymentMethod">
             <Form.Label>Payment Method</Form.Label>
             <Form.Select
@@ -98,9 +129,22 @@ function ProcessPayment({ customer,setShowModal }: any) {
             )}
           </Form.Group>
 
-          <Button type="submit" variant="primary" disabled={isSubmitting} className="w-100">
-            {isSubmitting ? 'Processing...' : 'Pay Now'}
-          </Button>
+          <div className="d-flex justify-content-end mt-3">
+            <Button 
+              variant="secondary" 
+              onClick={handleCancel} 
+              className="me-2"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              variant="primary" 
+              disabled={isSubmitting || !customer?._id}
+            >
+              {isSubmitting ? 'Processing...' : 'Pay Now'}
+            </Button>
+          </div>
         </Form>
       </Card.Body>
     </Card>

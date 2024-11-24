@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import ModalPopup from "../../PopupModal/ModalPopup";
 import ProcessPayment from "../ProcessPayment";
 import axios from "../../../Api/Api";
@@ -12,24 +12,40 @@ const Action: React.FC<{
   invoiceItems: any;
   customer: any;
   invoiceDetails: any;
-}> = ({ totals, invoiceItems, customer, invoiceDetails }:any) => {
-  const handlePayment =async () => {
+  onCancel: () => void;
+  onPaymentComplete: () => void;
+}> = ({ totals, invoiceItems, customer, invoiceDetails, onCancel, onPaymentComplete }) => {
+  const handlePayment = async () => {
     setLoadingState(true)
-    let cu:any=await axios.get(`entity/customer/${customer._id}`)
+    let cu: any = await axios.get(`entity/customer/${customer._id}`)
     setCustomerFull(cu.data)
     setShowModal(true);
     setLoadingState(false)
   };
   const { setLoadingState } = useLoading() as { setLoadingState: (isLoading: boolean) => void };
   const [showModal, setShowModal] = useState(false);
-  const [customerFull,setCustomerFull]=useState(null)
+  const [customerFull, setCustomerFull] = useState(null)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
   const handleCancel = () => {
-    // Implement cancel logic
+    setShowConfirmDialog(true);
   };
+
+  const confirmCancel = () => {
+    setInv(undefined);
+    setCustomerFull(null);
+    setShowModal(false);
+    setShowConfirmDialog(false);
+    
+    onCancel();
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  
   const [inv, setInv] = useState();
+  
   const generateInvoice = async () => {
     try {
       setLoadingState(true);
@@ -49,7 +65,6 @@ const Action: React.FC<{
       };
       let inv = await axios.post("/accounts/generate-invoice", body);
       setInv(inv.data.response);
-      // generateInvoicePdf(inv.data.response)
     } catch (error) {
       console.log(error);
     } finally {
@@ -57,8 +72,37 @@ const Action: React.FC<{
     }
   };
 
+  const handlePaymentSuccess = () => {
+    // Reset local states without confirmation
+    setInv(undefined);
+    setCustomerFull(null);
+    setShowModal(false);
+    
+    // Call parent reset function
+    onPaymentComplete();
+  };
+
   return (
     <div>
+      {/* Confirmation Modal */}
+      <Modal show={showConfirmDialog} onHide={() => setShowConfirmDialog(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Cancel</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to cancel? All unsaved changes will be lost.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmDialog(false)}>
+            No
+          </Button>
+          <Button variant="danger" onClick={confirmCancel}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Action Buttons */}
       <Button variant="danger" className="me-2" onClick={handleCancel}>
         Cancel
       </Button>
@@ -84,7 +128,7 @@ const Action: React.FC<{
           Print
         </Button>
       )}
-      {inv &&(
+      {inv && (
         <Button variant="success" className="me-2" onClick={handlePayment}>
           Process Payment (F2)
         </Button>
@@ -97,9 +141,12 @@ const Action: React.FC<{
         handleClose={handleCloseModal}
         dialogClassName="vendor-modal"
       >
-        <ProcessPayment customer={customerFull} setShowModal={setShowModal} />
-        
-      </ModalPopup >
+        <ProcessPayment 
+          customer={customerFull} 
+          setShowModal={setShowModal}
+          onPaymentComplete={handlePaymentSuccess}
+        />
+      </ModalPopup>
     </div>
   );
 };

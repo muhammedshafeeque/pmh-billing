@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { FaCalendarAlt, FaFileInvoice, FaHistory } from "react-icons/fa";
 import axios from '../../../Api/Api';
 import moment from "moment";
 import "./accounts.scss";
 
-const InvoiceDetails: React.FC<any> = ({ customer ,setInvoiceDetails}) => {
+interface InvoiceDetailsProps {
+  customer: any;
+  setInvoiceDetails: (details: any) => void;
+}
+
+const InvoiceDetails = forwardRef<any, InvoiceDetailsProps>(({ customer, setInvoiceDetails }, ref) => {
   const [prefix, setPrefix] = useState<any>({ name: "" });
   const [date, setDate] = useState<string>( moment().format("DD/MM/YYYY"));
   const [outAmount, setOutAmount] = useState<number>(0);
@@ -40,6 +45,20 @@ const InvoiceDetails: React.FC<any> = ({ customer ,setInvoiceDetails}) => {
       setOutAmount(0)
     }
   },[customer])
+
+  const generateNewInvoiceNumber = async () => {
+    try {
+      const res = await axios.post('core/generate-sequence', { type: '/INV/' })
+      setPrefix(res.data)
+      setInvoiceDetails({prefix:res.data,formattedDate:moment().format("DD/MM/YYYY")})
+    } catch (error) {
+      console.error('Error generating invoice number:', error); 
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    generateNewInvoiceNumber
+  }));
 
   return (
     <>
@@ -96,6 +115,6 @@ const InvoiceDetails: React.FC<any> = ({ customer ,setInvoiceDetails}) => {
       </Form>
     </>
   );
-};
+});
 
 export default InvoiceDetails;

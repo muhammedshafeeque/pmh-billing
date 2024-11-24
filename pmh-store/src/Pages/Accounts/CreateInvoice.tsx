@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Alert } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import CustomerDetails from "../../Components/Accounts/Invoice/CustomerDetails";
@@ -31,7 +31,12 @@ const CreateInvoice: React.FC = () => {
   });
   const [total, setTotal] = useState(0);
   const [invoiceDetails,setInvoiceDetails]=useState()
-  const { control, register, watch, getValues } = useForm<InvoiceForm>({
+
+  // Add refs before the useForm hook
+  const customerDetailsRef = useRef<any>(null);
+  const invoiceDetailsRef = useRef<any>(null);
+
+  const { control, register, watch, getValues, reset } = useForm<InvoiceForm>({
     defaultValues: {
       items: [],
     },
@@ -77,6 +82,34 @@ const CreateInvoice: React.FC = () => {
    setTotals(newTotals)
   },[total])
 
+  const handleInvoiceCancel = () => {
+    // Reset all states to initial values
+    setCustomer({});
+    setTotals({
+      billAmount: 0,
+      discount: 0,
+      outstanding: 0,
+      payableAmount: 0,
+    });
+    setTotal(0);
+    setInvoiceDetails(undefined);
+    
+    // Reset form data including items
+    reset({
+      items: []
+    });
+
+    // Reset customer details
+    if (customerDetailsRef.current) {
+      customerDetailsRef.current.resetCustomer();
+    }
+
+    // Generate new invoice number
+    if (invoiceDetailsRef.current) {
+      invoiceDetailsRef.current.generateNewInvoiceNumber();
+    }
+  };
+
   return (
     <Container fluid className="py-2">
       <h4 className="mb-2 text-primary">Billing</h4>
@@ -105,12 +138,19 @@ const CreateInvoice: React.FC = () => {
         <Col md={4}>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <CustomerDetails setCustomer={setCustomer} />
+              <CustomerDetails 
+                ref={customerDetailsRef}
+                setCustomer={setCustomer} 
+              />
             </Card.Body>
           </Card>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <InvoiceDetails customer={customer} setInvoiceDetails={setInvoiceDetails} />
+              <InvoiceDetails 
+                ref={invoiceDetailsRef}
+                customer={customer} 
+                setInvoiceDetails={setInvoiceDetails} 
+              />
             </Card.Body>
           </Card>
           <Card className="shadow-sm mb-2">
@@ -120,7 +160,14 @@ const CreateInvoice: React.FC = () => {
           </Card>
           <Card className="shadow-sm">
             <Card.Body className="p-2">
-              <Action totals={totals} invoiceItems={getValues()} customer={customer} invoiceDetails={invoiceDetails} />
+              <Action 
+                totals={totals} 
+                invoiceItems={getValues()} 
+                customer={customer} 
+                invoiceDetails={invoiceDetails}
+                onCancel={handleInvoiceCancel}
+                onPaymentComplete={handleInvoiceCancel}
+              />
             </Card.Body>
           </Card>
         </Col>

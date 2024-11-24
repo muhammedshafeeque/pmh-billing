@@ -1,28 +1,54 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { Form, Button } from "react-bootstrap";
 import AutoComplete from "../../AutoComplete/AutoComplete";
 import { useForm } from "react-hook-form";
-import axios  from "../../../Api/Api";
+import axios from "../../../Api/Api";
 
-const CustomerDetails: React.FC<{ setCustomer: (customer: any) => void }> = ({
-  setCustomer,
-}) => {
-  const { register, errors, setValue,  getValues,watch }: any =
-    useForm({
-      defaultValues: {
+interface CustomerDetailsProps {
+  setCustomer: (customer: any) => void;
+}
+
+const CustomerDetails = forwardRef<any, CustomerDetailsProps>(({ setCustomer }, ref) => {
+  const { register, formState: { errors }, setValue, getValues, watch, reset } = useForm({
+    defaultValues: {
+      name: "",
+      phone: "",
+      address: "",
+    },
+  });
+  const [isNew, setIsNew] = useState(false);
+  const [clearName, setClearName] = useState(false);
+  const [clearPhone, setClearPhone] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    resetCustomer: () => {
+      // Reset form values
+      reset({
         name: "",
         phone: "",
         address: "",
-      },
-    });
-    const [isNew,setIsNew]=useState(false)
+      });
+      
+      // Reset parent state
+      setCustomer({});
+      
+      // Reset local states
+      setIsNew(false);
+      
+      // Toggle clear flags to reset AutoComplete components
+      setClearName(prev => !prev);
+      setClearPhone(prev => !prev);
+      
+      // Reset AutoComplete values explicitly
+      setValue('name', '');
+      setValue('phone', '');
+    }
+  }));
+
   const handleLookup = () => {
     // Implement customer lookup logic here
     // On successful lookup, call setCustomer with the customer data
   };
-
-  const [clearName,setClearName]=useState(false)
-  const [clearPhone,setClearPhone]=useState(false)
 
   const handleCreateCustomer = async() => {
     const values = getValues(); // Get all form values
@@ -39,6 +65,7 @@ const CustomerDetails: React.FC<{ setCustomer: (customer: any) => void }> = ({
       setIsNew(true)
     }
   },[watch('name')])
+
   return (
     <div>
       <h5>Customer Details</h5>
@@ -109,6 +136,6 @@ const CustomerDetails: React.FC<{ setCustomer: (customer: any) => void }> = ({
       
     </div>
   );
-};
+});
 
 export default CustomerDetails;
