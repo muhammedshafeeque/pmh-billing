@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Form, Button, Card, Alert, Row, Col } from 'react-bootstrap';
+import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { BsFillPersonFill } from 'react-icons/bs';
 import axios from '../../Api/Api';
 
@@ -19,7 +19,7 @@ function ProcessPayment({ customer,setShowModal }: any) {
   });
 
   const amount = watch('amount');
-  const paymentMethod = watch('paymentMethod');
+  
 
   useEffect(() => {
     setValue('amount', customer.accountHEad.accountBalance);
@@ -27,7 +27,7 @@ function ProcessPayment({ customer,setShowModal }: any) {
 
   const onSubmit = async (data: { amount: number; paymentMethod: string }) => {
     try {
-      const response = await axios.post('/accounts/collection', {
+      await axios.post('/accounts/collection', {
         customerId: customer._id,
         amount: data.amount,
         method: data.paymentMethod,
