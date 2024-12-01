@@ -46,7 +46,7 @@ export const SideBarItems = [
       {
         icon: FaFileInvoiceDollar,
         name: "Invoices",
-        path: "",
+        path: ROUTERS.INVOICES,
       },
       {
         icon: RiBillFill,

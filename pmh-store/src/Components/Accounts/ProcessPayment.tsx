@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { BsFillPersonFill } from 'react-icons/bs';
 import axios from '../../Api/Api';
-import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../utils/KeyboardHandler';
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../Utils/KeyboardHandler';
 
 function ProcessPayment({ 
   customer, 

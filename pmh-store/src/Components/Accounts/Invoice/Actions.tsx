@@ -6,7 +6,7 @@ import axios from "../../../Api/Api";
 import { useLoading } from "../../../Contexts/LoaderContext";
 import moment from "moment";
 import { generateInvoicePdf } from "../../../Services/PdfService/invoice";
-import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../../utils/KeyboardHandler';
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../../Utils/KeyboardHandler';
 
 const Action = forwardRef<any, {
   totals: any;

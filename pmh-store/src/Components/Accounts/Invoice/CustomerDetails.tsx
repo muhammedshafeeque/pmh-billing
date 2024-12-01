@@ -3,7 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import AutoComplete from "../../AutoComplete/AutoComplete";
 import { useForm } from "react-hook-form";
 import axios from "../../../Api/Api";
-import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../../utils/KeyboardHandler';
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../../Utils/KeyboardHandler';
 
 interface CustomerDetailsProps {
   setCustomer: (customer: any) => void;

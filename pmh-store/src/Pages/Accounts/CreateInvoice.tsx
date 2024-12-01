@@ -7,7 +7,7 @@ import InvoiceTotals from "../../Components/Accounts/Invoice/Totals";
 import Action from "../../Components/Accounts/Invoice/Actions";
 import InvoiceItemAutoComplete from "../../Components/Accounts/Invoice/InvoiceItemAutoComplete";
 import Items from "../../Components/Accounts/Invoice/Items";
-import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../utils/KeyboardHandler';
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from '../../Utils/KeyboardHandler';
 import KeyboardShortcutHelp from '../../Components/KeyboardShortcutHelp';
 import { generateInvoicePdf } from "../../Services/PdfService/invoice";
 

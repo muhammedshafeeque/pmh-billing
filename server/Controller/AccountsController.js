@@ -12,7 +12,11 @@ import {
   createAccountHead,
   createTransaction,
 } from "../Service/AccountsService.js";
-import { convertToBaseUnit, numberGenerator, queryGen } from "../Utils/utils.js";
+import {
+  convertToBaseUnit,
+  numberGenerator,
+  queryGen,
+} from "../Utils/utils.js";
 
 export const getAccountHeads = async (req, res, next) => {
   try {
@@ -169,47 +173,89 @@ export const generateInvoice = async (req, res, next) => {
       itemName: itemsMap.get(String(obj.item)).name,
       quantity: obj.quantity,
       price: obj.pricePerUnit,
-      total:obj.pricePerUnit*obj.quantity,
-      unit:itemsMap.get(String(obj.item)).unit.unitCode
+      total: obj.pricePerUnit * obj.quantity,
+      unit: itemsMap.get(String(obj.item)).unit.unitCode,
     }));
-   let  response={
-      items:itemList,
-      invoiceNumber:INV.number,
-      customerName : customer.firstName,
-      customerMobile :customer.phone,
-      invoiceAmount:INV.invoiceAmount,
-      payableAmount:INV.payableAmount,
-      discount:INV.discount,
-      date:INV.invoiceDate
-    }
-    res.status(201).send({ message: "invoice generated Successfully",response });
+    let response = {
+      items: itemList,
+      invoiceNumber: INV.number,
+      customerName: customer.firstName,
+      customerMobile: customer.phone,
+      invoiceAmount: INV.invoiceAmount,
+      payableAmount: INV.payableAmount,
+      discount: INV.discount,
+      date: INV.invoiceDate,
+    };
+    res
+      .status(201)
+      .send({ message: "invoice generated Successfully", response });
   } catch (error) {
     next(error);
   }
-
-
 };
-export const processCollection=async(req,res,next)=>{
+export const processCollection = async (req, res, next) => {
   try {
-    let accounts=await ACCOUNT.find()
-    let account=accounts[0]
-    let customer=await CUSTOMER.findById(req.body.customerId)
-    let transaction=await createTransaction({        fromAccount: customer.accountHEad,
+    let accounts = await ACCOUNT.find();
+    let account = accounts[0];
+    let customer = await CUSTOMER.findById(req.body.customerId);
+    let transaction = await createTransaction({
+      fromAccount: customer.accountHEad,
       toAccount: account.accountHead,
       amount: req.body.amount,
-      description: `Collection From ${customer.firstName}`,})
-      let count = await PREFIX_NUMBER_MODAL.find({ type: '/PAYMENT/' }).count();
-    let number=await numberGenerator(count+1,'/PAYMENT/')
-    let Payment=   await COLLECTION.create({
+      description: `Collection From ${customer.firstName}`,
+    });
+    let count = await PREFIX_NUMBER_MODAL.find({ type: "/PAYMENT/" }).count();
+    let number = await numberGenerator(count + 1, "/PAYMENT/");
+    let Payment = await COLLECTION.create({
       collectedFrom: customer._id,
       toAccount: account.accountHead,
       amount: req.body.amount,
       transaction: transaction._id,
-      number:number.name
-      
-    }); 
-    res.send({message:`Collection Recorded successfully , ID= ${number.name}`,Payment})
+      number: number.name,
+    });
+    res.send({
+      message: `Collection Recorded successfully , ID= ${number.name}`,
+      Payment,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
+export const getCollections = async (req, res, next) => {
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let collections = await COLLECTION.find(keywords)
+      .populate("collectedFrom")
+      .skip(skip)
+      .limit(limit);
+    let count = await COLLECTION.find(keywords);
+    res.send({ results: collections, count });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getInvoices = async (req, res, next) => {
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let invoices = await INVOICE.find(keywords)
+      .populate("customer")
+      .populate("items.item")
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 });
+    let count=await INVOICE.find(keywords).count()
+    const results = invoices.map((obj) => ({
+      ...obj.toObject(),
+      customerName:obj.customer.firstName,
+      customer:obj.customer._id,
+      customerPhone:obj.customer.phone
+    }));
+    res.send({results,count})
+  } catch (error) {
+    next(error);
+  }
+};

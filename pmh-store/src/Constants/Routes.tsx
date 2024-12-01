@@ -14,6 +14,8 @@ export const ROUTERS = {
     ACCOUNTS:'/accounts',
     ACCOUNT_HEAD:'/account_heads',
     PAYMENTS:'/payments',
-    INVOICE:'/invoicing'
-    
+    INVOICE:'/invoicing',
+    COLLECTIONS:'/collections',
+    BILLS:'/bills',
+    INVOICES:'/invoices'
   };
