@@ -11,8 +11,19 @@ import morgan from "morgan";
 // ==========Configs=========
 const app = express();
 dotenv.config();
+const allowedOrigins = [
+  "http://localhost:5173",
+  'https://eclectic-naiad-a88864.netlify.app'
+];
+
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {  
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -29,7 +40,10 @@ app.use(fileUpload());
 
 connectDb();
 // =========End Configs ======
-app.use("/api", Router);
+app.use("/api",((req,res,next)=>{
+  // console.log(req.body)
+  next()
+}), Router);
 app.use((err, req, res, next) => {
   console.log(err)
   const errStatus = err.status || 500;

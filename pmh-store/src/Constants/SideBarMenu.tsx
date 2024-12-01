@@ -1,4 +1,4 @@
-import { MdAccountBalanceWallet, MdDashboard, MdLocationSearching, MdOutlineAccountBalance, MdPayments, MdPeople } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDashboard, MdOutlineAccountBalance, MdPayments, MdPeople } from "react-icons/md";
 import { ROUTERS } from "./Routes";
 import { FaBoxes, FaFileInvoiceDollar, FaSitemap, FaStoreAlt } from "react-icons/fa";
 import {
@@ -10,6 +10,8 @@ import { RiAlignItemLeftFill, RiBillFill, RiBillLine } from "react-icons/ri";
 import { HiIdentification } from "react-icons/hi2";
 import { FaChartLine, FaMoneyBillTransfer } from "react-icons/fa6";
 import { TbReportAnalytics } from "react-icons/tb";
+import { SiReact } from "react-icons/si";
+import { GiCash } from "react-icons/gi";
 
 
 
@@ -44,11 +46,16 @@ export const SideBarItems = [
       {
         icon: FaFileInvoiceDollar,
         name: "Invoices",
-        path: "",
+        path: ROUTERS.INVOICES,
       },
       {
         icon: RiBillFill,
         name: "Bills",
+        path: "",
+      },
+      {
+        icon: GiCash,
+        name: "Collections",
         path: "",
       },
       {
@@ -96,8 +103,8 @@ export const SideBarItems = [
     ],
   },
   {
-    icon: MdLocationSearching,
-    name: "Locations",
+    icon: SiReact,
+    name: "Core",
     children: [
       {
         icon: BsFillHddRackFill,
@@ -108,6 +115,11 @@ export const SideBarItems = [
         icon: BsSignIntersectionSideFill,
         name: "Sections",
         path: ROUTERS.SECTION,
+      },
+      {
+        icon: MdPayments,
+        name: "UPI configuration",
+        path: '',
       },
     ],
   },

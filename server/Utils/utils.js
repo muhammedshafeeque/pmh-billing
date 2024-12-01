@@ -152,3 +152,9 @@ export const generateExcelBlob = async (data) => {
     throw error;
   }
 };
+export const convertToBaseUnit = (quantity, unit) => {
+  return quantity * unit.conversionToParent;
+}
+export const convertFromBaseUnit = (quantity, unit) => {
+  return quantity / unit.conversionToParent;
+}

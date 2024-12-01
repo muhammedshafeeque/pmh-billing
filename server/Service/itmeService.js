@@ -43,6 +43,7 @@ export const getItem = (query) => {
         .populate("unit")
         .populate("racks")
         .populate("category")
+        .sort({ createdAt: -1 })
         .limit(limit)
         .skip(skip);
       let count = await ITEM.find(keywords).count();
@@ -50,6 +51,9 @@ export const getItem = (query) => {
         ...result.toObject(),
 
         category: result.category.name,
+        unit: result.unit.unitName,
+        unitCode: result.unit.unitCode,
+        measurement:result.unit.measurement
       }));
       resolve({ results, count });
     } catch (error) {

@@ -1,22 +1,80 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
+import { FaSave, FaTimes } from "react-icons/fa";
 
-const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
+interface Vendor {
+  _id: string;
+  name: string;
+  contactPhone: string;
+  contactEmail: string;
+  accountHead: string;
+  accountBallance: number;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+interface CreateAndUpdateVendorProps {
+  handleClose: () => void;
+  vendorToEdit?: Vendor | null;
+}
+
+// Define allowed fields based on vendorValidation schema
+const allowedFields: Array<keyof Vendor> = [
+  "name",
+  "contactEmail",
+  "contactPhone",
+  "street",
+  "city",
+  "state",
+  "zipCode",
+  "country",
+  "accountBallance",
+];
+
+const filterVendorData = (data: Vendor): Partial<Vendor> => {
+  return Object.keys(data).reduce((acc, key) => {
+    // Use a type assertion to ensure key is a valid key of Vendor
+    if (allowedFields.includes(key as keyof Vendor)) {
+      acc[key as keyof Partial<Vendor>] = data[key as keyof Vendor] as any; // Use 'as any' to bypass type checking
+    }
+    return acc;
+  }, {} as Partial<Vendor>);
+};
+
+
+const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClose, vendorToEdit }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<any>();
+    reset,
+  } = useForm<Vendor>();
   const { setLoadingState } = useLoading();
-  const onSubmit: SubmitHandler<any> = async (data: any) => {
+
+  useEffect(() => {
+    if (vendorToEdit) {
+      reset(vendorToEdit);
+    }
+  }, [vendorToEdit, reset]);
+
+  const onSubmit: SubmitHandler<Vendor> = async (data: Vendor) => {
     try {
       setLoadingState(true);
-      await axios.post("entity/vendor", data);
+      const filteredData = filterVendorData(data);
+      if (vendorToEdit) {
+        await axios.patch(`entity/vendor/${vendorToEdit._id}`, filteredData);
+      } else {
+        await axios.post("entity/vendor", filteredData);
+      }
       handleClose();
     } catch (error) {
+      console.error("Error submitting vendor:", error);
     } finally {
       setLoadingState(false);
     }
@@ -26,11 +84,11 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Row>
         <Col md={6}>
-          <Form.Group controlId="formCategoryName">
+          <Form.Group controlId="formVendorName">
             <Form.Label>Name</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter Category name"
+              placeholder="Enter vendor name"
               {...register("name", { required: "Name is required" })}
               isInvalid={!!errors.name}
             />
@@ -40,27 +98,14 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
           </Form.Group>
         </Col>
         <Col md={6}>
-          <Form.Group controlId="formCategoryEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              {...register("contactEmail")}
-              isInvalid={!!errors.contactEmail}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group controlId="formCategoryPhone">
+          <Form.Group controlId="formVendorPhone">
             <Form.Label>Phone</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               placeholder="Enter phone number"
-              {...register("contactPhone", {
+              {...register("contactPhone", { 
                 required: "Phone number is required",
+                valueAsNumber: true,
               })}
               isInvalid={!!errors.contactPhone}
             />
@@ -69,99 +114,51 @@ const CreateAndUpdateVendor: React.FC<PopupChildeProp> = ({ handleClose }) => {
             </Form.Control.Feedback>
           </Form.Group>
         </Col>
-        <Col md={6}>
-          <Form.Group controlId="formCategoryStreet">
-            <Form.Label>Street</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter street"
-              {...register("street")}
-              isInvalid={!!errors.street}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.street?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
       </Row>
 
-      <Row>
+      <Row className="mt-3">
         <Col md={6}>
-          <Form.Group controlId="formCategoryCity">
-            <Form.Label>City</Form.Label>
+          <Form.Group controlId="formVendorEmail">
+            <Form.Label>Email</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Enter city"
-              {...register("city")}
-              isInvalid={!!errors.city}
+              type="email"
+              placeholder="Enter email"
+              {...register("contactEmail", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
+              isInvalid={!!errors.contactEmail}
             />
             <Form.Control.Feedback type="invalid">
-              {errors.city?.message}
+              {errors.contactEmail?.message}
             </Form.Control.Feedback>
           </Form.Group>
         </Col>
         <Col md={6}>
-          <Form.Group controlId="formCategoryState">
-            <Form.Label>State</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter state"
-              {...register("state")}
-              isInvalid={!!errors.state}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.state?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
-          <Form.Group controlId="formCategoryZipCode">
-            <Form.Label>Zip Code</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter zip code"
-              {...register("zipCode")}
-              isInvalid={!!errors.zipCode}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.zipCode?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group controlId="formCategoryCountry">
-            <Form.Label>Country</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter country"
-              {...register("country")}
-              isInvalid={!!errors.country}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.country?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <Form.Group controlId="formOpeningBalance">
+          <Form.Group controlId="formVendorOpeningBalance">
             <Form.Label>Opening Balance</Form.Label>
             <Form.Control
               type="number"
-              placeholder="Enter Opening Balance"
-              {...register("OpeningBalance")}
+              placeholder="Enter opening balance"
+              {...register("accountBallance", { valueAsNumber: true })}
             />
           </Form.Group>
         </Col>
       </Row>
 
-      <Button variant="primary" type="submit" className="mt-3">
-        Submit
-      </Button>
+      {/* ...Other form fields... */}
+
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> {vendorToEdit ? 'Update' : 'Save'} Vendor
+        </Button>
+      </div>
     </Form>
   );
 };

@@ -1,60 +1,120 @@
-import { Row } from "react-bootstrap";
-import { Col } from "react-bootstrap";
-import { Form } from "react-bootstrap";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
+import { FaCalendarAlt, FaFileInvoice, FaHistory } from "react-icons/fa";
+import axios from '../../../Api/Api';
+import moment from "moment";
 import "./accounts.scss";
-import { Button } from "react-bootstrap";
-const InvoiceDetails: React.FC = () => {
+
+interface InvoiceDetailsProps {
+  customer: any;
+  setInvoiceDetails: (details: any) => void;
+}
+
+const InvoiceDetails = forwardRef<any, InvoiceDetailsProps>(({ customer, setInvoiceDetails }, ref) => {
+  const [prefix, setPrefix] = useState<any>({ name: "" });
+  const [date, setDate] = useState<string>( moment().format("DD/MM/YYYY"));
+  const [outAmount, setOutAmount] = useState<number>(0);
+
+  useEffect(() => {
+    const formattedDate = moment().format("DD/MM/YYYY");
+    setDate(formattedDate);
+    const fetchData = async () => {
+      try {
+        const res = await axios.post('core/generate-sequence', { type: '/INV/' });
+        setPrefix(res.data);
+        setInvoiceDetails({prefix:res.data,formattedDate})
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+
+  }, []);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputDate = e.target.value;
+    const formattedDate = moment(inputDate, "YYYY-MM-DD").format("DD/MM/YYYY");
+    setDate(formattedDate);
+    setInvoiceDetails({prefix,formattedDate})
+  };
+  useEffect(()=>{
+    if(customer&&customer.accountBallance){
+      setOutAmount(customer.accountBallance)
+    }else{
+      setOutAmount(0)
+    }
+  },[customer])
+
+  const generateNewInvoiceNumber = async () => {
+    try {
+      const res = await axios.post('core/generate-sequence', { type: '/INV/' })
+      setPrefix(res.data)
+      setInvoiceDetails({prefix:res.data,formattedDate:moment().format("DD/MM/YYYY")})
+    } catch (error) {
+      console.error('Error generating invoice number:', error); 
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    generateNewInvoiceNumber
+  }));
+
   return (
     <>
+      <h6 className="mb-2 text-primary">Invoice Details</h6>
       <Form>
-        <div className="inv-cards">
-          <h4 className="invoice-heads">Invoice Details</h4>
-          <Row className="mt-4">
-            <Col>
-              <Form.Group controlId="validationCustom01">
-                <Form.Label>Invoice Number</Form.Label>
+        <Row className="g-1">
+          <Col md={6}>
+            <Form.Group controlId="invoiceNumber" className="mb-1">
+              <Form.Label className="small">Invoice Number</Form.Label>
+              <InputGroup size="sm">
+                <InputGroup.Text><FaFileInvoice /></InputGroup.Text>
                 <Form.Control
-                  required
                   type="text"
-                  placeholder="First name"
-                  defaultValue="INV001"
+                  value={prefix?.name || ""}
                   disabled
                 />
-                <Form.Control.Feedback>Mobile</Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group controlId="validationCustom01">
-                <Form.Label>DATE</Form.Label>
+              </InputGroup>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="invoiceDate" className="mb-1">
+              <Form.Label className="small">Date</Form.Label>
+              <InputGroup size="sm">
+                <InputGroup.Text><FaCalendarAlt /></InputGroup.Text>
                 <Form.Control
-                  required
-                  type="date"
-                  placeholder="First name"
-                  defaultValue="Mark"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row className="mt-4">
-            <Col>
-              <Form.Group controlId="validationCustom01">
-                <Form.Label>Outstanding Amount</Form.Label>
-                <Form.Control
-                  required
                   type="text"
-                  placeholder="First name"
-                  defaultValue="INV001"
-                  disabled
+                  value={date}
+                  onChange={handleDateChange}
+                  pattern="\d{2}/\d{2}/\d{4}"
                 />
-              </Form.Group>
-            </Col>
-            <Col className="mt-4 pt-2">
-              <Button className="col-md-12">View History</Button>
-            </Col>
-          </Row>
-        </div>
+              </InputGroup>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row className="g-1">
+          <Col md={6}>
+            <Form.Group controlId="outstandingAmount" className="mb-1">
+              <Form.Label className="small">Outstanding Amount</Form.Label>
+              <Form.Control
+                size="sm"
+                type="text"
+                value={outAmount}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6} className="d-flex align-items-end">
+            <Button variant="outline-primary" size="sm" className="w-100 py-1">
+              <FaHistory className="me-1" />
+              View History
+            </Button>
+          </Col>
+        </Row>
       </Form>
     </>
   );
-};
+});
+
 export default InvoiceDetails;

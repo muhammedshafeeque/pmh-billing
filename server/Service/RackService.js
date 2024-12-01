@@ -16,6 +16,7 @@ export const getRacks = (query) => {
     }
     let racks = await Rack.find(keywords)
       .populate("section")
+      .sort({ createdAt: -1 })
       .limit(query.limit ? parseInt(query.limit) : 10)
       .skip(query.offset ? parseInt(query.offset) : 0);
       let count= await Rack.find(keywords).count()

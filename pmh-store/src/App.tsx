@@ -20,6 +20,8 @@ import StocksList from "./Pages/Stocks/Stocks";
 import TransactionList from "./Pages/Accounts/Transactions";
 import PaymentList from "./Pages/Accounts/PaymentsList";
 import CreateInvoice from "./Pages/Accounts/CreateInvoice";
+import Customers from "./Pages/Entity/Customers";
+import Invoices from "./Pages/Accounts/Invoices";
 
 const App: React.FC = () => {
   const { user } = usePmh();
@@ -29,7 +31,7 @@ const App: React.FC = () => {
         {user ? (
           <>
             <Header />
-            <div className="col-md-12 p-3">
+            <div className="col-md-12 pt-5 mt-5">
               <div className="admin_area">
                 <div className="col-md-12" style={{ display: "flex" }}>
                   <div className="col-md-2">
@@ -43,6 +45,8 @@ const App: React.FC = () => {
                       <Route path={ROUTERS.GROUPE} element={<GroupeList />} />
                       <Route path={ROUTERS.ITEM} element={<ItemsList />} />
                       <Route path={ROUTERS.VENDOR} element={<VendorList />} />
+                      <Route path={ROUTERS.CUSTOMERS} element={<Customers />} />
+
                       <Route
                         path={ROUTERS.ACCOUNT_HEAD}
                         element={<AccountHeadList />}
@@ -64,6 +68,11 @@ const App: React.FC = () => {
                         path={ROUTERS.INVOICE}
                         element={<CreateInvoice/>}
                       />
+                         <Route
+                        path={ROUTERS.INVOICES}
+                        element={<Invoices/>}
+                      />
+
                     </Routes>
                   </div>
                 </div>

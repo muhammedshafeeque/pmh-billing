@@ -19,7 +19,7 @@ const vendorSchema = mongoose.Schema(
       type: String,
       unique: true,
       trim: true,
-      match: [/^\d{10}$/, "Please provide a valid phone number"],
+      
     },
     accountHEad: {
       type: mongoose.Schema.Types.ObjectId,
@@ -41,7 +41,7 @@ const vendorSchema = mongoose.Schema(
     zipCode: {
       type: String,
       trim: true,
-      match: [/^\d{6}$/, "Please provide a valid zip code"],
+     
     },
     country: {
       type: String,

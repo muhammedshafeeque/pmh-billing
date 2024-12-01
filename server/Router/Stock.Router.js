@@ -12,6 +12,7 @@ import {
   getCategorySampleFile,
   getItemList,
   getItemWithId,
+  getItemsForInvoice,
   getRackList,
   getSectionList,
   getStocks,
@@ -54,5 +55,6 @@ router.get("/item/:id", getItemWithId);
 router.post("/stock", Validate(StockValidation), createStock);
 router.get("/stock",getStocks),
 router.patch("/stock",);
+router.get('/invoice-item',getItemsForInvoice)
 
 export default router;

@@ -1,0 +1,108 @@
+.pagination-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+
+  .page-item {
+    margin: 0 0.25rem;
+
+    .page-link {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      color: #333;
+      border: 1px solid #dee2e6;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+
+      &:hover {
+        background-color: #f8f9fa;
+        color: #007bff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    &.active .page-link {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+    }
+
+    &.disabled .page-link {
+      color: #6c757d;
+      pointer-events: none;
+      background-color: #fff;
+      border-color: #dee2e6;
+      opacity: 0.6;
+    }
+  }
+
+  .page-item:first-child .page-link,
+  .page-item:last-child .page-link {
+    border-radius: 50%;
+    font-size: 0.8rem;
+  }
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #6c757d;
+
+  span {
+    margin-right: 1rem;
+  }
+
+  .page-select {
+    width: auto;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 20px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover, &:focus {
+      border-color: #007bff;
+      box-shadow: 0 2px 5px rgba(0, 123, 255, 0.1);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-pagination {
+    .page-item {
+      .page-link {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .pagination-info {
+    flex-direction: column;
+    align-items: center;
+
+    span {
+      margin-right: 0;
+      margin-bottom: 0.5rem;
+    }
+  }
+}

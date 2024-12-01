@@ -1,22 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.scss";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import { Form, Button, Container, Row, Col, Card, InputGroup } from "react-bootstrap";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "../../Api/Api";
 import { usePmh } from "../../Contexts/PmhContext";
 import { useLoading } from "../../Contexts/LoaderContext";
-import { Button } from "react-bootstrap";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Define types for the form data
 interface LoginFormInputs {
-userName: string;
+  userName: string;
   password: string;
 }
 
 const Login: React.FC = () => {
   const { login } = usePmh();
   const { setLoadingState } = useLoading();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -35,61 +35,65 @@ const Login: React.FC = () => {
     }
   };
 
-  return (
-    <div>
-      <div className="mt-5 pt-2">
-        <div className="login_container col-md-12">
-          <div className="col-md-6 log_container">
-            <p className="login_welcome">Welcome to</p>
-            <h2>PMH STORE</h2>
-          </div>
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-          <Form
-            className="login_input_area col-md-9 mt-5"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <Form.Group as={Col} md="4" controlId="validationCustom01">
-              <Form.Label>User Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="User Name"
-                {...register("userName", { required: true })}
-                isInvalid={!!errors.userName}
-              />
-              <Form.Control.Feedback type="invalid">
-                Please enter a valid user.
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group
-              as={Col}
-              md="4"
-              className="mt-4"
-              controlId="validationCustom02"
-            >
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                {...register("password", { required: true })}
-                isInvalid={!!errors.password}
-              />
-              <Form.Control.Feedback type="invalid">
-                Please enter a password.
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group
-              as={Col}
-              md="4"
-              className="mt-4"
-              controlId="validationCustom02"
-            >
-              <Button style={{ width: "100%" }} type="submit">
-                Login
-              </Button>
-            </Form.Group>
-          </Form>
-        </div>
-      </div>
+  return (
+    <div className="login-page">
+      <Container>
+        <Row className="justify-content-center align-items-center min-vh-100">
+          <Col md={6} lg={5} xl={4}>
+            <Card className="login-card">
+              <Card.Body>
+                <div className="text-center mb-4">
+                  <h2 className="login-title">Welcome to PMH STORE</h2>
+                  <p className="login-subtitle">Please sign in to continue</p>
+                </div>
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                  <Form.Group className="mb-3">
+                    <InputGroup>
+                      <InputGroup.Text>
+                        <FaUser />
+                      </InputGroup.Text>
+                      <Form.Control
+                        type="text"
+                        placeholder="Username"
+                        {...register("userName", { required: "Username is required" })}
+                        isInvalid={!!errors.userName}
+                      />
+                    </InputGroup>
+                    {errors.userName && <Form.Text className="text-danger">{errors.userName.message}</Form.Text>}
+                  </Form.Group>
+                  <Form.Group className="mb-4">
+                    <InputGroup>
+                      <InputGroup.Text>
+                        <FaLock />
+                      </InputGroup.Text>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        {...register("password", { required: "Password is required" })}
+                        isInvalid={!!errors.password}
+                      />
+                      <Button 
+                        variant="outline-secondary"
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </Button>
+                    </InputGroup>
+                    {errors.password && <Form.Text className="text-danger">{errors.password.message}</Form.Text>}
+                  </Form.Group>
+                  <Button variant="primary" type="submit" className="w-100">
+                    Sign In
+                  </Button>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };

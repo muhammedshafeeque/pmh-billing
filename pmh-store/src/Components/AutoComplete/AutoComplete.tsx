@@ -9,13 +9,15 @@ interface AutoCompleteProps {
   isRequired?: boolean;
   formSubmitted?: boolean;
   name: string;
-  label: string;
-  setValue: (name: string, value: any) => void;
+  label?: string;
+  setValue: any;
   disabled?: boolean;
   url: string;
   readField: string;
-  clear: boolean;
-  value?:any
+  clear?: boolean;
+  value?: any;
+  size?: any;
+  editable?: boolean;
   onChange?: (value: string) => void; // Optional onChange function
   onSelect?: (option: any) => void;   // Optional onSelect function
 }
@@ -38,7 +40,9 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   clear,
   onChange,
   onSelect,
-  value
+  value,
+  size,
+  editable,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [options, setOptions] = useState<Option[]>([]);
@@ -94,7 +98,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     setValue(name, option);
     setOptions([]);
     setIsValid(true);
-    setDropdownOpen(false); // Close dropdown when an option is selected
+    setDropdownOpen(false);
 
     if (onSelect) {
       onSelect(option);
@@ -114,23 +118,27 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
   }, [formSubmitted, inputValue]);
 
   const handleBlur = () => {
+    if (editable && !selectedOption) {
+      setValue(name, inputValue);
+    }
     setTouched(true);
-    setDropdownOpen(false); // Close dropdown on blur
+    setDropdownOpen(false);
   };
-  useEffect(()=>{
-    if(value&&value._id){
-      if(inputValue!==value[readField]){
-      setInputValue(value[readField])
-      setValue(name, value);
+
+  useEffect(() => {
+    if (value && value._id) {
+      if (inputValue !== value[readField]) {
+        setInputValue(value[readField]);
+        setValue(name, value);
       }
     }
-  
-  },[value])
+  }, [value]);
 
   return (
     <div className="auto-complete-wrapper" onBlur={handleBlur}>
       <Form.Group controlId={`autoComplete-${name}`}>
-        <Form.Label>{label}</Form.Label>
+        {label&&<Form.Label>{label}</Form.Label>}
+        
         <Form.Control
           type="text"
           placeholder={`Enter ${label}`}
@@ -138,6 +146,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
           onChange={handleInputChange}
           onFocus={() => setDropdownOpen(true)}
           disabled={disabled}
+          size={size ? size : ""}
           isInvalid={
             isRequired &&
             !isValid &&

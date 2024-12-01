@@ -1,25 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
+import { FaSave, FaTimes } from "react-icons/fa";
 
+interface CreateAndUpdateSectionProps extends PopupChildeProp {
+  sectionToEdit?: Section | null;
+}
 
-const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
+const CreateAndUpdateSection: React.FC<CreateAndUpdateSectionProps> = ({ handleClose, sectionToEdit }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<Section>();
   const { setLoadingState } = useLoading();
-  const onSubmit: SubmitHandler<Section> = async (
-    data: Section
-  ) => {
+
+  useEffect(() => {
+    if (sectionToEdit) {
+      reset(sectionToEdit);
+    }
+  }, [sectionToEdit, reset]);
+
+  const onSubmit: SubmitHandler<Section> = async (data: Section) => {
     try {
       setLoadingState(true);
-      await axios.post("stock/section", data);
-      handleClose()
+      if (sectionToEdit) {
+        await axios.patch(`stock/section/${sectionToEdit._id}`, data);
+      } else {
+        await axios.post("stock/section", data);
+      }
+      handleClose();
     } catch (error) {
+      console.error("Error submitting section:", error);
     } finally {
       setLoadingState(false);
     }
@@ -63,9 +78,14 @@ const CreateAndUpdateSection: React.FC<PopupChildeProp> = ({ handleClose }) => {
         />
       </Form.Group>
 
-      <Button variant="primary" type="submit" className="mt-3">
-        Submit
-      </Button>
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> {sectionToEdit ? 'Update' : 'Save'} Section
+        </Button>
+      </div>
     </Form>
   );
 };

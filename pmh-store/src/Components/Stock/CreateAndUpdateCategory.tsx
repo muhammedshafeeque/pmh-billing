@@ -1,25 +1,47 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, Button } from "react-bootstrap";
 import axios from "../../Api/Api";
 import { useLoading } from "../../Contexts/LoaderContext";
+import { FaSave, FaTimes } from "react-icons/fa";
 
+interface Category {
+  _id?: string;
+  name: string;
+  code: string;
+  description?: string;
+}
 
-const CreateAndUpdateCategory: React.FC<PopupChildeProp> = ({ handleClose }) => {
+interface CreateAndUpdateCategoryProps extends PopupChildeProp {
+  categoryToEdit?: Category | null;
+}
+
+const CreateAndUpdateCategory: React.FC<CreateAndUpdateCategoryProps> = ({ handleClose, categoryToEdit }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<Category>();
   const { setLoadingState } = useLoading();
-  const onSubmit: SubmitHandler<Category> = async (
-    data: Category
-  ) => {
+
+  useEffect(() => {
+    if (categoryToEdit) {
+      reset(categoryToEdit);
+    }
+  }, [categoryToEdit, reset]);
+
+  const onSubmit: SubmitHandler<Category> = async (data: Category) => {
     try {
       setLoadingState(true);
-      await axios.post("stock/Category", data);
-      handleClose()
+      if (categoryToEdit) {
+        await axios.patch(`stock/Category/${categoryToEdit._id}`, data);
+      } else {
+        await axios.post("stock/Category", data);
+      }
+      handleClose();
     } catch (error) {
+      console.error("Error submitting category:", error);
     } finally {
       setLoadingState(false);
     }
@@ -63,9 +85,14 @@ const CreateAndUpdateCategory: React.FC<PopupChildeProp> = ({ handleClose }) => 
         />
       </Form.Group>
 
-      <Button variant="primary" type="submit" className="mt-3">
-        Submit
-      </Button>
+      <div className="modal-footer">
+        <Button variant="secondary" onClick={handleClose} className="me-2">
+          <FaTimes /> Cancel
+        </Button>
+        <Button variant="primary" type="submit">
+          <FaSave /> {categoryToEdit ? 'Update' : 'Save'} Category
+        </Button>
+      </div>
     </Form>
   );
 };
