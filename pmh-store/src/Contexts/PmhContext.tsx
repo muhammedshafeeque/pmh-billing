@@ -79,7 +79,7 @@ import {
         type: LOGIN,
         payload: { ...userData.userData, isLoggedIn: true },
       });
-      navigate(ROUTERS.HOME_ROUTER);
+      window.location.reload()
     };
   
     const navigator = useCallback(
