@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 export const generateInvoicePdf = (data: any) => {
-    const doc = new jsPDF();
+    const doc:any = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     
     // Shop Header
