@@ -1,5 +1,5 @@
 import express from "express";
-import { createAccount, generateInvoice, getAccount, getAccountHeads, getCollections, getInvoices, getPaymentList, getTransactions, processCollection } from "../Controller/AccountsController.js";
+import { createAccount, generateInvoice, getAccount, getAccountHeads, getCollections, getInvoiceById, getInvoices, getPaymentList, getTransactions, processCollection } from "../Controller/AccountsController.js";
 import { Validate } from "../MiddleWare/Validation.js";
 import { AccountValidation, collectionValidation, invoiceValidation } from "../Validations/AccountValidation.js";
 const router = express.Router();
@@ -14,6 +14,6 @@ router.get('/collection',getCollections)
 router.get('/bill')
 router.get('/bill/:id')
 router.get('/invoice',getInvoices)
-router.get('/invoice/:id')
+router.get('/invoice/:id',getInvoiceById)
 
 export const accountsRouter = router;

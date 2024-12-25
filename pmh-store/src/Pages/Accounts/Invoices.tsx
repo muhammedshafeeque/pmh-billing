@@ -8,6 +8,8 @@ import PaginationComponent from "../../Components/Pagination/Pagination";
 import moment from "moment";
 import axios from '../../Api/Api'
 import queryString from "query-string";
+import { useNavigate } from "react-router-dom";
+import { ROUTERS } from "../../Constants/Routes";
 const Invoices: React.FC = () => {
   const [results, setResults] = useState<any[]>([]);
   const [count, setCount] = useState(0);
@@ -30,7 +32,7 @@ const Invoices: React.FC = () => {
     setClearChild(!clearChild);
     fetchInvoices(0)
   };
-
+  const navigate=useNavigate()
   function handlePageChange(page: number): void {
     const newSkip = (page - 1) * 10;
     setSkip(newSkip);
@@ -155,7 +157,9 @@ const Invoices: React.FC = () => {
               </thead>
               <tbody>
                 {results.map((obj: any) => (
-                  <tr key={obj._id}>
+                  <tr key={obj._id} style={{cursor:"pointer"}} onClick={()=>{
+                    navigate(ROUTERS.INVOICE_VIEW+obj._id)
+                  }}>
                     <td>{moment(obj.invoiceDate).format("DD-MM-YYYY")}</td>
                     <td>{obj.number}</td>
                     <td>{obj.customerName}</td>

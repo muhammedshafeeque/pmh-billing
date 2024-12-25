@@ -247,14 +247,28 @@ export const getInvoices = async (req, res, next) => {
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: -1 });
-    let count=await INVOICE.find(keywords).count()
+    let count = await INVOICE.find(keywords).count();
     const results = invoices.map((obj) => ({
       ...obj.toObject(),
-      customerName:obj.customer.firstName,
-      customer:obj.customer._id,
-      customerPhone:obj.customer.phone
+      customerName: obj.customer.firstName,
+      customer: obj.customer._id,
+      customerPhone: obj.customer.phone,
     }));
-    res.send({results,count})
+    res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getInvoiceById = async (req, res, next) => {
+  try {
+    let inv = await INVOICE.findById(req.params.id)
+      .populate("customer")
+      .populate("items.item")
+      .populate({
+        path:'items.item',
+        populate:'unit'
+      })
+    res.send(inv);
   } catch (error) {
     next(error);
   }
