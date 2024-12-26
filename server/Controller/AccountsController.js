@@ -1,5 +1,6 @@
 import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { ACCOUNT } from "../Models/AccountModal.js";
+import { BILL } from "../Models/BillModal.js";
 import { COLLECTION } from "../Models/collectionModal.js";
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { INVOICE } from "../Models/InvoiceModal.js";
@@ -265,10 +266,34 @@ export const getInvoiceById = async (req, res, next) => {
       .populate("customer")
       .populate("items.item")
       .populate({
-        path:'items.item',
-        populate:'unit'
-      })
+        path: "items.item",
+        populate: "unit",
+      });
     res.send(inv);
+  } catch (error) {
+    next(error);
+  }
+};
+export const getBills = async (req, res, next) => {
+  try {
+    let skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    let keywords = await queryGen(req.query);
+    let results = await BILL.find(keywords)
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 });
+    let count = await BILL.find(keywords).count();
+    res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getBillById = async (req, res, next) => {
+  try {
+    let bill = await BILL.findById(req.params.id);
+    res.send(bill);
   } catch (error) {
     next(error);
   }

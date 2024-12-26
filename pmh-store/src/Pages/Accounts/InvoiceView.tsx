@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from "../../Api/Api";
 import { Col } from "react-bootstrap";
 import moment from "moment";
+import { generateInvoicePdf } from "../../Services/PdfService/invoice";
 const InvoiceView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [inv, setInv] = useState<any>();
@@ -63,7 +64,7 @@ const InvoiceView: React.FC = () => {
             style={{ display: "flex", justifyContent: "flex-end" }}
           >
             <div className="float-right">
-              <Button>Print</Button>
+              <Button onClick={()=>{generateInvoicePdf(inv)}}>Print</Button>
             </div>
           </div>
         </Container>
