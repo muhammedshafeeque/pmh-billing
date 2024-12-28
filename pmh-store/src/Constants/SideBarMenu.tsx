@@ -51,7 +51,7 @@ export const SideBarItems = [
       {
         icon: RiBillFill,
         name: "Bills",
-        path: "",
+        path: ROUTERS.BILLS,
       },
       {
         icon: GiCash,

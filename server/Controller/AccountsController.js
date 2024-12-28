@@ -280,6 +280,7 @@ export const getBills = async (req, res, next) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 10;
     let keywords = await queryGen(req.query);
     let results = await BILL.find(keywords)
+      .populate("vendor")
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: -1 });
@@ -292,7 +293,13 @@ export const getBills = async (req, res, next) => {
 
 export const getBillById = async (req, res, next) => {
   try {
-    let bill = await BILL.findById(req.params.id);
+    let bill = await BILL.findById(req.params.id)
+    .populate('vendor')
+    .populate("items.item")
+    .populate({
+      path: "items.item",
+      populate: "unit",
+    });
     res.send(bill);
   } catch (error) {
     next(error);

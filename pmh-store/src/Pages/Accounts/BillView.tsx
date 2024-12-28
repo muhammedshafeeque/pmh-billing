@@ -5,17 +5,17 @@ import axios from "../../Api/Api";
 import moment from "moment";
 import { generateInvoicePdf } from "../../Services/PdfService/invoice";
 
-const InvoiceView: React.FC = () => {
+const BillView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [inv, setInv] = useState<any>();
 
   useEffect(() => {
     const fetchingData = async () => {
       try {
-        const { data } = await axios.get(`accounts/invoice/${id}`);
+        const { data } = await axios.get(`accounts/bill/${id}`);
         setInv(data);
       } catch (error) {
-        console.error("Error fetching invoice:", error);
+        console.error("Error fetching bill:", error);
       }
     };
     fetchingData();
@@ -36,14 +36,14 @@ const InvoiceView: React.FC = () => {
       <div className="bg-white p-4 rounded shadow-sm">
         {/* Header Section */}
         <h2 className="page-title border-bottom pb-3 mb-4">
-          Invoice: {inv.number}
+          Bill: {inv.referenceNumber}
         </h2>
 
-        {/* Invoice Details Section */}
+        {/* Bill Details Section */}
         <Row className="mt-4 g-4">
           <Col md={6}>
             <div className="p-3 bg-light rounded">
-              <h5 className="mb-3 text-primary">Invoice Details</h5>
+              <h5 className="mb-3 text-primary">Bill Details</h5>
               <p className="mb-2">
                 <strong>Date:</strong> {moment(inv.invoiceDate).format("DD-MM-YYYY")}
               </p>
@@ -55,12 +55,24 @@ const InvoiceView: React.FC = () => {
 
           <Col md={6}>
             <div className="p-3 bg-light rounded">
-              <h5 className="mb-3 text-primary">Customer Information</h5>
+              <h5 className="mb-3 text-primary">Vendor Information</h5>
               <p className="mb-2">
-                <strong>Name:</strong> {inv.customer.firstName}
+                <strong>Name:</strong> {inv.vendor.name}
               </p>
               <p className="mb-2">
-                <strong>Mobile:</strong> {inv.customer.phone}
+                <strong>Mobile:</strong> {inv.vendor.contactPhone}
+              </p>
+              <p className="mb-2">
+                <strong>Email:</strong> {inv.vendor.contactEmail}
+              </p>
+              <p className="mb-2">
+                <strong>Address:</strong> {inv.vendor.street}
+              </p>
+              <p className="mb-2">
+                <strong>Location:</strong> {inv.vendor.state}, {inv.vendor.country}
+              </p>
+              <p className="mb-2">
+                <strong>PIN:</strong> {inv.vendor.zipCode}
               </p>
             </div>
           </Col>
@@ -89,9 +101,9 @@ const InvoiceView: React.FC = () => {
                     <td>{obj.item.name}</td>
                     <td>{obj.item.code}</td>
                     <td>{obj.item.unit.unitCode}</td>
-                    <td className="text-end">{obj.quantity}</td>
-                    <td className="text-end">${obj.pricePerUnit}</td>
-                    <td className="text-end">${obj.quantity * obj.pricePerUnit}</td>
+                    <td className="text-end">{obj.purchasedQuantity}</td>
+                    <td className="text-end">${obj.purchaseRate}</td>
+                    <td className="text-end">${obj.purchasedQuantity * obj.purchaseRate}</td>
                   </tr>
                 ))}
               </tbody>
@@ -113,4 +125,4 @@ const InvoiceView: React.FC = () => {
   );
 };
 
-export default InvoiceView;
+export default BillView;

@@ -31,6 +31,7 @@ import {
   ExcelDataExtractor,
   generateErrorExcelBlob,
   generateExcelBlob,
+  numberGenerator,
   queryGen,
   uploadFile,
 } from "../Utils/utils.js";
@@ -45,6 +46,7 @@ import { Stock } from "../Models/StockModal.js";
 import { collections } from "../Constants/collections.js";
 import mongoose from "mongoose";
 import { ITEM } from "../Models/itemModal.js";
+import { PREFIX_NUMBER_MODAL } from "../Models/PrefixNumber.js";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -184,7 +186,9 @@ export const createStock = async (req, res, next) => {
     if(req.body.account){
       accountKeywords={_id:new mongoose.Types.ObjectId(req.body.account)}
     }
-    
+    let count = await PREFIX_NUMBER_MODAL.find({ type: "/BILL/" }).count();
+    const RefNumber=await numberGenerator(count + 1, "/BILL/");
+    req.body.referenceNumber=RefNumber.name
     const [vendor, account, bill] = await Promise.all([
       VENDOR.findById(req.body.vendor),
       ACCOUNT.findOne(accountKeywords).populate("accountHead"),
