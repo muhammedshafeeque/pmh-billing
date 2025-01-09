@@ -11,6 +11,7 @@ import {
   deleteRack,
   pushItemToRack,
   pullItemFromRack,
+  getRackById,
 } from "../Service/RackService.js";
 import {
   deleteItem,
@@ -47,6 +48,7 @@ import { collections } from "../Constants/collections.js";
 import mongoose from "mongoose";
 import { ITEM } from "../Models/itemModal.js";
 import { PREFIX_NUMBER_MODAL } from "../Models/PrefixNumber.js";
+import { Rack } from "../Models/rack.modal.js";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -111,6 +113,14 @@ export const getRackList = async (req, res) => {
     res.status(400).send("Err:" + error);
   }
 };
+export const retrieveRack = async (req, res,next) => {
+  try {
+    let rack = await getRackById(req.params.id);
+    res.send(rack);
+  } catch (error) {
+    next(error)
+  }
+}
 export const updateRack = async (req, res) => {
   try {
     let rack = await patchRack(req.params.id, req.body);

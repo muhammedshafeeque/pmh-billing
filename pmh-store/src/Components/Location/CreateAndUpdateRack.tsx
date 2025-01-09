@@ -28,7 +28,6 @@ const CreateAndUpdateRack: React.FC<CreateAndUpdateRackProps> = ({ handleClose, 
 
   const onSubmit: SubmitHandler<Rack> = async (data:any) => {
     try {
-      console.log(data.section);
       setLoadingState(true);
       let body: any = {
         code: data.code,
@@ -87,6 +86,7 @@ const CreateAndUpdateRack: React.FC<CreateAndUpdateRackProps> = ({ handleClose, 
           readField={"name"}
           url={`/stock/section?nameContains`}
           isRequired={true}
+          value={rackToEdit?.section}
         />
       </Form.Group>
 

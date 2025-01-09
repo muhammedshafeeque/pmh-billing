@@ -4,13 +4,13 @@ import ModalPopup from "../../Components/PopupModal/ModalPopup";
 import CreateAndUpdateRack from "../../Components/Location/CreateAndUpdateRack";
 import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
 import axios from "../../Api/Api";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
 import { FaPlus, FaSearch, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
-
+import {getRackById} from '../../Services/api/CoreApi';
 const RackList: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [results, setResults] = useState<Rack[]>([]);
@@ -77,9 +77,19 @@ const RackList: React.FC = () => {
     fetchRacks(0);
   };
 
-  const handleEdit = (rack: Rack) => {
-    setSelectedRack(rack);
-    setShowModal(true);
+  const handleEdit = async(rack: Rack) => {
+    if(rack._id){
+      try {
+        setLoadingState(true);
+        let Rack=await getRackById(rack._id);
+        setSelectedRack(Rack);
+        setShowModal(true);        
+      }finally{
+        setLoadingState(false);
+      }
+     
+     
+    }
   };
 
   const handleDelete = (rack: Rack) => {

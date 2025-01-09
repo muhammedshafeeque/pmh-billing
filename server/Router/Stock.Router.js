@@ -18,6 +18,7 @@ import {
   getStocks,
   removeItem,
   removeSection,
+  retrieveRack,
   updateItem,
   updateRack,
   updateSection,
@@ -34,6 +35,7 @@ import {
 const router = express.Router();
 router.post("/rack", Validate(RackValidation), createRack);
 router.get("/rack", getRackList);
+router.get("/rack/:id",retrieveRack);
 router.patch("/rack/:id", updateRack);
 router.delete("/rack/:id", RemoveRack);
 router.patch("/rack/add-item/:id", addItemToRack);

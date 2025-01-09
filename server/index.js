@@ -44,10 +44,22 @@ app.use("/api",((req,res,next)=>{
   // console.log(req.body)
   next()
 }), Router);
-app.use((err, req, res, next) => {
-  console.log(err)
+app.use(async (err, req, res, next) => {
+  console.error(err);
+
+  if (req.session) {
+    try {
+      await req.session.abortTransaction();
+    } catch (abortError) {
+      console.error("Error aborting transaction:", abortError);
+    } finally {
+      req.session.endSession();
+    }
+  }
+
   const errStatus = err.status || 500;
   const errMsg = err.message || "Something went wrong";
+  
   res.status(errStatus).json({
     success: false,
     status: errStatus,

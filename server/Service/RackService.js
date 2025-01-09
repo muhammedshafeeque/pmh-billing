@@ -44,7 +44,7 @@ export const deleteRack = async (id) => {
 };
 export const getRackById = async (id) => {
   try {
-    return Rack.findById(id);
+    return Rack.findById(id).populate("section");
   } catch (error) {
     throw error;
   }
