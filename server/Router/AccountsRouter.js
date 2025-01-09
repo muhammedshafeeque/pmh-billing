@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/account-heads", getAccountHeads);
 router.post('/account',Validate(AccountValidation),createAccount)
 router.get('/account',getAccount)
+router.patch('/account/:id')
 router.get('/transaction',getTransactions)
 router.get('/payments',getPaymentList)
 router.post('/generate-invoice',Validate(invoiceValidation),generateInvoice)

@@ -37,7 +37,7 @@ export const getAccountHeads = async (req, res, next) => {
 
 export const createAccount = async (req, res, next) => {
   try {
-    let AccountHead = await createAccountHead({ name: req.body.name });
+    let AccountHead = await createAccountHead({ name: req.body.name, credit: Number(req.body.amount), });
     await ACCOUNT.create({
       name: req.body.name,
       type: "main",
@@ -70,6 +70,22 @@ export const getAccount = async (req, res, next) => {
     next(error);
   }
 };
+export const updateAccount = async (req, res, next) => {
+  try {
+    let account = await ACCOUNT.findById(req.params.id);
+    if (!account) {
+      next({ message: "Account Not Found", status: 404 })
+    } else {
+      await ACCOUNT.findByIdAndUpdate(req.params.id, {
+        name: req.body.name,
+      });
+      res.send({ message: "Account Updated Successfully" });
+    }
+
+  } catch (error) {
+    next(error)
+  }
+}
 export const getTransactions = async (req, res, next) => {
   try {
     let skip = req.query.skip ? parseInt(req.query.skip) : 0;
@@ -294,12 +310,12 @@ export const getBills = async (req, res, next) => {
 export const getBillById = async (req, res, next) => {
   try {
     let bill = await BILL.findById(req.params.id)
-    .populate('vendor')
-    .populate("items.item")
-    .populate({
-      path: "items.item",
-      populate: "unit",
-    });
+      .populate('vendor')
+      .populate("items.item")
+      .populate({
+        path: "items.item",
+        populate: "unit",
+      });
     res.send(bill);
   } catch (error) {
     next(error);

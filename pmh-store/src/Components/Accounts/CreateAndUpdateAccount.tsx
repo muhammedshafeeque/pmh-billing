@@ -8,7 +8,7 @@ import { FaSave, FaTimes } from "react-icons/fa";
 interface Account {
   _id?: string;
   name: string;
-  // Add other account properties here
+  amount: number;
 }
 
 interface CreateAndUpdateAccountProps extends PopupChildeProp {
@@ -54,6 +54,19 @@ const CreateAndUpdateAccount: React.FC<CreateAndUpdateAccountProps> = ({ handleC
           type="text"
           placeholder="Enter account name"
           {...register("name", { required: "Name is required" })}
+          isInvalid={!!errors.name}
+        />
+        <Form.Control.Feedback type="invalid">
+          {errors.name?.message}
+        </Form.Control.Feedback>
+      </Form.Group>
+      <Form.Group controlId="formAccountName">
+        <Form.Label>Opening Balance</Form.Label>
+        <Form.Control
+          type="number"
+          placeholder="Enter opening balance"
+          defaultValue={accountToEdit?accountToEdit.amount:0}
+          {...register("amount", { required: " opening balance is required" })}
           isInvalid={!!errors.name}
         />
         <Form.Control.Feedback type="invalid">

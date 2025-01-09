@@ -2,7 +2,16 @@ import Joi from "joi";
 export const AccountValidation = {
   body: Joi.object().keys({
     name: Joi.string().required(),
+    amount: Joi.number().required(),
   }),
+};
+export const AccountUpdateValidation = {
+  body: Joi.object().keys({
+    name: Joi.string(),
+  }),
+  params:Joi.object().keys({
+    id:Joi.string().required()
+  })
 };
 export const invoiceValidation={
   body:Joi.object().keys({
