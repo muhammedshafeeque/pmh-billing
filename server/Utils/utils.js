@@ -6,6 +6,7 @@ import { PREFIX_NUMBER_MODAL } from "../Models/PrefixNumber.js";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
+import { parse } from 'vcard-parser';
 
 export const encryptString = async (password) => {
   let hash = await bcrypt.hashSync(password, 10);
@@ -63,9 +64,8 @@ export const uploadFile = (files) => {
     if (!files || Object.keys(files).length === 0) {
       reject({ status: 400, message: "No files were uploaded" });
     }
-
     const uploadedFile = files.files;
-
+  
     const uniqueFilename = uuidv4() + path.extname(uploadedFile.name);
     const uploadDir = path.join("./Public/uploads");
     const filePath = path.join(uploadDir, uniqueFilename);
@@ -158,3 +158,42 @@ export const convertToBaseUnit = (quantity, unit) => {
 export const convertFromBaseUnit = (quantity, unit) => {
   return quantity / unit.conversionToParent;
 }
+export const extractDataFromCSV = (file) => {
+  let filePath= path.join("./Public/uploads", file.filename);
+  return new Promise((resolve, reject) => {
+    const results = [];
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', () => resolve(results))
+      .on('error', (error) => reject(error));
+  });
+}
+
+export const extractDataFromVCF = (file) => {
+  const filePath = path.join("./Public/uploads", file.filename);
+
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        return reject({ message: "Error reading VCF file", error: err });
+      }
+
+      try {
+        const parsedData = parse(data);
+        const cards = Array.isArray(parsedData) ? parsedData : [parsedData];  // Ensure it's an array
+
+        const results = cards.map(card => ({
+          name: card.fn?.value || '',
+          email: card.email?.value || '',
+          phone: card.tel?.value || '',
+        }));
+
+        resolve(results);
+
+      } catch (parseError) {
+        reject({ message: "Error parsing VCF data", error: parseError });
+      }
+    });
+  });
+};

@@ -1,7 +1,7 @@
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { VENDOR } from "../Models/VendorModal.js";
 import { createAccountHead, deleteAccountHead } from "../Service/AccountsService.js";
-import { queryGen } from "../Utils/utils.js";
+import { ExcelDataExtractor, extractDataFromCSV, extractDataFromVCF, queryGen, uploadFile } from "../Utils/utils.js";
 
 export const createVendor = async (req, res, next) => {
   let createdAccountHead = null;
@@ -39,6 +39,35 @@ export const createCustomer = async (req, res, next) => {
     next(error);
   }
 };
+export const uploadBulkCustomers = async (req, res, next) => {
+  try {
+    if (!req.files) {
+      return next({ status: 400, message: "No file uploaded" });
+    }
+    const file = await uploadFile(req.files);
+    const fileExtension = file.filename.split('.').pop().toLowerCase();
+    let customers = [];
+    switch (fileExtension) {
+      case 'xls':
+      case 'xlsx':
+        customers = await ExcelDataExtractor(file);
+        break;
+      case 'csv':
+        customers = await extractDataFromCSV(file);
+        break;
+      case 'vcf':
+        customers = await extractDataFromVCF(file);
+        break;
+      default:
+        return next({ status: 400, message: "Unsupported file format" });
+    }
+
+    res.send({ message: "Customers Uploaded Successfully", customers });
+
+  } catch (error) {
+    next(error);
+  }
+}
 
 export const getVendors = async (req, res, next) => {
   try {
