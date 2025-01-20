@@ -1,7 +1,8 @@
+import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { VENDOR } from "../Models/VendorModal.js";
 import { createAccountHead, deleteAccountHead } from "../Service/AccountsService.js";
-import { ExcelDataExtractor, extractDataFromCSV, extractDataFromVCF, queryGen, uploadFile } from "../Utils/utils.js";
+import { ExcelDataExtractor, extractDataFromCSV, extractDataFromVCF, generateExcelBlob, queryGen, uploadFile } from "../Utils/utils.js";
 
 export const createVendor = async (req, res, next) => {
   let createdAccountHead = null;
@@ -28,12 +29,18 @@ export const createVendor = async (req, res, next) => {
 
 export const createCustomer = async (req, res, next) => {
   try {
-    req.body.accountHEad = await createAccountHead({
-      name: req.body.name,
-      debit: Number(req.body.OpeningBalance),
+    let accountHEad = await createAccountHead({
+      name: req.body.firstName,
+      credit: Number(req.body.accountBallance),
       type: "receivable",
     });
-    await CUSTOMER.create(req.body);
+    let customer={
+      firstName:req.body.firstName,
+      phone:req.body.phone,
+      accountHEad:accountHEad._id
+
+    }
+    await CUSTOMER.create(customer);
     res.send({ message: "Customer  Created Successfully" });
   } catch (error) {
     next(error);
@@ -61,12 +68,42 @@ export const uploadBulkCustomers = async (req, res, next) => {
       default:
         return next({ status: 400, message: "Unsupported file format" });
     }
-
-    res.send({ message: "Customers Uploaded Successfully", customers });
+    await Promise.all(
+      customers.map(async (customer) => {
+        let accountHead= await createAccountHead({
+          name: customer.name,
+          debit: 0,
+          type: "receivable",
+        })
+        customer.accountHEad=accountHead._id
+        customer.firstName=customer.name
+      })
+    );
+    let Customers=await CUSTOMER.insertMany(customers)
+    res.send({ message: "Customers Uploaded Successfully", Customers });
 
   } catch (error) {
     next(error);
   }
+}
+export const customerExcelSampleFile = async (req, res, next) => {
+  try {
+      let data = [{ name: "sample", phone: "SAM", email: "example@example.com", accountBalance: 0 }];
+      const buffer = await generateExcelBlob(data);
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=error_report.xlsx"
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.status(200).send({
+        file: buffer,
+      });
+    } catch (error) {
+      next(error);
+    }
 }
 
 export const getVendors = async (req, res, next) => {
@@ -113,13 +150,6 @@ export const getCustomers = async (req, res, next) => {
   }
 };
 
-export const vcfFileCustomersBulkUpload = (req, res, next) => {
-  try {
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const createNewCustomerFromInvoice = async (req, res, next) => {
   try {
     req.body.firstName=req.body.name
@@ -148,6 +178,41 @@ export const createNewCustomerFromInvoice = async (req, res, next) => {
     next(error);
   }
 };
+export const deleteCustomer = async (req, res, next) => {
+  try {
+    let customer = await CUSTOMER.findById(req.params.id).populate('accountHEad');
+    console.log(customer);
+    
+    if (!customer) return next({ status: 400, message: 'Customer Not Found' });
+    
+    if (customer.accountHEad.accountBalance !== 0) {
+      return next({ status: 400, message: 'Need to clear Account Balance to perform this action' });
+    }
+
+    await CUSTOMER.findByIdAndDelete(req.params.id);
+    await ACCOUNT_HEAD.findByIdAndDelete(customer.accountHEad._id)
+    
+    return res.status(200).json({ message: "Customer Deleted Successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+export const updateCustomer=async(req,res,next)=>{
+  try {
+    let customer=await CUSTOMER.findByIdAndUpdate(req.params.id)
+    if(!customer) return next({ status: 400, message: 'Customer Not Found' });
+
+    let Customer=await CUSTOMER.findByIdAndUpdate(req.params.id,
+      {
+        $set:{firstName:req.body.firstName,phone:req.body.phone}
+      }
+    )
+    res.status(200).json({ message: "Customer Updated Successfully" ,customer:Customer});
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 export const updateVendor = async (req, res, next) => {
   try {
@@ -182,6 +247,7 @@ export const deleteVendor = async (req, res, next) => {
   }
 };
 export const retrieveCustomer=async(req,res,next)=>{
+  console.log("retrieving")
   try {
     let customer=await CUSTOMER.findById(req.params.id).populate('accountHEad')
     res.send(customer)

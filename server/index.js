@@ -4,10 +4,10 @@ import dotenv from "dotenv";
 import { connectDb } from "./Config/db.js";
 import Router from "./Router/index.js";
 import fileUpload from "express-fileupload";
-import path from 'path'
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import morgan from "morgan";
+import { transactionMiddleware } from "./MiddleWare/utils.js";
 // ==========Configs=========
 const app = express();
 dotenv.config();
@@ -37,26 +37,12 @@ app.use(morgan("common"));
 app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
-
+app.use(transactionMiddleware);
 connectDb();
 // =========End Configs ======
-app.use("/api",((req,res,next)=>{
-  // console.log(req.body)
-  next()
-}), Router);
+app.use("/api", Router);
 app.use(async (err, req, res, next) => {
   console.error(err);
-
-  if (req.session) {
-    try {
-      await req.session.abortTransaction();
-    } catch (abortError) {
-      console.error("Error aborting transaction:", abortError);
-    } finally {
-      req.session.endSession();
-    }
-  }
-
   const errStatus = err.status || 500;
   const errMsg = err.message || "Something went wrong";
   

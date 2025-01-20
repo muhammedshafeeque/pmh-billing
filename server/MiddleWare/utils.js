@@ -1,16 +1,20 @@
 import mongoose from "mongoose";
 
 export const transactionMiddleware = async (req, res, next) => {
-  req.session = await mongoose.startSession();
-  req.session.startTransaction();
+  if (req.method === "GET") {
+    return next();
+  }
+  const dbSession = await mongoose.startSession();
+  dbSession.startTransaction();
 
   try {
-    await next();
-    await req.session.commitTransaction();
+    req.dbSession = dbSession; // Attach session to the request
+    await next(); // Proceed with the next middleware or route handler
+    await dbSession.commitTransaction(); // Commit the transaction
   } catch (error) {
-    await req.session.abortTransaction();
-    next(error); 
+    await dbSession.abortTransaction(); // Abort the transaction on error
+    next(error); // Forward the error to the error-handling middleware
   } finally {
-    req.session.endSession(); 
+    dbSession.endSession(); // Ensure session is always closed
   }
 };

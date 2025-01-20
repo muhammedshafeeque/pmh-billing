@@ -7,7 +7,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import { parse } from 'vcard-parser';
-
+import csv from 'csv-parser';
 export const encryptString = async (password) => {
   let hash = await bcrypt.hashSync(password, 10);
   return hash;
@@ -159,16 +159,23 @@ export const convertFromBaseUnit = (quantity, unit) => {
   return quantity / unit.conversionToParent;
 }
 export const extractDataFromCSV = (file) => {
-  let filePath= path.join("./Public/uploads", file.filename);
+  const filePath = path.join("./Public/uploads", file.filename);
+
   return new Promise((resolve, reject) => {
     const results = [];
-    fs.createReadStream(filePath)
-      .pipe(csv())
-      .on('data', (data) => results.push(data))
-      .on('end', () => resolve(results))
-      .on('error', (error) => reject(error));
+
+    try {
+      fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', () => resolve(results))
+        .on('error', (error) => reject({ message: "Error parsing CSV file", error }));
+    } catch (error) {
+      reject({ message: "Error reading CSV file", error });
+    }
   });
-}
+};
+
 
 export const extractDataFromVCF = (file) => {
   const filePath = path.join("./Public/uploads", file.filename);

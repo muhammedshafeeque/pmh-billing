@@ -4,17 +4,35 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import queryString from "query-string";
 import { useForm } from "react-hook-form";
 import { useLoading } from "../../Contexts/LoaderContext";
-import axios  from "../../Api/Api";
+import axios from "../../Api/Api";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
-import { FaSearch, FaTimes } from "react-icons/fa";
+import { FaSearch, FaTimes, FaPlus, FaRegFileExcel, FaEdit, FaTrash } from "react-icons/fa";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import ModalPopup from "../../Components/PopupModal/ModalPopup";
-import CreateAndUpdateVendor from "../../Components/Entity/CreateAndUpdateVendor";
-const Customers:React.FC=()=>{
-    const [showModal, setShowModal] = useState(false);
-  const [results, setResults] = useState<Vendor[]>([]);
+import CreateAndUpdateCustomer from "../../Components/Entity/CreateAndUpdateCustomer";
+import { deleteCustomer, downloadCustomerSampleFile, getCustomerById } from "../../Services/api/EntityApi";
+import ExcelFileUpload from "../../Components/ExcelFileUpload/ExcelFileUpload";
+import { convertArrayBufferExcel } from "../../Utils/ExcelUtility";
+interface Customer {
+  _id: string;
+  firstName: string;
+  phone: string;
+  contactEmail: string;
+  accountHEad: any;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  accountBalance: number;
+  accountBallance: number;
+  country: string;
+}
+const Customers: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
+  const [results, setResults] = useState<Customer[]>([]);
   const [count, setCount] = useState(0);
-  const [selectedVendor, setSelectedVendor] = useState<any | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
@@ -27,9 +45,9 @@ const Customers:React.FC=()=>{
   const [skip, setSkip] = useState(0);
   const [clearChild, setClearChild] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
-
-  const fetchVendors = async (newSkip: number) => {
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fetchCustomer = async (newSkip: number) => {
     try {
       setLoadingState(true);
       let formData = getValues();
@@ -51,43 +69,52 @@ const Customers:React.FC=()=>{
 
   const onSubmit = () => {
     setSkip(0);
-    fetchVendors(0);
+    fetchCustomer(0);
   };
 
   useEffect(() => {
-    fetchVendors(0);
+    fetchCustomer(0);
   }, [showModal]);
 
   const handlePageChange = (page: number) => {
     const newSkip = (page - 1) * 10;
     setSkip(newSkip);
-    fetchVendors(newSkip);
+    fetchCustomer(newSkip);
   };
 
   const handleClear = () => {
     reset();
     setClearChild(!clearChild);
-    fetchVendors(0);
+    fetchCustomer(0);
   };
 
-  // const handleEdit = (vendor: Vendor) => {
-  //   setSelectedVendor(vendor);
-  //   setShowModal(true);
-  // };
+  const handleEdit = async(customer: Customer) => {
+    try {
+      setLoadingState(true)
+    let cut=await getCustomerById(customer._id)
+    setSelectedCustomer(cut);
+    setShowModal(true);
+    } catch (error) {
 
-  // const handleDelete = (vendor: Vendor) => {
-  //   setVendorToDelete(vendor);
-  //   setShowDeleteModal(true);
-  // };
+    }finally{
+      setLoadingState(false)
+    }
+    
+  };
+
+  const handleDelete = (customer: Customer) => {
+    setCustomerToDelete(customer);
+    setShowDeleteModal(true);
+  };
 
   const confirmDelete = async () => {
-    if (vendorToDelete) {
+    if ( customerToDelete) {
       try {
         setLoadingState(true);
-        await axios.delete(`entity/customer/${vendorToDelete._id}`);
+        await deleteCustomer(customerToDelete._id)
         setShowDeleteModal(false);
-        setVendorToDelete(null);
-        fetchVendors(skip);
+        setCustomerToDelete(null);
+        fetchCustomer(skip);
       } catch (error) {
         console.error("Error deleting vendor:", error);
       } finally {
@@ -98,9 +125,30 @@ const Customers:React.FC=()=>{
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedVendor(null);
+    setSelectedCustomer(null);
   };
-
+  const handleBulkUploadModal = () => {
+    setShowBulkUploadModal(false);
+  }
+  const handleFileChange = (file: File | null) => {
+    setSelectedFile(file);
+  };
+  const handleUpload = async () => {
+    
+  };
+  const handleDownloadSample = async() => {
+      try {
+        setLoadingState(true);
+        let data=await downloadCustomerSampleFile()
+        convertArrayBufferExcel(
+          data,
+          "Customer Sample File"
+        );
+      } catch (error) { 
+      }finally{ 
+        setLoadingState(false);
+      }
+  };
   return (
     <Container fluid className="section-list">
       <h2 className="page-title mb-4">Customers Management</h2>
@@ -133,7 +181,7 @@ const Customers:React.FC=()=>{
                   clear={clearChild}
                 />
               </Col>
-              <Col md={4} style={{display:"flex",justifyContent:"flex-end"}} className="d-flex align-items-end">
+              <Col md={4} style={{ display: "flex", justifyContent: "flex-end" }} className="d-flex align-items-end">
                 <Button
                   variant="outline-secondary"
                   className="me-2"
@@ -154,9 +202,15 @@ const Customers:React.FC=()=>{
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h5 className="card-title mb-0">Search Results</h5>
-            {/* <Button variant="success" onClick={() => setShowModal(true)}>
-              <FaPlus /> New Vendor
-            </Button> */}
+            <div className="d-flex">
+              <Button variant="outline-primary" style={{ marginRight: "5px" }} onClick={() => setShowBulkUploadModal(true)}>
+                <FaRegFileExcel /> Bulk Upload Customers
+              </Button>
+              <Button variant="success" onClick={() => setShowModal(true)}>
+                <FaPlus /> New Customer
+              </Button>
+            </div>
+
           </div>
 
           <div className="table-responsive">
@@ -168,7 +222,7 @@ const Customers:React.FC=()=>{
                   <th>Email</th>
                   <th>Account Head</th>
                   <th>Balance</th>
-                  {/* <th>Actions</th> */}
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -179,7 +233,7 @@ const Customers:React.FC=()=>{
                     <td>{customer.email}</td>
                     <td>{customer.accountHEad}</td>
                     <td>{customer.accountBallance}</td>
-                    {/* <td>
+                    <td>
                       <Button
                         variant="outline-primary"
                         size="sm"
@@ -191,11 +245,11 @@ const Customers:React.FC=()=>{
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleDelete(vendor)}
+                        onClick={() => handleDelete(customer)}
                       >
                         <FaTrash /> Delete
                       </Button>
-                    </td> */}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -214,24 +268,36 @@ const Customers:React.FC=()=>{
       </Card>
 
       <ModalPopup
-        head={selectedVendor ? "Edit Vendor" : "Create New Vendor"}
+        head={selectedCustomer ? "Edit Vendor" : "Create New Customer"}
         size="lg"
         show={showModal}
         handleClose={handleCloseModal}
         dialogClassName="vendor-modal"
       >
-        <CreateAndUpdateVendor
+        <CreateAndUpdateCustomer
           handleClose={handleCloseModal}
-          vendorToEdit={selectedVendor}
+          customerToEdit={selectedCustomer}
         />
       </ModalPopup>
-
+      <ModalPopup
+        head={"Bulk Upload Customers"}
+        size="lg"
+        show={showBulkUploadModal}
+        handleClose={handleBulkUploadModal}
+        dialogClassName="vendor-modal"
+      >
+      <ExcelFileUpload
+          onFileChange={handleFileChange}
+          onUpload={handleUpload}
+          onDownloadSample={handleDownloadSample}
+        />
+      </ModalPopup>
       <ConfirmationModal
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}
-        title="Delete Vendor"
-        message={`Are you sure you want to delete the vendor "${vendorToDelete?.name}"?`}
+        title="Delete Customer"
+        message={`Are you sure you want to delete the Customer "${customerToDelete?.firstName}"?`}
         confirmButtonText="Delete"
         cancelButtonText="Cancel"
         confirmButtonVariant="danger"

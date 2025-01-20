@@ -9,4 +9,9 @@ router.post(
   Validate(genSequenceValidation),
   generateSequence
 );
+router.post("upi-configurations");
+router.get("upi-configuration/:id");
+router.get("upi-configurations");
+router.patch("upi-configuration/:id");
+
 export const CoreRouter = router;

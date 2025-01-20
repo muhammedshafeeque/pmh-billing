@@ -30,7 +30,7 @@ const ExcelFileUpload: React.FC<ExcelFileUploadProps> = ({
       <Button variant="secondary" size='sm' style={{marginRight:"10px"}} onClick={onDownloadSample}>
         Download Sample
       </Button>
-      <Button variant="primary" onClick={onUpload} size='sm' className="mr-2">
+      <Button variant="success"   onClick={onUpload} size='sm' className="mr-2">
         Upload
       </Button>
     </div>
