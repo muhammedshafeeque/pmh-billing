@@ -8,7 +8,7 @@ import { ROUTERS } from "../Constants/Routes";
 let token = localStorage.getItem(TOKEN);
 const apiInstance = axios.create({
   baseURL: baseUrl,
-  timeout: 5000,
+  timeout: 0,
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,

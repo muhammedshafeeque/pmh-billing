@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import queryString from "query-string";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useLoading } from "../../Contexts/LoaderContext";
 import axios from "../../Api/Api";
 import AutoComplete from "../../Components/AutoComplete/AutoComplete";
@@ -10,7 +10,7 @@ import { FaSearch, FaTimes, FaPlus, FaRegFileExcel, FaEdit, FaTrash } from "reac
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import ModalPopup from "../../Components/PopupModal/ModalPopup";
 import CreateAndUpdateCustomer from "../../Components/Entity/CreateAndUpdateCustomer";
-import { deleteCustomer, downloadCustomerSampleFile, getCustomerById } from "../../Services/api/EntityApi";
+import { bulkUploadCustomer, deleteCustomer, downloadCustomerSampleFile, getCustomerById } from "../../Services/api/EntityApi";
 import ExcelFileUpload from "../../Components/ExcelFileUpload/ExcelFileUpload";
 import { convertArrayBufferExcel } from "../../Utils/ExcelUtility";
 interface Customer {
@@ -52,8 +52,8 @@ const Customers: React.FC = () => {
       setLoadingState(true);
       let formData = getValues();
       let params = {
-        name: formData.name ? formData.name.name : "",
-        contactPhone: formData.contactPhone ? formData.contactPhone.contactPhone : "",
+        firstName: formData.name ? formData.name.firstName : "",
+        phone: formData.contactPhone ? formData.contactPhone.phone : "",
         skip: newSkip,
       };
       let query = queryString.stringify(params);
@@ -134,7 +134,24 @@ const Customers: React.FC = () => {
     setSelectedFile(file);
   };
   const handleUpload = async () => {
-    
+    try {
+      setLoadingState(true);
+      if (selectedFile) {
+        await bulkUploadCustomer(selectedFile);
+        fetchCustomer(skip);
+        setShowBulkUploadModal(false)
+      }
+
+    } catch (error:any) {
+      if (error.response.data.file) {
+        convertArrayBufferExcel(
+          error.response.data,
+          "Category Upload Error File"
+        );
+      }
+    }finally{
+      setLoadingState(false);
+    }
   };
   const handleDownloadSample = async() => {
       try {
@@ -164,8 +181,8 @@ const Customers: React.FC = () => {
                   name="name"
                   label="Name"
                   setValue={setValue}
-                  readField={"name"}
-                  url={`/entity/customer?nameContains`}
+                  readField={"firstName"}
+                  url={`/entity/customer?firstNameContains`}
                   clear={clearChild}
                 />
               </Col>
@@ -176,8 +193,8 @@ const Customers: React.FC = () => {
                   name="contactPhone"
                   label="Phone"
                   setValue={setValue}
-                  readField={"contactPhone"}
-                  url={`entity/customer?contactPhoneContains`}
+                  readField={"phone"}
+                  url={`entity/customer?phoneContains`}
                   clear={clearChild}
                 />
               </Col>

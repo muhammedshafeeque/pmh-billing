@@ -64,7 +64,7 @@ export const uploadFile = (files) => {
     if (!files || Object.keys(files).length === 0) {
       reject({ status: 400, message: "No files were uploaded" });
     }
-    const uploadedFile = files.files;
+    const uploadedFile = files.file;
   
     const uniqueFilename = uuidv4() + path.extname(uploadedFile.name);
     const uploadDir = path.join("./Public/uploads");

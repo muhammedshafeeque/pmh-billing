@@ -2,7 +2,7 @@ import { ACCOUNT_HEAD } from "../Models/AccountHead.js";
 import { CUSTOMER } from "../Models/CustomerModal.js";
 import { VENDOR } from "../Models/VendorModal.js";
 import { createAccountHead, deleteAccountHead } from "../Service/AccountsService.js";
-import { ExcelDataExtractor, extractDataFromCSV, extractDataFromVCF, generateExcelBlob, queryGen, uploadFile } from "../Utils/utils.js";
+import { ExcelDataExtractor, extractDataFromCSV, extractDataFromVCF, generateErrorExcelBlob, generateExcelBlob, queryGen, uploadFile } from "../Utils/utils.js";
 
 export const createVendor = async (req, res, next) => {
   let createdAccountHead = null;
@@ -68,20 +68,49 @@ export const uploadBulkCustomers = async (req, res, next) => {
       default:
         return next({ status: 400, message: "Unsupported file format" });
     }
+    let duplicates = new Map();
     await Promise.all(
       customers.map(async (customer) => {
-        let accountHead= await createAccountHead({
-          name: customer.name,
-          debit: 0,
-          type: "receivable",
+        let  isExist=await CUSTOMER.findOne({phone:customer.phone})
+        if(isExist){
+          duplicates.set(customer.phone, customer)
+        }}))
+    if (duplicates.size > 0) {
+      let errorData = [];
+      customers = customers.forEach(element => {
+        if(duplicates.has(element.phone)){
+          errorData.push({item:element,success:false,error:{message:'Customer Already Exist'}})
+        }else{
+          errorData.push({item:element,success:true})
+        }
+      });
+      const buffer = await generateErrorExcelBlob(errorData);
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=error_report.xlsx"
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.status(400).send({
+        file: buffer,
+      });
+    }else{
+      await Promise.all(
+        customers.map(async (customer) => {
+          let accountHead= await createAccountHead({
+            name: customer.name,
+            debit: 0,
+            type: "receivable",
+          })
+          customer.accountHEad=accountHead._id
+          customer.firstName=customer.name
         })
-        customer.accountHEad=accountHead._id
-        customer.firstName=customer.name
-      })
-    );
-    let Customers=await CUSTOMER.insertMany(customers)
-    res.send({ message: "Customers Uploaded Successfully", Customers });
-
+      );
+      let Customers=await CUSTOMER.insertMany(customers)
+      res.send({ message: "Customers Uploaded Successfully", Customers });
+    }  
   } catch (error) {
     next(error);
   }

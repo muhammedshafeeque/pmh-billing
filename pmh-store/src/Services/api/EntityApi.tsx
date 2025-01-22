@@ -48,8 +48,12 @@ export const downloadCustomerSampleFile=async()=>{
 export const bulkUploadCustomer=async(file:File)=>{
     try {
         let formData=new FormData();
-        formData.append("files",file);
-        let customer = await axios.post(`/entity/customer-bulk-upload`,formData);
+        formData.append("file",file);
+        let customer = await axios.post(`/entity/bulk-upload-customer`,formData,{
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
         return customer.data;
     } catch (error) {
         throw error;
