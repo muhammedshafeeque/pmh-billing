@@ -56,7 +56,7 @@ export const SideBarItems = [
       {
         icon: GiCash,
         name: "Collections",
-        path: "",
+        path: ROUTERS.COLLECTIONS,
       },
       {
         icon: MdPayments,

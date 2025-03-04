@@ -25,6 +25,7 @@ import Invoices from "./Pages/Accounts/Invoices";
 import InvoiceView from "./Pages/Accounts/InvoiceView";
 import Bills from "./Pages/Accounts/Bills";
 import BillView from "./Pages/Accounts/BillView";
+import CollectionsList from "./Pages/Accounts/Collections";
 
 const App: React.FC = () => {
   const { user } = usePmh();
@@ -75,6 +76,7 @@ const App: React.FC = () => {
                       <Route path={ROUTERS.INVOICE_VIEW+':id'} element={<InvoiceView/>}/>
                       <Route path={ROUTERS.BILLS} element={<Bills/>}/>
                       <Route path={ROUTERS.BILL_VIEW+':id'} element={<BillView/>}/>
+                      <Route path={ROUTERS.COLLECTIONS} element={<CollectionsList/>}/>
                     </Routes>
                   </div>
                 </div>

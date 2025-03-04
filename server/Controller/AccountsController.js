@@ -321,3 +321,113 @@ export const getBillById = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getDashboardData = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get today's sales
+    const todaysSales = await INVOICE.aggregate([
+      { $match: { createdAt: { $gte: today } } },
+      { $group: { _id: null, total: { $sum: "$invoiceAmount" } } }
+    ]);
+
+    // Get monthly revenue
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const monthlyRevenue = await INVOICE.aggregate([
+      { $match: { createdAt: { $gte: monthStart } } },
+      { $group: { _id: null, total: { $sum: "$invoiceAmount" } } }
+    ]);
+
+    // Get counts
+    const totalInvoices = await INVOICE.countDocuments();
+    const totalCustomers = await CUSTOMER.countDocuments();
+    const lowStockItems = await ITEM.countDocuments({ quantity: { $lt: 10 } });
+
+    // Get pending collections
+    const pendingCollections = await INVOICE.aggregate([
+      { $group: { _id: null, total: { $sum: "$pendingAmount" } } }
+    ]);
+
+    // Get monthly sales data for chart
+    const monthlySalesData = await INVOICE.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          amount: { $sum: "$invoiceAmount" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Get payment mode distribution
+    const paymentModeData = await COLLECTION.aggregate([
+      {
+        $group: {
+          _id: "$paymentMode",
+          amount: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    // Get top selling items
+    const topSellingItems = await INVOICE.aggregate([
+      {
+        $group: {
+          _id: "$itemId",
+          quantity: { $sum: "$quantity" }
+        }
+      },
+      { $sort: { quantity: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "items",
+          localField: "_id",
+          foreignField: "_id",
+          as: "item"
+        }
+      }
+    ]);
+
+    // Get recent transactions
+    const recentTransactions = await INVOICE.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate('customer', 'firstName lastName');
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    res.json({
+      todaysSales: todaysSales[0]?.total || 0,
+      monthlyRevenue: monthlyRevenue[0]?.total || 0,
+      totalInvoices,
+      pendingCollections: pendingCollections[0]?.total || 0,
+      totalCustomers,
+      lowStockItems,
+      monthlySalesData: monthlySalesData.map(item => ({
+        month: monthNames[item._id - 1],
+        amount: item.amount
+      })),
+      paymentModeData: paymentModeData.map(item => ({
+        mode: item._id,
+        amount: item.amount
+      })),
+      topSellingItems: topSellingItems.map(item => ({
+        name: item.item[0].name,
+        quantity: item.quantity
+      })),
+      recentTransactions: recentTransactions.map(invoice => ({
+        _id: invoice._id,
+        date: invoice.createdAt,
+        invoiceNumber: invoice.number,
+        customerName: `${invoice.customer.firstName} ${invoice.customer.lastName}`,
+        amount: invoice.invoiceAmount
+      }))
+    });
+  } catch (error) {
+    console.error('Dashboard data error:', error);
+    res.status(500).json({ message: 'Error fetching dashboard data' });
+  }
+};
