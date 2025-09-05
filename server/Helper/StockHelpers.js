@@ -2,9 +2,13 @@ import { Category } from "../Models/CategoryModal.js";
 import { ITEM } from "../Models/itemModal.js";
 
 
-export const CategoryNameValidate = async (category) => {
+export const CategoryNameValidate = async (category, excludeId = null) => {
   try {
-    let nameExist = await Category.findOne({ name: category.name });
+    let query = { name: category.name };
+    if (excludeId) {
+      query._id = { $ne: excludeId };
+    }
+    let nameExist = await Category.findOne(query);
     if (nameExist) {
       return Promise.reject({ category, message: "Name Already Exists!" });
     } else {
@@ -15,9 +19,13 @@ export const CategoryNameValidate = async (category) => {
   }
 };
 
-export const CategoryCodeValidate = async (category) => {
+export const CategoryCodeValidate = async (category, excludeId = null) => {
   try {
-    let codeExist = await Category.findOne({ code: category.code });
+    let query = { code: category.code };
+    if (excludeId) {
+      query._id = { $ne: excludeId };
+    }
+    let codeExist = await Category.findOne(query);
     if (codeExist) {
       return Promise.reject({ category, message: "Code Already Exists!" });
     } else {

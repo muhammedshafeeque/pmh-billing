@@ -8,6 +8,7 @@ import {
   createRack,
   createSection,
   createStock,
+  deleteCategory,
   getCategories,
   getCategorySampleFile,
   getItemList,
@@ -18,6 +19,7 @@ import {
   getStocks,
   removeItem,
   removeSection,
+  updateCategory,
   updateItem,
   updateRack,
   updateSection,
@@ -45,11 +47,11 @@ router.post("/category",Validate(CateGoryValidation),createCategory);
 router.post("/category-excel-upload",categoryBulkUpload)
 router.get("/category-excel-sample-file",getCategorySampleFile)
 router.get("/category",getCategories);
-router.patch("/category/:id");
-router.delete("/category/:id");
+router.patch("/category/:id", Validate(CateGoryValidation), updateCategory);
+router.delete("/category/:id", deleteCategory);
 router.post("/item",Validate(itemValidations), createItem);
 router.get("/item", getItemList);
-router.patch("/item", updateItem);
+router.patch("/item/:id", Validate(itemValidations), updateItem);
 router.delete("/item/:id", removeItem);
 router.get("/item/:id", getItemWithId);
 router.post("/stock", Validate(StockValidation), createStock);

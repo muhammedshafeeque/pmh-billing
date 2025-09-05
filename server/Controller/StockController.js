@@ -135,24 +135,36 @@ export const createItem = async (req, res, next) => {
 };
 export const updateItem = async (req, res, next) => {
   try {
-    let existItem = await getItemById(req.params.id);
-    existItem.activeracks.forEach((obj) => {
-      pullItemFromRack(obj, req.params.id);
-    });
-    let item = await patchItem(req.params.id, req.body);
-    req.body.activeracks.forEach((rack) => {
-      pushItemToRack(rack, Item._id);
-    });
+    const { id } = req.params;
+    const updateData = req.body;
 
-    res.send(item);
+    // Validate required fields
+    if (!updateData.name || !updateData.code) {
+      return res.status(400).json({ message: "Name and code are required" });
+    }
+
+    const updatedItem = await ITEM.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.status(200).json({ message: "Item updated successfully", data: updatedItem });
   } catch (error) {
     next(error);
   }
 };
 export const removeItem = async (req, res, next) => {
   try {
-    let item = await deleteItem(req.params.id);
-    res.send(item);
+    const { id } = req.params;
+
+    const deletedItem = await ITEM.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -354,6 +366,43 @@ export const getCategories = async (req, res, next) => {
     let results = await Category.find(keywords).sort({ createdAt: -1 }).limit(limit).skip(skip);
     let count = await Category.find(keywords).count();
     res.send({ results, count });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    let validations = [
+      CategoryCodeValidate(req.body, id),
+      CategoryNameValidate(req.body, id),
+    ];
+    await Promise.all(validations);
+
+    const updatedCategory = await Category.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (!updatedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json({ message: "Category updated successfully", data: updatedCategory });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedCategory = await Category.findByIdAndDelete(id);
+
+    if (!deletedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
     next(error);
   }

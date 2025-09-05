@@ -9,7 +9,8 @@ import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
 import CategoryBulkUpload from "../../Components/Stock/CategoryBulkUpload";
 import CreateAndUpdateCategory from "../../Components/Stock/CreateAndUpdateCategory";
-import { FaPlus, FaSearch, FaTimes, FaUpload } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash, FaUpload } from "react-icons/fa";
+import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
 
 interface Group {
   _id: string;
@@ -24,6 +25,9 @@ const GroupList: React.FC = () => {
   const [results, setResults] = useState<Group[]>([]);
   const [count, setCount] = useState(0);
   const [clearChild, setClearChild] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Group | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Group | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
@@ -74,6 +78,37 @@ const GroupList: React.FC = () => {
     reset();
     setClearChild(!clearChild);
     fetchGroups(0);
+  };
+
+  const handleEdit = (category: Group) => {
+    setSelectedCategory(category);
+    setShowCreateModal(true);
+  };
+
+  const handleDelete = (category: Group) => {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (categoryToDelete) {
+      try {
+        setLoadingState(true);
+        await axios.delete(`stock/category/${categoryToDelete._id}`);
+        setShowDeleteModal(false);
+        setCategoryToDelete(null);
+        fetchGroups(skip);
+      } catch (error) {
+        console.error("Error deleting category:", error);
+      } finally {
+        setLoadingState(false);
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setSelectedCategory(null);
   };
 
   return (
@@ -153,6 +188,7 @@ const GroupList: React.FC = () => {
                   <th>Name</th>
                   <th>Code</th>
                   <th>Description</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,6 +197,23 @@ const GroupList: React.FC = () => {
                     <td>{obj.name}</td>
                     <td>{obj.code}</td>
                     <td>{obj.description}</td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleEdit(obj)}
+                        className="me-2"
+                      >
+                        <FaEdit /> Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(obj)}
+                      >
+                        <FaTrash /> Delete
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -182,13 +235,14 @@ const GroupList: React.FC = () => {
       </Card>
 
       <ModalPopup
-        head="Create New Category"
+        head={selectedCategory ? "Edit Category" : "Create New Category"}
         size="lg"
         show={showCreateModal}
-        handleClose={() => setShowCreateModal(false)}
+        handleClose={handleCloseModal}
       >
         <CreateAndUpdateCategory
-          handleClose={() => setShowCreateModal(false)}
+          handleClose={handleCloseModal}
+          categoryToEdit={selectedCategory}
         />
       </ModalPopup>
 
@@ -200,6 +254,17 @@ const GroupList: React.FC = () => {
       >
         <CategoryBulkUpload handleClose={() => setShowBulkUploadModal(false)} />
       </ModalPopup>
+
+      <ConfirmationModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Category"
+        message={`Are you sure you want to delete the category "${categoryToDelete?.name}"?`}
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+        confirmButtonVariant="danger"
+      />
     </Container>
   );
 };

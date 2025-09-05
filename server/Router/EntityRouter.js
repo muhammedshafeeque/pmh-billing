@@ -7,6 +7,8 @@ import {
   getVendors,
   updateVendor,
   deleteVendor,
+  updateCustomer,
+  deleteCustomer,
 } from "../Controller/EntityController.js";
 import { Validate } from "../MiddleWare/Validation.js";
 import {
@@ -22,4 +24,6 @@ router.get('/customer',getCustomers)
 router.post("/create-customer-from-invoice",Validate(createCustomerFromInvoice),createNewCustomerFromInvoice)
 router.patch("/vendor/:id", Validate(vendorValidation), updateVendor);
 router.delete("/vendor/:id", deleteVendor);
+router.patch("/customer/:id", Validate(customerValidation), updateCustomer);
+router.delete("/customer/:id", deleteCustomer);
 export const EntityRouter = router;

@@ -37,12 +37,19 @@ const allowedFields = [
 ];
 
 const filterVendorData = (data: Vendor): Partial<Vendor> => {
-  return Object.keys(data).reduce((acc, key) => {
-    if (allowedFields.includes(key)) {
-      acc[key as keyof Vendor] = data[key as keyof Vendor] as Vendor[keyof Vendor];
-    }
-    return acc;
-  }, {} as Partial<Vendor>);
+  const filtered: Partial<Vendor> = {};
+  
+  if (data.name) filtered.name = data.name;
+  if (data.contactEmail) filtered.contactEmail = data.contactEmail;
+  if (data.contactPhone) filtered.contactPhone = data.contactPhone;
+  if (data.street) filtered.street = data.street;
+  if (data.city) filtered.city = data.city;
+  if (data.state) filtered.state = data.state;
+  if (data.zipCode) filtered.zipCode = data.zipCode;
+  if (data.country) filtered.country = data.country;
+  if (data.accountBallance !== undefined) filtered.accountBallance = data.accountBallance;
+  
+  return filtered;
 };
 
 const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClose, vendorToEdit }) => {

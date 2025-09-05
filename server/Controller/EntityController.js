@@ -29,8 +29,8 @@ export const createVendor = async (req, res, next) => {
 export const createCustomer = async (req, res, next) => {
   try {
     req.body.accountHEad = await createAccountHead({
-      name: req.body.name,
-      debit: Number(req.body.OpeningBalance),
+      name: `${req.body.firstName} ${req.body.lastName}`,
+      debit: Number(req.body.openingBalance || 0),
       type: "receivable",
     });
     await CUSTOMER.create(req.body);
@@ -76,6 +76,7 @@ export const getCustomers = async (req, res, next) => {
     customers = customers.map((result) => ({
       ...result.toObject(),
       accountBallance: result.accountHEad.accountBalance,
+      openingBalance: result.accountHEad.debit,
       accountHEad: result.accountHEad.name,
     }));
     res.send({ count, results: customers });
@@ -148,6 +149,39 @@ export const deleteVendor = async (req, res, next) => {
     }
 
     res.status(200).json({ message: "Vendor deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCustomer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedCustomer = await CUSTOMER.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedCustomer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCustomer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedCustomer = await CUSTOMER.findByIdAndDelete(id);
+
+    if (!deletedCustomer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.status(200).json({ message: "Customer deleted successfully" });
   } catch (error) {
     next(error);
   }

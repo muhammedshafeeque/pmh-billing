@@ -8,7 +8,8 @@ import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
 import CreateAndUpdateItem from "../../Components/Stock/CreateAndUpdateItem";
-import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
+import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
 
 interface Item {
   _id: string;
@@ -18,6 +19,11 @@ interface Item {
   racks: { _id: string; name: string }[];
   unit: string;
   totalStock: number;
+  rack?: string[];
+  remarks?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 const ItemsList: React.FC = () => {
@@ -25,6 +31,9 @@ const ItemsList: React.FC = () => {
   const [results, setResults] = useState<Item[]>([]);
   const [count, setCount] = useState(0);
   const [clearChild, setClearChild] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
@@ -77,6 +86,37 @@ const ItemsList: React.FC = () => {
     reset();
     setClearChild(!clearChild);
     fetchItems(0);
+  };
+
+  const handleEdit = (item: Item) => {
+    setSelectedItem(item);
+    setShowCreateModal(true);
+  };
+
+  const handleDelete = (item: Item) => {
+    setItemToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      try {
+        setLoadingState(true);
+        await axios.delete(`stock/item/${itemToDelete._id}`);
+        setShowDeleteModal(false);
+        setItemToDelete(null);
+        fetchItems(skip);
+      } catch (error) {
+        console.error("Error deleting item:", error);
+      } finally {
+        setLoadingState(false);
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setSelectedItem(null);
   };
 
   return (
@@ -176,6 +216,7 @@ const ItemsList: React.FC = () => {
                   <th>Racks</th>
                   <th>Unit</th>
                   <th>Existing Stocks</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -191,6 +232,23 @@ const ItemsList: React.FC = () => {
                     </td>
                     <td>{obj.unit}</td>
                     <td>{obj.totalStock}</td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleEdit(obj)}
+                        className="me-2"
+                      >
+                        <FaEdit /> Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDelete(obj)}
+                      >
+                        <FaTrash /> Delete
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -212,15 +270,27 @@ const ItemsList: React.FC = () => {
       </Card>
 
       <ModalPopup
-        head="Create New Item"
+        head={selectedItem ? "Edit Item" : "Create New Item"}
         size="lg"
         show={showCreateModal}
-        handleClose={() => setShowCreateModal(false)}
+        handleClose={handleCloseModal}
       >
         <CreateAndUpdateItem
-          handleClose={() => setShowCreateModal(false)}
+          handleClose={handleCloseModal}
+          itemToEdit={selectedItem}
         />
       </ModalPopup>
+
+      <ConfirmationModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Item"
+        message={`Are you sure you want to delete the item "${itemToDelete?.name}"?`}
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+        confirmButtonVariant="danger"
+      />
     </Container>
   );
 };

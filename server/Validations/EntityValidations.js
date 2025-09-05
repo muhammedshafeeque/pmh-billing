@@ -18,7 +18,7 @@ export const customerValidation = Joi.object({
   lastName: Joi.string().trim().required(),
   email: Joi.string().email().trim().lowercase().messages({
     "string.email": "Please provide a valid email address",
-  }),
+  }).optional(),
   phone: Joi.string()
     .trim()
     .pattern(/^\d{10}$/)
@@ -39,7 +39,6 @@ export const customerValidation = Joi.object({
       }),
     country: Joi.string().trim().optional(),
   }).optional(),
-  dateOfBirth: Joi.date().optional(),
 });
 export const createCustomerFromInvoice = Joi.object({
   name: Joi.string().required(),

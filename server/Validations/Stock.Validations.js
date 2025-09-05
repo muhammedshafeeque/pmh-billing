@@ -50,7 +50,6 @@ export const itemValidations = {
       code: Joi.string().required(),
       racks: Joi.array().items(Joi.string()).required(),
       unit: Joi.string().required(),
-      totalStock: Joi.number().required(),
       category: Joi.string(),
       remark: Joi.string(),
     })

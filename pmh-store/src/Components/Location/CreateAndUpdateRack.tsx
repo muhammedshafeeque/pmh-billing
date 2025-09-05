@@ -87,6 +87,7 @@ const CreateAndUpdateRack: React.FC<CreateAndUpdateRackProps> = ({ handleClose, 
           readField={"name"}
           url={`/stock/section?nameContains`}
           isRequired={true}
+          value={rackToEdit?.section}
         />
       </Form.Group>
 

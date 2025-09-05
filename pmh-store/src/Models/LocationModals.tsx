@@ -11,8 +11,9 @@ interface Rack {
   name: string;
   code: string;
   description: string;
-  section:string
-  _id?:string
+  section:Section
+  _id?:string,
+  sectionName:string
 }
 interface RackCreateBody{
   name: string;

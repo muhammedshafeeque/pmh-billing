@@ -22,7 +22,7 @@ export const getRacks = (query) => {
       let count= await Rack.find(keywords).count()
       racks=racks.map((rack)=>({
         ...rack.toObject(),
-        section:rack.section.name
+        sectionName:rack.section.name
       }))
     resolve({results:racks,count});
    } catch (error) {

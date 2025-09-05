@@ -115,7 +115,7 @@ const MultiSelectAutoComplete: React.FC<AutoCompleteProps> = ({
       
         <Form.Control
           type="text"
-          placeholder={`Enter ${label}`}
+          placeholder={`Search and select ${label.toLowerCase()} (multiple selection allowed)`}
           value={inputValue}
           onChange={handleInputChange}
           onFocus={() => setDropdownOpen(true)}
@@ -124,24 +124,40 @@ const MultiSelectAutoComplete: React.FC<AutoCompleteProps> = ({
         />
         {loading && <Form.Text className="text-muted">Loading...</Form.Text>}
         {error && <Form.Text className="text-danger">{error}</Form.Text>}
-        {dropdownOpen && (
-          <ul className="auto-complete-dropdown list-group">
+        {!loading && !error && selectedOptions.length === 0 && (
+          <Form.Text className="text-muted">Type to search and select multiple {label.toLowerCase()}</Form.Text>
+        )}
+        {dropdownOpen && options.length > 0 && (
+          <div className="auto-complete-dropdown border rounded mt-1" style={{maxHeight:"200px", overflowY:"auto", position:"absolute", zIndex:1000, backgroundColor:"white", width:"100%"}}>
             {options.map((option, index) => (
-              <li
+              <div
                 key={index}
-                className="list-group-item"
+                className="p-2 border-bottom"
+                style={{cursor:"pointer", transition:"background-color 0.2s"}}
                 onMouseDown={() => handleOptionSelect(option)}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8f9fa"}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
               >
                 {option[readField]}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
-          <div className="selected-options" style={{display:"flex",flexWrap:"wrap",width:"100%"}}>
+        <div className="selected-options mt-2" style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
           {selectedOptions.map((option, index) => (
-            <span key={index} className="selected-option" style={{display:"flex", width: "max-content", marginLeft:"10px" }}>
+            <span 
+              key={index} 
+              className="badge bg-primary d-flex align-items-center" 
+              style={{fontSize:"0.875rem", padding:"0.375rem 0.75rem"}}
+            >
               {option[readField]}
-              <p  onClick={() => handleRemoveOption(option)}>×</p>
+              <button
+                type="button"
+                className="btn-close btn-close-white ms-2"
+                style={{fontSize:"0.7rem", padding:"0", margin:"0"}}
+                onClick={() => handleRemoveOption(option)}
+                aria-label="Remove"
+              ></button>
             </span>
           ))}
         </div>

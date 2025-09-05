@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Alert } from "react-bootstrap";
 import ExcelFileUpload from "../ExcelFileUpload/ExcelFileUpload";
 import axios from "../../Api/Api";
 import { useToastService } from "../../Contexts/ToastContext";
@@ -56,7 +57,19 @@ const CategoryBulkUpload: React.FC<PopupChildeProp> = ({ handleClose }) => {
   };
 
   return (
-    <div>
+    <div className="category-bulk-upload">
+      <Alert variant="info" className="mb-4">
+        <Alert.Heading className="h6 mb-2">
+          📋 Instructions for Bulk Upload
+        </Alert.Heading>
+        <ul className="mb-0 small">
+          <li>Download the sample file to see the correct format</li>
+          <li>Fill in your category data following the same structure</li>
+          <li>Upload the completed Excel file</li>
+          <li>Any errors will be downloaded as an error report file</li>
+        </ul>
+      </Alert>
+
       <ExcelFileUpload
         onFileChange={handleFileChange}
         onUpload={handleUpload}

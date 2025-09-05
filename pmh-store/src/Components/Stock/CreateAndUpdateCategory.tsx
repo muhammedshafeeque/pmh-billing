@@ -10,6 +10,9 @@ interface Category {
   name: string;
   code: string;
   description?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 interface CreateAndUpdateCategoryProps extends PopupChildeProp {
@@ -34,10 +37,12 @@ const CreateAndUpdateCategory: React.FC<CreateAndUpdateCategoryProps> = ({ handl
   const onSubmit: SubmitHandler<Category> = async (data: Category) => {
     try {
       setLoadingState(true);
+      // Remove fields that shouldn't be sent from frontend
+      const { _id, createdAt, updatedAt, __v, ...categoryData } = data;
       if (categoryToEdit) {
-        await axios.patch(`stock/Category/${categoryToEdit._id}`, data);
+        await axios.patch(`stock/category/${categoryToEdit._id}`, categoryData);
       } else {
-        await axios.post("stock/Category", data);
+        await axios.post("stock/category", categoryData);
       }
       handleClose();
     } catch (error) {

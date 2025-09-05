@@ -12,10 +12,12 @@ interface Item {
   name: string;
   code: string;
   unit: string;
-  quantity: number;
   category: string;
-  rack: string[];
+  rack?: string[];
   remarks?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 interface CreateAndUpdateItemProps extends PopupChildeProp {
@@ -24,7 +26,7 @@ interface CreateAndUpdateItemProps extends PopupChildeProp {
 
 const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, itemToEdit }) => {
   const [items, setItems] = useState<Item[]>([
-    { name: "", code: "", unit: "", quantity: 0, category: "", rack: [] },
+    { name: "", code: "", unit: "", category: "", rack: [] },
   ]);
   const [clearChild, setClearChild] = useState(false);
   const {
@@ -51,13 +53,14 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
         code: item.code,
         unit: item.unit._id,
         racks: item.rack.map((ra: any) => ra._id),
-        totalStock: item.quantity,
         category: item.category._id,
         remark: item.remarks,
       }));
 
       if (itemToEdit) {
-        await axios.patch(`stock/item/${itemToEdit._id}`, body[0]);
+        // Remove database fields for update
+        const { _id, createdAt, updatedAt, __v, ...updateData } = body[0];
+        await axios.patch(`stock/item/${itemToEdit._id}`, updateData);
       } else {
         await axios.post("stock/item", body);
       }
@@ -72,7 +75,7 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
   const handleAddItem = () => {
     setItems([
       ...items,
-      { name: "", code: "", unit: "", quantity: 0, category: "", rack: [] },
+      { name: "", code: "", unit: "", category: "", rack: [] },
     ]);
   };
 
@@ -130,49 +133,6 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
               />
             </Col>
             <Col md={3}>
-              <Form.Group controlId={`formQuantity${index}`}>
-                <Form.Label>Quantity</Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="Enter Quantity"
-                  {...register(`items[${index}].quantity`, {
-                    required: "Quantity is required",
-                  })}
-                  isInvalid={!!errors.items?.[index]?.quantity}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.items?.[index]?.quantity?.message}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row className="mt-3">
-            <Col md={3}>
-              <AutoComplete
-                register={register}
-                errors={errors}
-                name={`items[${index}].category`}
-                label="Category"
-                setValue={setValue}
-                readField={"name"}
-                url={`/stock/category?nameContains`}
-                clear={clearChild}
-                isRequired={true}
-              />
-            </Col>
-            <Col md={3}>
-              <MultiSelectAutoComplete
-                register={register}
-                errors={errors}
-                name={`items[${index}].rack`}
-                label="Rack"
-                setValue={setValue}
-                readField={"code"}
-                url={`/stock/rack?codeContains`}
-                clear={clearChild}
-              />
-            </Col>
-            <Col md={3}>
               <Form.Group controlId={`formRemark${index}`}>
                 <Form.Label>Remark</Form.Label>
                 <Form.Control
@@ -185,6 +145,33 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                   {errors.items?.[index]?.remarks?.message}
                 </Form.Control.Feedback>
               </Form.Group>
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col md={6}>
+              <AutoComplete
+                register={register}
+                errors={errors}
+                name={`items[${index}].category`}
+                label="Category"
+                setValue={setValue}
+                readField={"name"}
+                url={`/stock/category?nameContains`}
+                clear={clearChild}
+                isRequired={true}
+              />
+            </Col>
+            <Col md={6}>
+              <MultiSelectAutoComplete
+                register={register}
+                errors={errors}
+                name={`items[${index}].rack`}
+                label="Rack"
+                setValue={setValue}
+                readField={"code"}
+                url={`/stock/rack?codeContains`}
+                clear={clearChild}
+              />
             </Col>
           </Row>
           {!itemToEdit && (

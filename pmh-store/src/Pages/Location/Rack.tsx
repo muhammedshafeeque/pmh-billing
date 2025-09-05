@@ -189,7 +189,7 @@ const RackList: React.FC = () => {
                   <tr key={obj._id}>
                     <td>{obj.name}</td>
                     <td>{obj.code}</td>
-                    <td>{obj.section}</td>
+                    <td>{obj.sectionName}</td>
                     <td>{obj.description}</td>
                     <td>
                       <Button

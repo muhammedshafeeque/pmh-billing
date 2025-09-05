@@ -9,12 +9,31 @@ import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import ModalPopup from "../../Components/PopupModal/ModalPopup";
-import CreateAndUpdateVendor from "../../Components/Entity/CreateAndUpdateVendor";
-const Customers:React.FC=()=>{
-    const [showModal, setShowModal] = useState(false);
-  const [results, setResults] = useState<Vendor[]>([]);
+import CreateAndUpdateCustomer from "../../Components/Entity/CreateAndUpdateCustomer";
+
+interface Customer {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  openingBalance?: number;
+  accountHEad: string;
+  accountBallance: number;
+}
+
+const Customers: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [results, setResults] = useState<Customer[]>([]);
   const [count, setCount] = useState(0);
-  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
@@ -27,9 +46,9 @@ const Customers:React.FC=()=>{
   const [skip, setSkip] = useState(0);
   const [clearChild, setClearChild] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
 
-  const fetchVendors = async (newSkip: number) => {
+  const fetchCustomers = async (newSkip: number) => {
     try {
       setLoadingState(true);
       let formData = getValues();
@@ -51,45 +70,45 @@ const Customers:React.FC=()=>{
 
   const onSubmit = () => {
     setSkip(0);
-    fetchVendors(0);
+    fetchCustomers(0);
   };
 
   useEffect(() => {
-    fetchVendors(0);
+    fetchCustomers(0);
   }, [showModal]);
 
   const handlePageChange = (page: number) => {
     const newSkip = (page - 1) * 10;
     setSkip(newSkip);
-    fetchVendors(newSkip);
+    fetchCustomers(newSkip);
   };
 
   const handleClear = () => {
     reset();
     setClearChild(!clearChild);
-    fetchVendors(0);
+    fetchCustomers(0);
   };
 
-  const handleEdit = (vendor: Vendor) => {
-    setSelectedVendor(vendor);
+  const handleEdit = (customer: Customer) => {
+    setSelectedCustomer(customer);
     setShowModal(true);
   };
 
-  const handleDelete = (vendor: Vendor) => {
-    setVendorToDelete(vendor);
+  const handleDelete = (customer: Customer) => {
+    setCustomerToDelete(customer);
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
-    if (vendorToDelete) {
+    if (customerToDelete) {
       try {
         setLoadingState(true);
-        await axios.delete(`entity/customer/${vendorToDelete._id}`);
+        await axios.delete(`entity/customer/${customerToDelete._id}`);
         setShowDeleteModal(false);
-        setVendorToDelete(null);
-        fetchVendors(skip);
+        setCustomerToDelete(null);
+        fetchCustomers(skip);
       } catch (error) {
-        console.error("Error deleting vendor:", error);
+        console.error("Error deleting customer:", error);
       } finally {
         setLoadingState(false);
       }
@@ -98,7 +117,7 @@ const Customers:React.FC=()=>{
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedVendor(null);
+    setSelectedCustomer(null);
   };
 
   return (
@@ -116,8 +135,8 @@ const Customers:React.FC=()=>{
                   name="name"
                   label="Name"
                   setValue={setValue}
-                  readField={"name"}
-                  url={`/entity/customer?nameContains`}
+                  readField={"firstName"}
+                  url={`/entity/customer?firstNameContains`}
                   clear={clearChild}
                 />
               </Col>
@@ -128,8 +147,8 @@ const Customers:React.FC=()=>{
                   name="contactPhone"
                   label="Phone"
                   setValue={setValue}
-                  readField={"contactPhone"}
-                  url={`entity/customer?contactPhoneContains`}
+                  readField={"phone"}
+                  url={`entity/customer?phoneContains`}
                   clear={clearChild}
                 />
               </Col>
@@ -154,9 +173,9 @@ const Customers:React.FC=()=>{
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h5 className="card-title mb-0">Search Results</h5>
-            {/* <Button variant="success" onClick={() => setShowModal(true)}>
-              <FaPlus /> New Vendor
-            </Button> */}
+            <Button variant="success" onClick={() => setShowModal(true)}>
+              <FaPlus /> New Customer
+            </Button>
           </div>
 
           <div className="table-responsive">
@@ -168,18 +187,18 @@ const Customers:React.FC=()=>{
                   <th>Email</th>
                   <th>Account Head</th>
                   <th>Balance</th>
-                  {/* <th>Actions</th> */}
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {results.map((customer: any) => (
+                {results.map((customer: Customer) => (
                   <tr key={customer._id}>
-                    <td>{customer.firstName}</td>
+                    <td>{customer.firstName} {customer.lastName}</td>
                     <td>{customer.phone}</td>
                     <td>{customer.email}</td>
                     <td>{customer.accountHEad}</td>
                     <td>{customer.accountBallance}</td>
-                    {/* <td>
+                    <td>
                       <Button
                         variant="outline-primary"
                         size="sm"
@@ -191,11 +210,11 @@ const Customers:React.FC=()=>{
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleDelete(vendor)}
+                        onClick={() => handleDelete(customer)}
                       >
                         <FaTrash /> Delete
                       </Button>
-                    </td> */}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -214,15 +233,15 @@ const Customers:React.FC=()=>{
       </Card>
 
       <ModalPopup
-        head={selectedVendor ? "Edit Vendor" : "Create New Vendor"}
+        head={selectedCustomer ? "Edit Customer" : "Create New Customer"}
         size="lg"
         show={showModal}
         handleClose={handleCloseModal}
-        dialogClassName="vendor-modal"
+        dialogClassName="customer-modal"
       >
-        <CreateAndUpdateVendor
+        <CreateAndUpdateCustomer
           handleClose={handleCloseModal}
-          vendorToEdit={selectedVendor}
+          customerToEdit={selectedCustomer}
         />
       </ModalPopup>
 
@@ -230,14 +249,14 @@ const Customers:React.FC=()=>{
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}
-        title="Delete Vendor"
-        message={`Are you sure you want to delete the vendor "${vendorToDelete?.name}"?`}
+        title="Delete Customer"
+        message={`Are you sure you want to delete the customer "${customerToDelete?.firstName} ${customerToDelete?.lastName}"?`}
         confirmButtonText="Delete"
         cancelButtonText="Cancel"
         confirmButtonVariant="danger"
       />
     </Container>
   );
-}
+};
 
-export default Customers
+export default Customers;
