@@ -1,6 +1,5 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
 import './ModalPopup.scss';
 
 interface ModalPopupProps {

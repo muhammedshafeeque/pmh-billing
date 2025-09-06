@@ -19,6 +19,11 @@ interface Vendor {
   contactEmail: string;
   accountHEad: string;
   accountBallance: number;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
 }
 
 const VendorList: React.FC = () => {

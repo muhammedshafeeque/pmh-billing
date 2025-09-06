@@ -23,6 +23,7 @@ import {
   updateItem,
   updateRack,
   updateSection,
+  updateStock,
 } from "../Controller/StockController.js";
 import { Validate } from "../MiddleWare/Validation.js";
 import {
@@ -31,6 +32,8 @@ import {
   SectionValidation,
   StockValidation,
   itemValidations,
+  itemUpdateValidations,
+  StockUpdateValidation,
 } from "../Validations/Stock.Validations.js";
 
 const router = express.Router();
@@ -51,12 +54,12 @@ router.patch("/category/:id", Validate(CateGoryValidation), updateCategory);
 router.delete("/category/:id", deleteCategory);
 router.post("/item",Validate(itemValidations), createItem);
 router.get("/item", getItemList);
-router.patch("/item/:id", Validate(itemValidations), updateItem);
+router.patch("/item/:id", Validate(itemUpdateValidations), updateItem);
 router.delete("/item/:id", removeItem);
 router.get("/item/:id", getItemWithId);
 router.post("/stock", Validate(StockValidation), createStock);
 router.get("/stock",getStocks),
-router.patch("/stock",);
+router.patch("/stock/:id",Validate(StockUpdateValidation),updateStock);
 router.get('/invoice-item',getItemsForInvoice)
 
 export default router;

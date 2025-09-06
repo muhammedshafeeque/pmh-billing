@@ -22,9 +22,10 @@ interface ItemsProps {
   control: Control<InvoiceForm>;
   remove: (index: number) => void;
   onTotalChange: (total: number) => void;
+  disabled?: boolean;
 }
 
-const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTotalChange }) => {
+const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTotalChange, disabled = false }) => {
   const items = useWatch({
     control,
     name: "items",
@@ -53,18 +54,34 @@ const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTota
           <tr key={item.id}>
             <td>{item.name}</td>
             <td>{item.code}</td>
-            <td>{item.price.toFixed(2)}</td>
+            <td>
+              <Form.Control
+                type="number"
+                step="0.01"
+                min="0"
+                disabled={disabled}
+                {...register(`items.${index}.price` as const, { valueAsNumber: true })}
+              />
+            </td>
             <td>
               <Form.Control
                 type="number"
                 min="1"
+                disabled={disabled}
                 {...register(`items.${index}.quantity` as const, { valueAsNumber: true })}
               />
             </td>
             <td>{item.unitCode}</td>
             <td>{(items[index]?.price * items[index]?.quantity).toFixed(2)}</td>
             <td>
-              <Button variant="danger" size="sm" onClick={() => remove(index)}>Remove</Button>
+              <Button 
+                variant="danger" 
+                size="sm" 
+                disabled={disabled}
+                onClick={() => remove(index)}
+              >
+                Remove
+              </Button>
             </td>
           </tr>
         ))}

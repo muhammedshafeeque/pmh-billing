@@ -10,21 +10,11 @@ import queryString from "query-string";
 import CreateAndUpdateItem from "../../Components/Stock/CreateAndUpdateItem";
 import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
 import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
+import { Item } from "../../Models/StockModals";
+import { Rack } from "../../Models/StockModals";
 
-interface Item {
-  _id: string;
-  name: string;
-  code: string;
-  category: string;
-  racks: { _id: string; name: string }[];
-  unit: string;
-  totalStock: number;
-  rack?: string[];
-  remarks?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  __v?: number;
-}
+
+
 
 const ItemsList: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -224,13 +214,13 @@ const ItemsList: React.FC = () => {
                   <tr key={obj._id}>
                     <td>{obj.name}</td>
                     <td>{obj.code}</td>
-                    <td>{obj.category}</td>
+                    <td>{obj.categoryName}</td>
                     <td>
-                      {obj.racks.map((rack) => (
+                      {obj.racks.map((rack: Rack) => (
                         <span key={rack._id}>{rack.name}, </span>
                       ))}
                     </td>
-                    <td>{obj.unit}</td>
+                    <td>{obj.unit.unitName}</td>
                     <td>{obj.totalStock}</td>
                     <td>
                       <Button

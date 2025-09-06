@@ -6,6 +6,15 @@ import { useLoading } from "../../Contexts/LoaderContext";
 import AutoComplete from "../AutoComplete/AutoComplete";
 import { FaSave, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
 
+interface PopupChildeProp {
+  handleClose: () => void;
+}
+
+interface Vendor {
+  _id: string;
+  name: string;
+}
+
 interface Unit {
   _id: string;
   unitCode: string;
@@ -31,9 +40,11 @@ interface FormItem {
   name: string;
   code: string;
   unit: string;
+  total?: number;
 }
 
 interface FormData {
+  _id?: string;
   vendor: Vendor;
   items: FormItem[];
   billAmount: number;
@@ -43,7 +54,7 @@ interface FormData {
 }
 
 interface CreateAndUpdateStockProps extends PopupChildeProp {
-  stockToEdit?: FormData | null;
+  stockToEdit?: any | null; // Using any for now since the structure is complex
 }
 
 const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose, stockToEdit }) => {
@@ -59,6 +70,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
       unit: "",
     },
   ]);
+  const [clearChild] = useState(false);
   const {
     register,
     handleSubmit,
@@ -68,38 +80,69 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
     formState: { errors },
   } = useForm<FormData>();
   const { setLoadingState } = useLoading();
-  const [clearChild, setClearChild] = useState(false);
   const watchedItems = watch("items", items);
 
   useEffect(() => {
     if (stockToEdit) {
-      reset(stockToEdit);
-      setItems(stockToEdit.items);
+      // For editing a single stock entry, convert it to the form structure
+      const formData = {
+        vendor: stockToEdit.vendor,
+        items: [{
+          item: stockToEdit.item,
+          name: stockToEdit.item,
+          code: stockToEdit.item,
+          unit: stockToEdit.purchasedUnit || stockToEdit.item.unit,
+          purchaseRate: stockToEdit.purchasedRatePerUnit,
+          purchasedQuantity: stockToEdit.purchasedQuantity,
+          sellablePricePerUnit: stockToEdit.sellablePricePerUnit,
+          status: stockToEdit.status || "active",
+          total: stockToEdit.purchaseRate,
+        }],
+        billAmount: stockToEdit.purchaseRate,
+        payableAmount: stockToEdit.purchaseRate,
+        payedAmount: stockToEdit.purchaseRate,
+        account: null, // This needs to be fetched or provided
+      };
+      reset(formData);
+      setItems(formData.items);
     }
   }, [stockToEdit, reset]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       setLoadingState(true);
-      const body = {
-        items: data.items.map((item: any) => ({
-          item: item.name._id,
+      
+      if (stockToEdit) {
+        // For updating a single stock entry
+        const item = data.items[0];
+        const updateBody = {
+          item: typeof item.name === 'object' ? (item.name as any)._id : (stockToEdit as any).item._id,
           purchaseRate: Number(item.total),
           purchasedQuantity: Number(item.purchasedQuantity),
           sellablePricePerUnit: Number(item.sellablePricePerUnit),
           purchasedRatePerUnit: Number(item.purchaseRate),
-          purchasedUnit: item.unit._id
-        })),
-        vendor: data.vendor._id,
-        payableAmount: Number(data.payableAmount),
-        billAmount: Number(data.billAmount),
-        payedAmount: Number(data.payedAmount),
-        account: data.account._id
-      };
-
-      if (stockToEdit) {
-        await axios.patch(`stock/stock/${stockToEdit._id}`, body);
+          purchasedUnit: typeof item.unit === 'object' ? (item.unit as any)._id : (stockToEdit as any).purchasedUnit._id,
+          vendor: typeof data.vendor === 'object' ? (data.vendor as any)._id : (stockToEdit as any).vendor._id,
+          status: item.status,
+        };
+        await axios.patch(`stock/stock/${stockToEdit._id}`, updateBody);
       } else {
+        // For creating new stock entries (bulk)
+        const body = {
+          items: data.items.map((item: any) => ({
+            item: item.name._id,
+            purchaseRate: Number(item.total),
+            purchasedQuantity: Number(item.purchasedQuantity),
+            sellablePricePerUnit: Number(item.sellablePricePerUnit),
+            purchasedRatePerUnit: Number(item.purchaseRate),
+            purchasedUnit: item.unit._id
+          })),
+          vendor: data.vendor._id,
+          payableAmount: Number(data.payableAmount),
+          billAmount: Number(data.billAmount),
+          payedAmount: Number(data.payedAmount),
+          account: data.account._id
+        };
         await axios.post("stock/stock", body);
       }
       handleClose();
@@ -135,7 +178,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
     watchedItems.forEach((item: any, index: number) => {
       if (item.purchasedQuantity && item.purchaseRate) {
         const total = Number(item.purchasedQuantity) * Number(item.purchaseRate);
-        setValue(`items[${index}].total`, total);
+        setValue(`items.${index}.total` as any, total);
         totalBillAmount += total;
       }
     });
@@ -155,12 +198,13 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
             readField={"name"}
             url={`/entity/vendor?nameContains`}
             clear={clearChild}
+            value={stockToEdit ? stockToEdit.vendor : null}
           />
         </Col>
       </Row>
 
       <h5 className="mt-4">Items</h5>
-      {items.map((item: any, index: number) => (
+      {items.map((_: any, index: number) => (
         <div key={index}>
           <Row>
             <Col md={3}>
@@ -181,20 +225,20 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 errors={errors}
                 name={`items[${index}].name`}
                 label="Item Name"
-                setValue={(name, value) => {
-                  setValue(name, value);
+                setValue={(name: string, value: any) => {
+                  setValue(name as any, value);
                 }}
                 readField={"name"}
                 url={`stock/item?category=${
-                  watch(`items[${index}].category`)
-                    ? watch(`items[${index}].category`)._id
+                  watch(`items.${index}.category` as any)
+                    ? (watch(`items.${index}.category` as any) as any)?._id
                     : ""
                 }&nameContains`}
                 clear={clearChild}
                 onSelect={(e) => {
-                  setValue(`items[${index}].code`, e);
+                  setValue(`items.${index}.code` as any, e);
                 }}
-                value={watch(`items[${index}].name`)}
+                value={watch(`items.${index}.name` as any)}
               />
             </Col>
             <Col md={3}>
@@ -203,20 +247,20 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 errors={errors}
                 name={`items[${index}].code`}
                 label="Item Code"
-                setValue={(name, value) => {
-                  setValue(name, value);
+                setValue={(name: string, value: any) => {
+                  setValue(name as any, value);
                 }}
                 onSelect={(e) => {
-                  setValue(`items[${index}].name`, e);
+                  setValue(`items.${index}.name` as any, e);
                 }}
                 readField={"code"}
                 url={`stock/item?category=${
-                  watch(`items[${index}].category`)
-                    ? watch(`items[${index}].category`)._id
+                  watch(`items.${index}.category` as any)
+                    ? (watch(`items.${index}.category` as any) as any)?._id
                     : ""
                 }&codeContains`}
                 clear={clearChild}
-                value={watch(`items[${index}].code`)}
+                value={watch(`items.${index}.code` as any)}
               />
             </Col>
             <Col md={3}>
@@ -225,15 +269,15 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 errors={errors}
                 name={`items[${index}].unit`}
                 label="Item Unit"
-                setValue={(name, value) => {
-                  setValue(name, value);
+                setValue={(name: string, value: any) => {
+                  setValue(name as any, value);
                 }}
                 readField={"unitName"}
                 url={`core/units?measurement=${
-                  watch(`items[${index}].name`)?.measurement
+                  (watch(`items.${index}.name` as any) as any)?.measurement
                 }&unitNameContains`}
                 clear={clearChild}
-                disabled={!watch(`items[${index}].name`)}
+                disabled={!watch(`items.${index}.name` as any)}
               />
             </Col>
           </Row>
@@ -244,7 +288,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Control
                   type="number"
                   placeholder="Enter Quantity"
-                  {...register(`items[${index}].purchasedQuantity`, {
+                  {...register(`items.${index}.purchasedQuantity` as any, {
                     required: "Quantity is required",
                   })}
                   isInvalid={!!errors.items?.[index]?.purchasedQuantity}
@@ -263,7 +307,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Control
                   type="number"
                   placeholder="Enter Rate Per Unit"
-                  {...register(`items[${index}].purchaseRate`, {
+                  {...register(`items.${index}.purchaseRate` as any, {
                     required: "Rate Per Unit is required",
                   })}
                   isInvalid={!!errors.items?.[index]?.purchaseRate}
@@ -282,7 +326,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Control
                   type="number"
                   placeholder="Sellable Price Per Unit"
-                  {...register(`items[${index}].sellablePricePerUnit`)}
+                  {...register(`items.${index}.sellablePricePerUnit` as any)}
                   isInvalid={!!errors.items?.[index]?.sellablePricePerUnit}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -296,7 +340,7 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Control
                   type="number"
                   placeholder="Total"
-                  {...register(`items[${index}].total`)}
+                  {...register(`items.${index}.total` as any)}
                   isInvalid={!!errors.items?.[index]?.total}
                   disabled
                 />
@@ -335,69 +379,71 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
         </div>
       ))}
 
-      <Row className="mt-4">
-        <Col md={3}>
-          <Form.Group controlId="formBillAmount">
-            <Form.Label>Bill Amount</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Bill Amount"
-              {...register("billAmount", {
-                required: "Bill Amount is required",
-              })}
-              isInvalid={!!errors.billAmount}
-              disabled
+      {!stockToEdit && (
+        <Row className="mt-4">
+          <Col md={3}>
+            <Form.Group controlId="formBillAmount">
+              <Form.Label>Bill Amount</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Bill Amount"
+                {...register("billAmount", {
+                  required: "Bill Amount is required",
+                })}
+                isInvalid={!!errors.billAmount}
+                disabled
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.billAmount?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group controlId="formPayableAmount">
+              <Form.Label>Payable Amount</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Payable Amount"
+                {...register("payableAmount", {
+                  required: "Payable Amount is required",
+                })}
+                isInvalid={!!errors.payableAmount}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.payableAmount?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group controlId="formPayedAmount">
+              <Form.Label>Payed Amount</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Payed Amount"
+                {...register("payedAmount", {
+                  required: "Payed Amount is required",
+                })}
+                isInvalid={!!errors.payedAmount}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.payedAmount?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <AutoComplete
+              register={register}
+              errors={errors}
+              name="account"
+              label="Account"
+              setValue={setValue}
+              readField={"name"}
+              url={`accounts/account?nameContains`}
+              clear={clearChild}
             />
-            <Form.Control.Feedback type="invalid">
-              {errors.billAmount?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-        <Col md={3}>
-          <Form.Group controlId="formPayableAmount">
-            <Form.Label>Payable Amount</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Payable Amount"
-              {...register("payableAmount", {
-                required: "Payable Amount is required",
-              })}
-              isInvalid={!!errors.payableAmount}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.payableAmount?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-        <Col md={3}>
-          <Form.Group controlId="formPayedAmount">
-            <Form.Label>Payed Amount</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Payed Amount"
-              {...register("payedAmount", {
-                required: "Payed Amount is required",
-              })}
-              isInvalid={!!errors.payedAmount}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.payedAmount?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-        <Col md={3}>
-          <AutoComplete
-            register={register}
-            errors={errors}
-            name="account"
-            label="Account"
-            setValue={setValue}
-            readField={"name"}
-            url={`accounts/account?nameContains`}
-            clear={clearChild}
-          />
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+      )}
 
       <div className="modal-footer">
         <Button variant="secondary" onClick={handleClose} className="me-2">

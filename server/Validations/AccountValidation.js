@@ -18,3 +18,10 @@ export const invoiceValidation={
     discount:Joi.number().required()
   })
 }
+export const paymentValidation={
+  body:Joi.object().keys({
+    customer:Joi.string().required(),
+    amount:Joi.number().required(),
+    account:Joi.string().required()
+  })
+}

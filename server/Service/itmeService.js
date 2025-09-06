@@ -49,11 +49,11 @@ export const getItem = (query) => {
       let count = await ITEM.find(keywords).count();
       results = results.map((result) => ({
         ...result.toObject(),
-
-        category: result.category.name,
+        categoryName: result.category.name,
         unit: result.unit.unitName,
         unitCode: result.unit.unitCode,
-        measurement:result.unit.measurement
+        measurement:result.unit.measurement,
+        unit:result.unit
       }));
       resolve({ results, count });
     } catch (error) {
@@ -62,15 +62,23 @@ export const getItem = (query) => {
   });
 };
 export const patchItem = (id, data) => {
-  return new Promise(async (Resolve, reject) => {
-    let items = await item.fintByIdAndUpdate(id, data);
-    resolve(items);
+  return new Promise(async (resolve, reject) => {
+    try {
+      let items = await ITEM.findByIdAndUpdate(id, data, { new: true });
+      resolve(items);
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 export const deleteItem = (id) => {
   return new Promise(async (resolve, reject) => {
-    let items = await item.deleteOne({ _id: id });
-    resolve(items);
+    try {
+      let items = await ITEM.deleteOne({ _id: id });
+      resolve(items);
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 export const getItemById = (id) => {
@@ -82,7 +90,7 @@ export const getItemById = (id) => {
 };
 export const pushStockToItem = async (stock, Item) => {
   try {
-    await item.findByIdAndUpdate(stock.item, {
+    await ITEM.findByIdAndUpdate(stock.item, {
       $push: {
         stocks: stock._id,
       },
@@ -97,7 +105,7 @@ export const pushStockToItem = async (stock, Item) => {
 };
 export const pushRackToActiveRacks = async (id, rack) => {
   try {
-    await item.findByIdAndUpdate(id, {
+    await ITEM.findByIdAndUpdate(id, {
       $push: {
         activeracks: rack,
       },
@@ -108,7 +116,7 @@ export const pushRackToActiveRacks = async (id, rack) => {
 };
 export const pullRackFromActiveRacks = async (id, rack) => {
   try {
-    await item.findByIdAndUpdate(id, {
+    await ITEM.findByIdAndUpdate(id, {
       $pull: {
         activeracks: rack,
       },
@@ -119,7 +127,7 @@ export const pullRackFromActiveRacks = async (id, rack) => {
 };
 export const getItemByIdFullPopulate = async (id) => {
   try {
-    let Item = await item.findById(id).populate({
+    let Item = await ITEM.findById(id).populate({
       path: "activeracks",
       populate: {
         path: "section",

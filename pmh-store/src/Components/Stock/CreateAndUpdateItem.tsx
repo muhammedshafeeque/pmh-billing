@@ -7,13 +7,50 @@ import AutoComplete from "../AutoComplete/AutoComplete";
 import MultiSelectAutoComplete from "../MultiSelect/MultiSelect";
 import { FaSave, FaTimes, FaPlus, FaTrash } from "react-icons/fa";
 
+interface PopupChildeProp {
+  handleClose: () => void;
+}
+
+interface Unit {
+  _id: string;
+  unitCode: string;
+  unitName: string;
+  description: string;
+  measurement: string;
+  iso: string;
+  conversionToParent: number;
+  parentUnit: string;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  code: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+interface Rack {
+  _id: string;
+  name: string;
+  code: string;
+  section: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 interface Item {
   _id?: string;
   name: string;
   code: string;
-  unit: string;
-  category: string;
-  rack?: string[];
+  unit: Unit | string;
+  category: Category | string;
+  rack?: Rack[] | string[];
+  racks?: Rack[] | string[]; // API returns racks array
   remarks?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -28,7 +65,7 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
   const [items, setItems] = useState<Item[]>([
     { name: "", code: "", unit: "", category: "", rack: [] },
   ]);
-  const [clearChild, setClearChild] = useState(false);
+  const [clearChild] = useState(false);
   const {
     register,
     handleSubmit,
@@ -40,8 +77,15 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
 
   useEffect(() => {
     if (itemToEdit) {
-      reset({ items: [itemToEdit] });
-      setItems([itemToEdit]);
+      // Map the itemToEdit to match the form structure
+      const formattedItem = {
+        ...itemToEdit,
+        unit: typeof itemToEdit.unit === 'object' ? itemToEdit.unit : itemToEdit.unit,
+        category: typeof itemToEdit.category === 'object' ? itemToEdit.category : itemToEdit.category,
+        rack: Array.isArray(itemToEdit.racks) ? itemToEdit.racks : (Array.isArray(itemToEdit.rack) ? itemToEdit.rack : [])
+      };
+      reset({ items: [formattedItem] });
+      setItems([formattedItem]);
     }
   }, [itemToEdit, reset]);
 
@@ -51,10 +95,10 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
       let body: any[] = data.items.map(item => ({
         name: item.name,
         code: item.code,
-        unit: item.unit._id,
-        racks: item.rack.map((ra: any) => ra._id),
-        category: item.category._id,
-        remark: item.remarks,
+        unit: typeof item.unit === 'object' ? (item.unit as any)._id : item.unit,
+        racks: Array.isArray(item.rack) ? item.rack.map((ra: any) => typeof ra === 'object' ? ra._id : ra) : [],
+        category: typeof item.category === 'object' ? (item.category as any)._id : item.category,
+        remark: item.remarks || undefined,
       }));
 
       if (itemToEdit) {
@@ -85,7 +129,7 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      {items.map((item, index) => (
+      {items.map((_, index) => (
         <div key={index}>
           <Row>
             <Col md={3}>
@@ -94,7 +138,7 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                 <Form.Control
                   type="text"
                   placeholder="Enter Item name"
-                  {...register(`items[${index}].name`, {
+                  {...register(`items.${index}.name` as const, {
                     required: "Name is required",
                   })}
                   isInvalid={!!errors.items?.[index]?.name}
@@ -110,7 +154,7 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                 <Form.Control
                   type="text"
                   placeholder="Enter Item code"
-                  {...register(`items[${index}].code`, {
+                  {...register(`items.${index}.code` as const, {
                     required: "Code is required",
                   })}
                   isInvalid={!!errors.items?.[index]?.code}
@@ -126,10 +170,11 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                 errors={errors}
                 name={`items[${index}].unit`}
                 label="Unit"
-                setValue={setValue}
+                setValue={(name: string, value: any) => setValue(name as any, value)}
                 readField={"unitName"}
                 url={`/core/units?unitNameContains`}
                 clear={clearChild}
+                value={typeof items[index]?.unit === 'object' ? items[index].unit : null}
               />
             </Col>
             <Col md={3}>
@@ -138,7 +183,7 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                 <Form.Control
                   type="text"
                   placeholder="Enter Remarks"
-                  {...register(`items[${index}].remarks`)}
+                  {...register(`items.${index}.remarks` as const)}
                   isInvalid={!!errors.items?.[index]?.remarks}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -154,11 +199,12 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                 errors={errors}
                 name={`items[${index}].category`}
                 label="Category"
-                setValue={setValue}
+                setValue={(name: string, value: any) => setValue(name as any, value)}
                 readField={"name"}
                 url={`/stock/category?nameContains`}
                 clear={clearChild}
                 isRequired={true}
+                value={typeof items[index]?.category === 'object' ? items[index].category : null}
               />
             </Col>
             <Col md={6}>
@@ -167,10 +213,11 @@ const CreateAndUpdateItem: React.FC<CreateAndUpdateItemProps> = ({ handleClose, 
                 errors={errors}
                 name={`items[${index}].rack`}
                 label="Rack"
-                setValue={setValue}
-                readField={"code"}
-                url={`/stock/rack?codeContains`}
+                setValue={(name: string, value: any) => setValue(name as any, value)}
+                readField={"name"}
+                url={`/stock/rack?nameContains`}
                 clear={clearChild}
+                value={Array.isArray(items[index]?.rack) ? items[index].rack as Rack[] : (Array.isArray(items[index]?.racks) ? items[index].racks as Rack[] : [])}
               />
             </Col>
           </Row>

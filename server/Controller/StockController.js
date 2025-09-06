@@ -247,6 +247,10 @@ export const getStocks = async (req, res, next) => {
             path: "category",
             model: collections.CATEGORY_COLLECTIONS,
           },
+          {
+            path: "unit",
+            model: collections.UNIT_COLLECTION,
+          },
         ],
       }).populate("purchasedUnit")
       .populate("vendor")
@@ -256,12 +260,15 @@ export const getStocks = async (req, res, next) => {
     let count = await Stock.find(keywords).count();
     results = results.map((result) => ({
       ...result.toObject(),
-      name: result.item.name,
-      item: result.item._id,
-      vendor: result.vendor.name,
-      unit: result.purchasedUnit.unitName,
-      code: result.item.code,
-      category: result.item.category,
+      // Keep the populated objects intact for the frontend
+      item: result.item,
+      vendor: result.vendor,
+      purchasedUnit: result.purchasedUnit,
+      // Add flat fields for backward compatibility if needed
+      name: result.item?.name,
+      unit: result.purchasedUnit?.unitName,
+      code: result.item?.code,
+      category: result.item?.category,
     }));
     res.send({ results, count });
   } catch (error) {
@@ -435,7 +442,6 @@ export const getItemsForInvoice = async (req, res, next) => {
         }).populate('purchasedUnit');
         return { item, stocks }; 
       } catch (error) {
-        console.error(`Error fetching stocks for item ${item._id}:`, error);
         return { item, stocks: [] };
       }
     }));
@@ -476,3 +482,4 @@ export const getItemsForInvoice = async (req, res, next) => {
     next(error);
   }
 };
+

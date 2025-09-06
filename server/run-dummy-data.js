@@ -20,3 +20,4 @@ createDummyData()
     console.error("\n❌ Failed to create dummy data:", error.message);
     process.exit(1);
   });
+

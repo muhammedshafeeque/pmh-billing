@@ -6,9 +6,10 @@ import axios from '../../../Api/Api';
 
 interface InvoiceItemAutoCompleteProps {
   onItemSelect: (item: any) => void;
+  disabled?: boolean;
 }
 
-const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onItemSelect }) => {
+const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onItemSelect, disabled = false }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const { register, setValue } = useForm();
 
@@ -33,9 +34,10 @@ const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onIte
       <Form.Control
         {...register('itemSearch')}
         type="text"
-        placeholder="Scan barcode or enter item name"
+        placeholder={disabled ? "Invoice generated - fields disabled" : "Scan barcode or enter item name"}
         onChange={handleSearch}
         autoComplete="off"
+        disabled={disabled}
       />
       {searchResults.length > 0 && (
         <ListGroup 

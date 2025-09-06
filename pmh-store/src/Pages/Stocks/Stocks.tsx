@@ -8,18 +8,33 @@ import AutoComplete from "../../Components/AutoComplete/AutoComplete";
 import PaginationComponent from "../../Components/Pagination/Pagination";
 import queryString from "query-string";
 import CreateAndUpdateStock from "../../Components/Stock/CreateAndUpdateStock";
-import { FaPlus, FaSearch, FaTimes } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSearch, FaTimes, FaTrash } from "react-icons/fa";
+import ConfirmationModal from "../../Components/ConfirmationModal/ConfirmationModal";
 
 interface Stock {
   _id: string;
-  name: string;
-  code: string;
-  category: { name: string };
-  unit: string;
+  item: {
+    _id: string;
+    name: string;
+    code: string;
+    category?: { name: string };
+    unit?: { unitName: string };
+  };
   purchasedRatePerUnit: number;
   purchasedQuantity: number;
   sellablePricePerUnit: number;
   purchaseRate: number;
+  purchasedUnit?: {
+    _id: string;
+    unitName: string;
+  };
+  vendor?: {
+    _id: string;
+    name: string;
+  };
+  status?: string;
+  expiry?: Date;
+  purchaseDate?: Date;
 }
 
 const StocksList: React.FC = () => {
@@ -27,6 +42,9 @@ const StocksList: React.FC = () => {
   const [results, setResults] = useState<Stock[]>([]);
   const [count, setCount] = useState(0);
   const [clearChild, setClearChild] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [stockToDelete, setStockToDelete] = useState<Stock | null>(null);
   const { setLoadingState } = useLoading();
   const {
     register,
@@ -51,10 +69,18 @@ const StocksList: React.FC = () => {
       };
       let query = await queryString.stringify(params);
       let { data } = await axios.get(`/stock/stock?${query}`);
-      setResults(data.results);
-      setCount(data.count);
+      
+      // Ensure we have valid data structure
+      const results = Array.isArray(data.results) ? data.results : [];
+      const count = typeof data.count === 'number' ? data.count : 0;
+      
+      setResults(results);
+      setCount(count);
     } catch (error) {
       console.error("Error fetching stocks:", error);
+      // Set empty results on error to prevent crashes
+      setResults([]);
+      setCount(0);
     } finally {
       setLoadingState(false);
     }
@@ -79,6 +105,37 @@ const StocksList: React.FC = () => {
     reset();
     setClearChild(!clearChild);
     fetchStocks(0);
+  };
+
+  const handleEdit = (stock: Stock) => {
+    setSelectedStock(stock);
+    setShowCreateModal(true);
+  };
+
+  const handleDelete = (stock: Stock) => {
+    setStockToDelete(stock);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (stockToDelete) {
+      try {
+        setLoadingState(true);
+        await axios.delete(`stock/stock/${stockToDelete._id}`);
+        setShowDeleteModal(false);
+        setStockToDelete(null);
+        fetchStocks(skip);
+      } catch (error) {
+        console.error("Error deleting stock:", error);
+      } finally {
+        setLoadingState(false);
+      }
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setSelectedStock(null);
   };
 
   return (
@@ -180,21 +237,55 @@ const StocksList: React.FC = () => {
                   <th>Quantity</th>
                   <th>Sellable Price/Unit</th>
                   <th>Total</th>
+                  <th>Vendor</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {results.map((obj: Stock) => (
-                  <tr key={obj._id}>
-                    <td>{obj.name}</td>
-                    <td>{obj.code}</td>
-                    <td>{obj.category.name}</td>
-                    <td>{obj.unit}</td>
-                    <td>{obj.purchasedRatePerUnit}</td>
-                    <td>{obj.purchasedQuantity}</td>
-                    <td>{obj.sellablePricePerUnit}</td>
-                    <td>{obj.purchaseRate}</td>
+                {results.length > 0 ? (
+                  results.map((obj: Stock) => (
+                    <tr key={obj._id}>
+                      <td>{obj.item?.name || 'N/A'}</td>
+                      <td>{obj.item?.code || 'N/A'}</td>
+                      <td>{obj.item?.category?.name || 'N/A'}</td>
+                      <td>{obj.purchasedUnit?.unitName || obj.item?.unit?.unitName || 'N/A'}</td>
+                      <td>{obj.purchasedRatePerUnit || 0}</td>
+                      <td>{obj.purchasedQuantity || 0}</td>
+                      <td>{obj.sellablePricePerUnit || 0}</td>
+                      <td>{obj.purchaseRate || 0}</td>
+                      <td>{obj.vendor?.name || 'N/A'}</td>
+                      <td>
+                        <span className={`badge ${obj.status === 'active' ? 'bg-success' : 'bg-secondary'}`}>
+                          {obj.status || 'Unknown'}
+                        </span>
+                      </td>
+                      <td>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleEdit(obj)}
+                          className="me-2"
+                        >
+                          <FaEdit /> Edit
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleDelete(obj)}
+                        >
+                          <FaTrash /> Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={11} className="text-center">
+                      No stocks found
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -214,13 +305,27 @@ const StocksList: React.FC = () => {
       </Card>
 
       <ModalPopup
-        head="Add New Stock"
+        head={selectedStock ? "Edit Stock" : "Add New Stock"}
         size="lg"
         show={showCreateModal}
-        handleClose={() => setShowCreateModal(false)}
+        handleClose={handleCloseModal}
       >
-        <CreateAndUpdateStock handleClose={() => setShowCreateModal(false)} />
+        <CreateAndUpdateStock 
+          handleClose={handleCloseModal}
+          stockToEdit={selectedStock}
+        />
       </ModalPopup>
+
+      <ConfirmationModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Stock"
+        message={`Are you sure you want to delete this stock entry for "${stockToDelete?.item?.name || 'Unknown Item'}"?`}
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+        confirmButtonVariant="danger"
+      />
     </Container>
   );
 };

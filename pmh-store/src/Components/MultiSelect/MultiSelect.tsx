@@ -15,6 +15,7 @@ interface AutoCompleteProps {
   url: string;
   readField: string;
   clear: boolean;
+  value?: Option[];
 }
 
 interface Option {
@@ -32,6 +33,7 @@ const MultiSelectAutoComplete: React.FC<AutoCompleteProps> = ({
   url,
   readField,
   clear,
+  value,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [options, setOptions] = useState<Option[]>([]);
@@ -91,11 +93,19 @@ const MultiSelectAutoComplete: React.FC<AutoCompleteProps> = ({
   };
 
   useEffect(() => {
-    if (clear) {
+    if (value && Array.isArray(value) && value.length > 0) {
+      setSelectedOptions(value);
+      setValue(name, value);
+    }
+  }, [value, name, setValue]);
+
+  useEffect(() => {
+    if (clear && (!value || value.length === 0)) {
       setInputValue("");
       setSelectedOptions([]);
+      setValue(name, []);
     }
-  }, [clear]);
+  }, [clear, value, name, setValue]);
 
   useEffect(() => {
     if (formSubmitted) {

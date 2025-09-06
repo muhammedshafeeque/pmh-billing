@@ -23,18 +23,6 @@ interface CreateAndUpdateVendorProps extends PopupChildeProp {
   vendorToEdit?: Vendor | null;
 }
 
-// Define allowed fields based on vendorValidation schema
-const allowedFields = [
-  "name",
-  "contactEmail",
-  "contactPhone",
-  "street",
-  "city",
-  "state",
-  "zipCode",
-  "country",
-  "accountBallance",
-];
 
 const filterVendorData = (data: Vendor): Partial<Vendor> => {
   const filtered: Partial<Vendor> = {};

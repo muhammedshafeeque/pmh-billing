@@ -15,6 +15,7 @@ interface InvoiceItem {
   price: number;
   quantity: number;
   unit: string;
+  unitCode: string;
 }
 
 interface InvoiceForm {
@@ -30,8 +31,10 @@ const CreateInvoice: React.FC = () => {
     payableAmount: 0,
   });
   const [total, setTotal] = useState(0);
-  const [invoiceDetails,setInvoiceDetails]=useState()
-  const { control, register, watch, setValue,getValues } = useForm<InvoiceForm>({
+  const [invoiceDetails, setInvoiceDetails] = useState();
+  const [isInvoiceGenerated, setIsInvoiceGenerated] = useState(false);
+  const [invoiceKey, setInvoiceKey] = useState(0); // Key to force re-mount InvoiceDetails
+  const { control, register, watch, getValues, reset } = useForm<InvoiceForm>({
     defaultValues: {
       items: [],
     },
@@ -45,7 +48,6 @@ const CreateInvoice: React.FC = () => {
   const watchItems = watch("items");
 
   useEffect(() => {
-    // Auto-focus on the quick add item input when the component mounts
     const quickAddInput = document.getElementById("itemSearch");
     if (quickAddInput) {
       quickAddInput.focus();
@@ -62,12 +64,58 @@ const CreateInvoice: React.FC = () => {
   };
 
   const handleTotalChange = (newTotal: number) => {
-
     setTotal(newTotal);
+  };
+
+  const handleInvoiceGenerated = (invoiceData: any) => {
+    setIsInvoiceGenerated(true);
+    // Store invoice data if needed for future use
+    console.log('Invoice generated:', invoiceData);
+  };
+
+  const handleNewInvoice = () => {
+    console.log("🔄 Starting New Invoice - Clearing ALL data...");
+    
+    // Reset form and all items
+    reset({ items: [] });
+    
+    // Clear customer data completely
+    setCustomer({});
+    
+    // Reset all totals to zero
+    setTotals({
+      billAmount: 0,
+      discount: 0,
+      outstanding: 0,
+      payableAmount: 0,
+    });
+    
+    // Reset total amount
+    setTotal(0);
+    
+    // Clear invoice details
+    setInvoiceDetails(undefined);
+    
+    // Reset invoice generation state
+    setIsInvoiceGenerated(false);
+    
+    // Force re-mount InvoiceDetails to get new invoice number
+    setInvoiceKey(prev => prev + 1);
+    
+    console.log("✅ All invoice data cleared successfully");
+    
+    // Focus on item search after clearing
+    setTimeout(() => {
+      const quickAddInput = document.getElementById("itemSearch") as HTMLInputElement;
+      if (quickAddInput) {
+        quickAddInput.focus();
+        quickAddInput.value = ""; // Clear any existing value
+      }
+    }, 200);
   };
   useEffect(()=>{
     const newTotals = watchItems.reduce(
-      (acc, item) => {
+      (acc) => {
         acc.billAmount = total;
         acc.payableAmount = total;
         return acc;
@@ -87,7 +135,11 @@ const CreateInvoice: React.FC = () => {
         <Col md={8}>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <InvoiceItemAutoComplete onItemSelect={handleQuickAdd} />
+              <InvoiceItemAutoComplete 
+                key={`items-${invoiceKey}`}
+                onItemSelect={handleQuickAdd} 
+                disabled={isInvoiceGenerated}
+              />
             </Card.Body>
           </Card>
           <Card className="shadow-sm">
@@ -98,6 +150,7 @@ const CreateInvoice: React.FC = () => {
                 control={control}
                 remove={remove}
                 onTotalChange={handleTotalChange}
+                disabled={isInvoiceGenerated}
               />
             </Card.Body>
           </Card>
@@ -105,12 +158,20 @@ const CreateInvoice: React.FC = () => {
         <Col md={4}>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <CustomerDetails setCustomer={setCustomer} />
+              <CustomerDetails 
+                key={`customer-${invoiceKey}`}
+                setCustomer={setCustomer} 
+                disabled={isInvoiceGenerated}
+              />
             </Card.Body>
           </Card>
           <Card className="shadow-sm mb-2">
             <Card.Body className="p-2">
-              <InvoiceDetails customer={customer} setInvoiceDetails={setInvoiceDetails} />
+              <InvoiceDetails 
+                key={invoiceKey} 
+                customer={customer} 
+                setInvoiceDetails={setInvoiceDetails} 
+              />
             </Card.Body>
           </Card>
           <Card className="shadow-sm mb-2">
@@ -120,7 +181,15 @@ const CreateInvoice: React.FC = () => {
           </Card>
           <Card className="shadow-sm">
             <Card.Body className="p-2">
-              <Action totals={totals} invoiceItems={getValues()} customer={customer} invoiceDetails={invoiceDetails} />
+              <Action 
+                totals={totals} 
+                invoiceItems={getValues()} 
+                customer={customer} 
+                invoiceDetails={invoiceDetails} 
+                onNewInvoice={handleNewInvoice}
+                onInvoiceGenerated={handleInvoiceGenerated}
+                isInvoiceGenerated={isInvoiceGenerated}
+              />
             </Card.Body>
           </Card>
         </Col>

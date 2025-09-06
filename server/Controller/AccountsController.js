@@ -185,3 +185,27 @@ export const generateInvoice = async (req, res, next) => {
     next(error);
   }
 };
+
+export const processPayment = async (req, res, next) => {
+  let data = req.body;
+  try {
+    let customer = await CUSTOMER.findById(data.customer);
+    if(!customer){
+      throw {status:400,message:"Customer not found"}
+    }
+    let account = await ACCOUNT.findById(data.account);
+    if(!account){
+      throw {status:400,message:"Account not found"}
+    }
+    let transaction = await createTransaction({
+      fromAccount: customer.accountHEad._id,
+      toAccount: account.accountHead._id,
+      amount: data.amount,
+      description: "Collection",
+    });
+
+    res.send({ message: "Payment processed Successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
