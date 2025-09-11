@@ -30,46 +30,40 @@ const App: React.FC = () => {
         {user ? (
           <>
             <Header />
-            <div className="col-md-12 pt-5 mt-5">
-              <div className="admin_area">
-                <div className="col-md-12" style={{ display: "flex" }}>
-                  <div className="col-md-2">
-                    <SideBar items={SideBarItems} />
-                  </div>
-                  <div className="col-md-10">
-                    <Routes>
-                      <Route path={ROUTERS.HOME_ROUTER} element={<Home />} />
-                      <Route path={ROUTERS.SECTION} element={<SectionList />} />
-                      <Route path={ROUTERS.RACK} element={<RackList />} />
-                      <Route path={ROUTERS.GROUPE} element={<GroupeList />} />
-                      <Route path={ROUTERS.ITEM} element={<ItemsList />} />
-                      <Route path={ROUTERS.VENDOR} element={<VendorList />} />
-                      <Route path={ROUTERS.CUSTOMERS} element={<Customers />} />
+            <div className="admin-layout">
+              <SideBar items={SideBarItems} />
+              <div className="main-content">
+                <Routes>
+                  <Route path={ROUTERS.HOME_ROUTER} element={<Home />} />
+                  <Route path={ROUTERS.SECTION} element={<SectionList />} />
+                  <Route path={ROUTERS.RACK} element={<RackList />} />
+                  <Route path={ROUTERS.GROUPE} element={<GroupeList />} />
+                  <Route path={ROUTERS.ITEM} element={<ItemsList />} />
+                  <Route path={ROUTERS.VENDOR} element={<VendorList />} />
+                  <Route path={ROUTERS.CUSTOMERS} element={<Customers />} />
 
-                      <Route
-                        path={ROUTERS.ACCOUNT_HEAD}
-                        element={<AccountHeadList />}
-                      />
-                      <Route
-                        path={ROUTERS.ACCOUNTS}
-                        element={<AccountsList />}
-                      />
-                      <Route path={ROUTERS.STOCK} element={<StocksList />} />
-                      <Route
-                        path={ROUTERS.TRANSACTIONS}
-                        element={<TransactionList />}
-                      />
-                      <Route
-                        path={ROUTERS.PAYMENTS}
-                        element={<PaymentList />}
-                      />
-                      <Route
-                        path={ROUTERS.INVOICE}
-                        element={<CreateInvoice/>}
-                      />
-                    </Routes>
-                  </div>
-                </div>
+                  <Route
+                    path={ROUTERS.ACCOUNT_HEAD}
+                    element={<AccountHeadList />}
+                  />
+                  <Route
+                    path={ROUTERS.ACCOUNTS}
+                    element={<AccountsList />}
+                  />
+                  <Route path={ROUTERS.STOCK} element={<StocksList />} />
+                  <Route
+                    path={ROUTERS.TRANSACTIONS}
+                    element={<TransactionList />}
+                  />
+                  <Route
+                    path={ROUTERS.PAYMENTS}
+                    element={<PaymentList />}
+                  />
+                  <Route
+                    path={ROUTERS.INVOICE}
+                    element={<CreateInvoice/>}
+                  />
+                </Routes>
               </div>
             </div>
           </>

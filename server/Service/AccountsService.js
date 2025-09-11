@@ -38,22 +38,7 @@ export const createTransaction = async (data) => {
     return Promise.reject(error);
   }
 };
-export const transferDiscount=async(data)=>{
-  try {
-    data.type='Discount'
-    let transaction = await TRANSACTION.create(data);
-    await Promise.all([
-      ACCOUNT_HEAD.findByIdAndUpdate(data.toAccount, {
-        $inc: { credit: data.amount },
-      }),
-    ]);
-    const toAccount = await ACCOUNT_HEAD.findById(data.toAccount);
-    await toAccount.save();
-    return Promise.resolve(transaction);
-  } catch (error) {
-    return Promise.reject(error);
-  }
-}
+
 
 export const addBill = async (data) => {
   try {

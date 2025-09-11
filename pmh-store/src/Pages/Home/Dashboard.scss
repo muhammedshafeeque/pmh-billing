@@ -1,0 +1,283 @@
+.dashboard-container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  
+  .metric-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    }
+    
+    .metric-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      
+      &.bg-primary { background: linear-gradient(45deg, #007bff, #0056b3); }
+      &.bg-success { background: linear-gradient(45deg, #28a745, #1e7e34); }
+      &.bg-info { background: linear-gradient(45deg, #17a2b8, #117a8b); }
+      &.bg-warning { background: linear-gradient(45deg, #ffc107, #e0a800); }
+    }
+  }
+  
+  .card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+    }
+    
+    .card-header {
+      border-radius: 12px 12px 0 0 !important;
+      
+      h5 {
+        font-weight: 600;
+        color: #2c3e50;
+      }
+    }
+  }
+  
+  .custom-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    
+    .label {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    
+    p {
+      margin: 2px 0;
+      font-size: 12px;
+    }
+  }
+  
+  .activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+    
+    .activity-item {
+      .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.9rem;
+        margin-right: 12px;
+        flex-shrink: 0;
+        
+        &.bg-success { background: linear-gradient(45deg, #28a745, #20c997); }
+        &.bg-info { background: linear-gradient(45deg, #17a2b8, #20c997); }
+        &.bg-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+        &.bg-primary { background: linear-gradient(45deg, #007bff, #6610f2); }
+      }
+    }
+  }
+  
+  .stock-alert-item {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
+    
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+    
+    .progress {
+      background: #e9ecef;
+      border-radius: 10px;
+    }
+  }
+  
+  .table {
+    th {
+      border-top: none;
+      font-weight: 600;
+      color: #495057;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    td {
+      border-top: 1px solid #f1f3f4;
+      vertical-align: middle;
+      
+      strong {
+        color: #2c3e50;
+      }
+    }
+  }
+  
+  .fa-spin {
+    animation: fa-spin 2s infinite linear;
+  }
+  
+  @keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .metric-card .metric-icon {
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+    }
+    
+    .d-flex.gap-2 {
+      flex-direction: column;
+      gap: 0.5rem !important;
+      
+      .btn, .dropdown {
+        width: 100%;
+      }
+    }
+  }
+  
+  // Performance metrics styling
+  .performance-metrics {
+    .metric-item {
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+      }
+      
+      .progress {
+        background: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+    }
+  }
+  
+  // Monthly insights styling
+  .insight-card {
+    transition: all 0.3s ease;
+    background: #ffffff;
+    
+    &:hover {
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+    }
+    
+    .insight-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    
+    .recommendation {
+      border-left: 3px solid #007bff;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: #e3f2fd !important;
+      }
+    }
+  }
+  
+  // Enhanced metric cards
+  .metric-card {
+    .metric-icon {
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: all 0.6s;
+        opacity: 0;
+      }
+      
+      &:hover::before {
+        opacity: 1;
+        animation: shimmer 0.6s ease-in-out;
+      }
+    }
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+  }
+  
+  // Chart container styling
+  .recharts-wrapper {
+    .recharts-cartesian-axis-tick-value {
+      font-size: 12px;
+      fill: #666;
+    }
+    
+    .recharts-legend-wrapper {
+      .recharts-legend-item-text {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+    
+    .recharts-tooltip-wrapper {
+      .recharts-default-tooltip {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+      }
+    }
+  }
+  
+  // Additional utility classes
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+  }
+  
+  .bg-gradient-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34);
+  }
+  
+  .bg-gradient-info {
+    background: linear-gradient(45deg, #17a2b8, #117a8b);
+  }
+  
+  .bg-gradient-warning {
+    background: linear-gradient(45deg, #ffc107, #e0a800);
+  }
+}

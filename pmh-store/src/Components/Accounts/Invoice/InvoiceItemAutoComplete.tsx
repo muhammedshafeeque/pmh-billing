@@ -57,7 +57,7 @@ const InvoiceItemAutoComplete: React.FC<InvoiceItemAutoCompleteProps> = ({ onIte
               action
               onClick={() => handleItemSelect(item)}
             >
-              {item.name} - {item.code} :- Stocks Available : {item.stock} {item.unitCode}, Racks: {item.racks.map((rack: any) => rack.rackCode).join(', ')}
+              {item.name} - {item.code} :   {item.stock} {item.unitCode} |{item.price} &#8377; | {item.stockDate} | {item.expiry} -- Racks: {item.racks.map((rack: any) => rack.rackCode).join(', ')}
             </ListGroup.Item>
           ))}
         </ListGroup>

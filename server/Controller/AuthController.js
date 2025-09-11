@@ -41,8 +41,8 @@ export const doLogin = async (req, res) => {
     if (compare) {
       let profile = await getProfileByUserId(userExist._id);
       let token = await generateToken(profile.userId);
-      profile._doc.token=token
-      res.send(profile);
+      
+      res.status(200).send({userData:profile,token});
     } else {
       res.status(400).send({message:"Invalid userId Or Password"});
     }

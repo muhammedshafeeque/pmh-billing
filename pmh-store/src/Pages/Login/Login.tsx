@@ -27,7 +27,7 @@ const Login: React.FC = () => {
     try {
       setLoadingState(true);
       const { data } = await axios.post("auth/login", body);
-      login({ ...data, isLoggedIn: true });
+      login(data);
     } catch (error) {
       // Handle error if necessary
     } finally {

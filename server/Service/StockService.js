@@ -3,6 +3,7 @@ import { UNITS } from "../Models/UnitModal.js";
 import { ITEM } from "../Models/itemModal.js";
 import { createTransaction } from "./AccountsService.js";
 import { convertToBaseUnit, convertFromBaseUnit } from "../Utils/utils.js";
+import { ItemStatus } from "../Constants/Constants.js";
 
 export const postStock = async (data) => {
   try {
@@ -21,6 +22,7 @@ export const postStock = async (data) => {
 
     data.transaction = transaction._id;
     data.quantity=convertToBaseUnit(data.purchasedQuantity, purchasedUnit);
+    data.status=ItemStatus.IN_STOCK;
     await Stock.create(data);
 
     let convertedQuantity = convertToBaseUnit(data.purchasedQuantity, purchasedUnit);
@@ -35,6 +37,7 @@ export const postStock = async (data) => {
 
 export const patchStock = (id, data) => {
   try {
+    data.status=ItemStatus.IN_STOCK;
     return Stock.findByIdAndUpdate(id, data);
   } catch (error) {
     throw error;

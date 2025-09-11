@@ -160,6 +160,8 @@ const CreateAndUpdateCustomer: React.FC<CreateAndUpdateCustomerProps> = ({
             <Form.Label>Opening Balance</Form.Label>
             <Form.Control
               type="number"
+              step="0.01"
+              min="0"
               placeholder="Enter opening balance"
               {...register("openingBalance", { valueAsNumber: true })}
               disabled={!!customerToEdit}

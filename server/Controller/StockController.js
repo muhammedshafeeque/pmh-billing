@@ -36,7 +36,7 @@ import {
 } from "../Utils/utils.js";
 import {
   createPayment,
-  transferDiscount,
+  createTransaction,
 } from "../Service/AccountsService.js";
 import { VENDOR } from "../Models/VendorModal.js";
 import { ACCOUNT } from "../Models/AccountModal.js";
@@ -45,6 +45,7 @@ import { Stock } from "../Models/StockModal.js";
 import { collections } from "../Constants/collections.js";
 import mongoose from "mongoose";
 import { ITEM } from "../Models/itemModal.js";
+import moment from "moment/moment.js";
 
 export const createSection = async (req, res, next) => {
   try {
@@ -73,17 +74,14 @@ export const updateSection = async (req, res) => {
 };
 export const removeSection = async (req, res, next) => {
   try {
-    // Check if there are any racks associated with this section
     const relatedRacks = await getRacks({ section: req.params.id });
 
     if (relatedRacks.results.length > 0) {
-      // If there are related racks, don't allow deletion
       return res.status(400).json({
         message: "Cannot delete section. There are racks associated with this section.",
         relatedRacksCount: relatedRacks.length
       });
     }else{
-      // If no related racks, proceed with deletion
     await deleteSection(req.params.id);
     res.send("Section Removed Successfully");
     }
@@ -138,7 +136,6 @@ export const updateItem = async (req, res, next) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    // Validate required fields
     if (!updateData.name || !updateData.code) {
       return res.status(400).json({ message: "Name and code are required" });
     }
@@ -192,6 +189,8 @@ export const createStock = async (req, res, next) => {
         throw {status:400,message:"Payment Account is required"}
       }
     }
+
+
     let accountKeywords={ name: "Store" }
     if(req.body.account){
       accountKeywords={_id:new mongoose.Types.ObjectId(req.body.account)}
@@ -205,11 +204,11 @@ export const createStock = async (req, res, next) => {
   
     let Discount = req.body.billAmount - req.body.payableAmount;
     if (Discount > 0) {
-      await transferDiscount({
-        fromAccount: vendor.accountHEad._id,
-        toAccount: account.accountHead._id,
+      await createTransaction({
+        fromAccount: account.accountHead._id,
+        toAccount: vendor.accountHEad._id,
         amount: Discount,
-        description: "Purchase Bill",
+        description: "Purchase Bill Discount",
       });
     }
     
@@ -260,11 +259,9 @@ export const getStocks = async (req, res, next) => {
     let count = await Stock.find(keywords).count();
     results = results.map((result) => ({
       ...result.toObject(),
-      // Keep the populated objects intact for the frontend
       item: result.item,
       vendor: result.vendor,
       purchasedUnit: result.purchasedUnit,
-      // Add flat fields for backward compatibility if needed
       name: result.item?.name,
       unit: result.purchasedUnit?.unitName,
       code: result.item?.code,
@@ -469,7 +466,9 @@ export const getItemsForInvoice = async (req, res, next) => {
               unitCode:itemWithStock.item.unit ? itemWithStock.item.unit.unitCode : null,
               unitId:itemWithStock.item.unit ? itemWithStock.item.unit._id: null,
               measurement:itemWithStock.item.unit ? itemWithStock.item.unit.measurement: null,
-              price:inv.sellablePricePerUnit
+              price:inv.sellablePricePerUnit,
+              expiry:inv.ExpiryDate?moment(inv.ExpiryDate).format('DD-MM-YYYY'):null,
+              stockDate:inv.createdAt?moment(inv.createdAt).format('DD-MM-YYYY'):null,
             };
             itemList.push(inventory);
           }

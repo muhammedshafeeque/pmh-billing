@@ -37,7 +37,22 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
-  min-height: 90vh;
+  min-height: 100vh;
+}
+
+.admin-layout {
+  display: flex;
+  margin-top: 80px; // Account for fixed header height
+  min-height: calc(100vh - 80px);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 220px; // Account for fixed sidebar width
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 80px);
 }
 
 main {

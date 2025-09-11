@@ -117,7 +117,6 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
               type="email"
               placeholder="Enter email"
               {...register("contactEmail", {
-                required: "Email is required",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                   message: "Invalid email address",
@@ -135,6 +134,8 @@ const CreateAndUpdateVendor: React.FC<CreateAndUpdateVendorProps> = ({ handleClo
             <Form.Label>Opening Balance</Form.Label>
             <Form.Control
               type="number"
+              step="0.01"
+              min="0"
               placeholder="Enter opening balance"
               {...register("accountBallance", { valueAsNumber: true })}
             />

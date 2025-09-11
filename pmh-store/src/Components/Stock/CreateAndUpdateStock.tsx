@@ -287,6 +287,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Label>Quantity</Form.Label>
                 <Form.Control
                   type="number"
+                  step="0.01"
+                  min="0.01"
                   placeholder="Enter Quantity"
                   {...register(`items.${index}.purchasedQuantity` as any, {
                     required: "Quantity is required",
@@ -306,6 +308,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Label>Rate Per Unit</Form.Label>
                 <Form.Control
                   type="number"
+                  step="0.01"
+                  min="0"
                   placeholder="Enter Rate Per Unit"
                   {...register(`items.${index}.purchaseRate` as any, {
                     required: "Rate Per Unit is required",
@@ -325,6 +329,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Label>Sellable Price Per Unit</Form.Label>
                 <Form.Control
                   type="number"
+                  step="0.01"
+                  min="0"
                   placeholder="Sellable Price Per Unit"
                   {...register(`items.${index}.sellablePricePerUnit` as any)}
                   isInvalid={!!errors.items?.[index]?.sellablePricePerUnit}
@@ -339,6 +345,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
                 <Form.Label>Total Rate</Form.Label>
                 <Form.Control
                   type="number"
+                  step="0.01"
+                  min="0"
                   placeholder="Total"
                   {...register(`items.${index}.total` as any)}
                   isInvalid={!!errors.items?.[index]?.total}
@@ -386,6 +394,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
               <Form.Label>Bill Amount</Form.Label>
               <Form.Control
                 type="number"
+                step="0.01"
+                min="0"
                 placeholder="Bill Amount"
                 {...register("billAmount", {
                   required: "Bill Amount is required",
@@ -403,6 +413,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
               <Form.Label>Payable Amount</Form.Label>
               <Form.Control
                 type="number"
+                step="0.01"
+                min="0"
                 placeholder="Payable Amount"
                 {...register("payableAmount", {
                   required: "Payable Amount is required",
@@ -419,6 +431,8 @@ const CreateAndUpdateStock: React.FC<CreateAndUpdateStockProps> = ({ handleClose
               <Form.Label>Payed Amount</Form.Label>
               <Form.Control
                 type="number"
+                step="0.01"
+                min="0"
                 placeholder="Payed Amount"
                 {...register("payedAmount", {
                   required: "Payed Amount is required",

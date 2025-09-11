@@ -66,7 +66,8 @@ const Items: React.FC<ItemsProps> = ({ fields, register, control, remove, onTota
             <td>
               <Form.Control
                 type="number"
-                min="1"
+                step="0.01"
+                min="0.01"
                 disabled={disabled}
                 {...register(`items.${index}.quantity` as const, { valueAsNumber: true })}
               />

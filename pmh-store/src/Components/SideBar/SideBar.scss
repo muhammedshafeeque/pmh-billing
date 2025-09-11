@@ -51,11 +51,15 @@
 .sidebar {
   background-color: #ffffff;
   border-right: 1px solid #e0e0e0;
-  height: calc(100vh - 56px); // Adjust based on your header height
+  height: calc(100vh - 80px); // Adjust based on your header height
   overflow-y: auto;
   width: 220px; // Reduced from 260px to 220px
   transition: all 0.3s ease;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 80px; // Position below the fixed header
+  left: 0;
+  z-index: 999;
 }
 
 .sidebar-item {
